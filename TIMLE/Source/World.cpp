@@ -86,10 +86,10 @@ void World::loadLevel(int levelNumber)
 			mLevel->loadFromFile("Level3.tmx");
 			break;
 		case 4:
-			mLevel->loadFromFile("test_map.tmx");
+			mLevel->loadFromFile("test_map.tmx");	// Test level for Vasar.
 			break;
 		case 5:
-			mLevel->loadFromFile("supertest_map.tmx");
+			mLevel->loadFromFile("supertest_map.tmx");	// Test level for Gusev.
 			break;
 		default:
 			std::cout << "Error! Out of range level." << std::endl;
