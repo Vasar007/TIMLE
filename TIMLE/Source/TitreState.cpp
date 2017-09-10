@@ -51,7 +51,7 @@ bool TitreState::update(sf::Time dt)
 
 bool TitreState::handleEvent(const sf::Event& event)
 {
-	// If any key is pressed, trigger the next screen
+	// If any key is pressed, trigger the next screen.
 	if (event.type == sf::Event::KeyReleased)
 	{
 		requestStackPop();

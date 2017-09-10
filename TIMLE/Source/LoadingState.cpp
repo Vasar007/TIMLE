@@ -8,7 +8,7 @@
 
 LoadingState::LoadingState(StateStack& stack, Context context)
 : State(stack, context)
-, mLoadingTask(*context.mTextures, context.mPlayerInfo)
+, mLoadingTask(*context.mTextures, *context.mSounds, context.mPlayerInfo)
 {
 	sf::RenderWindow& window = *getContext().mWindow;
 	sf::Font& font = context.mFonts->get(Fonts::Main);
@@ -45,7 +45,7 @@ void LoadingState::draw()
 
 bool LoadingState::update(sf::Time)
 {
-	// Update the progress bar from the remote task or finish it
+	// Update the progress bar from the remote task or finish it.
 	if (mLoadingTask.isFinished())
 	{
 		requestStackPop();

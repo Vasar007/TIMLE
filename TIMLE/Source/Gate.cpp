@@ -49,16 +49,16 @@ void Gate::checkCollisionWithMap(float Dx, float Dy)
 		}
 }
 
-void Gate::update(float time)
+void Gate::update(float dt)
 {
 	switch (mTypeID)
 	{
 		case Type::OpeningGate:
 			if (mIsStarted)
 			{
-				mCurrentFrame += 0.005f * time;
+				mCurrentFrame += 0.005f * dt;
 
-				y += dy * time;
+				y += dy * dt;
 				if (y >= mWaySizeDown)
 				{
 					dy = 0.f;
@@ -71,9 +71,9 @@ void Gate::update(float time)
 		case Type::ClosingGate:
 			if (mIsAttacked)
 			{
-				mCurrentFrame += 0.005f * time;
+				mCurrentFrame += 0.005f * dt;
 
-				y += dy * time;
+				y += dy * dt;
 				if (y >= mWaySizeDown)
 				{
 					dy = 0.f;
@@ -84,9 +84,9 @@ void Gate::update(float time)
 			}
 			break;
 		case Type::OpenClosingGate:
-			mCurrentFrame += 0.005f * time;
+			mCurrentFrame += 0.005f * dt;
 
-			y += dy * time;
+			y += dy * dt;
 			if ((y >= mWaySizeDown && !mIsEnd) || (y <= mWaySizeUp && mIsEnd))
 			{
 				if (dy > 0.f)

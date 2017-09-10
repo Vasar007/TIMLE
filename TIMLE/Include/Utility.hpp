@@ -5,7 +5,6 @@
 #include <SFML/System/Vector2.hpp>
 
 #include <sstream>
-#include "AnimatedSprite.hpp"
 
 
 namespace sf

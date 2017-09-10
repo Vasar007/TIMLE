@@ -30,7 +30,7 @@ bool Container::isSelectable() const
 
 void Container::handleEvent(const sf::Event& event)
 {
-	// If we have selected a child then give it events
+	// If we have selected a child then give it events.
 	if (hasSelection() && mChildren[mSelectedChild]->isActive())
 	{
 		mChildren[mSelectedChild]->handleEvent(event);
@@ -83,13 +83,13 @@ void Container::selectNext()
 	if (!hasSelection())
 		return;
 
-	// Search next component that is selectable, wrap around if necessary
+	// Search next component that is selectable, wrap around if necessary.
 	int next = mSelectedChild;
 	do
 		next = (next + 1) % mChildren.size();
 	while (!mChildren[next]->isSelectable());
 
-	// Select that component
+	// Select that component.
 	select(next);
 }
 
@@ -98,13 +98,13 @@ void Container::selectPrevious()
 	if (!hasSelection())
 		return;
 
-	// Search previous component that is selectable, wrap around if necessary
+	// Search previous component that is selectable, wrap around if necessary.
 	int prev = mSelectedChild;
 	do
 		prev = (prev + mChildren.size() - 1) % mChildren.size();
 	while (!mChildren[prev]->isSelectable());
 
-	// Select that component
+	// Select that component.
 	select(prev);
 }
 

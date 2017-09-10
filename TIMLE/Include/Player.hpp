@@ -56,9 +56,9 @@ public:
 public:
 					Player(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, PlayerInfo* playerInfo);
 
-	void			control(float time);
+	void			control(float dt);
 	void			checkCollisionWithMap(float Dx, float Dy);	// Функция взаимодейтсвия с картой
-	virtual void	update(float time);	// Функция "оживления" класса
+	virtual void	update(float dt);	// Функция "оживления" класса
 
 };
 

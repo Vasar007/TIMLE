@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 
 class ChoosingState : public State
@@ -15,6 +16,7 @@ class ChoosingState : public State
 
 		sf::Text				mText;
 		GUI::Container 			mGUIContainer;
+		sf::Sound				mSound;
 
 		std::vector<sf::String>	mDialogText;
 		std::vector<sf::String>	mDialogTalking;

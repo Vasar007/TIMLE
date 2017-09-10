@@ -191,9 +191,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\AnimatedSprite.cpp" />
-    <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\AudioManager.cpp" />
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\ChoosingState.cpp" />
@@ -242,9 +241,8 @@
     <ClCompile Include="TinyXML\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\AnimatedSprite.hpp" />
-    <ClInclude Include="Include\Animation.hpp" />
     <ClInclude Include="Include\Application.hpp" />
+    <ClInclude Include="Include\AudioManager.hpp" />
     <ClInclude Include="Include\Bullet.hpp" />
     <ClInclude Include="Include\Button.hpp" />
     <ClInclude Include="Include\ChoosingState.hpp" />

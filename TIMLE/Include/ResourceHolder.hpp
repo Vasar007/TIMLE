@@ -8,6 +8,11 @@
 #include <cassert>
 
 
+/**
+ * \brief				Special class for keep-tracking action with app resources.
+ * \tparam Resource		A type of the resources for keeping.
+ * \tparam Identifier	Array of identificators for tracking recources.
+ */
 template <typename Resource, typename Identifier>
 class ResourceHolder
 {

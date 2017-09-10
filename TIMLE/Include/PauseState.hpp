@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 
 class PauseState : public State
@@ -14,6 +15,7 @@ class PauseState : public State
 		sf::Sprite		mBackgroundSprite;
 		sf::Text		mPausedText;
 		GUI::Container 	mGUIContainer;
+		sf::Sound		mSound;
 
 		PlayerInfo*		mPlayerInfo;
 

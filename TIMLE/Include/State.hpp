@@ -4,6 +4,7 @@
 #include "StateIdentifiers.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "PlayerInfo.hpp"
+#include "AudioManager.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -26,18 +27,25 @@ class State
 
 		struct Context
 		{
-								Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, PlayerInfo& playerInfo);
+								Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
+										SoundBufferHolder& sounds, PlayerInfo& playerInfo);
 
 			sf::RenderWindow*	mWindow;
 			TextureHolder*		mTextures;
 			FontHolder*			mFonts;
+			SoundBufferHolder*	mSounds;
 			PlayerInfo*			mPlayerInfo;
+			
 		};
 
 
 	private:
 		StateStack*				mStack;
 		Context					mContext;
+
+
+	public:
+		static AudioManager		mAudioManager;
 
 
 	public:

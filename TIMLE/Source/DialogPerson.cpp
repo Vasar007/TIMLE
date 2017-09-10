@@ -27,7 +27,6 @@ DialogPerson::DialogPerson(Type::ID Id, const TextureHolder& textures, const Fon
 	}
 }
 
-void DialogPerson::update(float time)
+void DialogPerson::update(float dt)
 {
-
 }

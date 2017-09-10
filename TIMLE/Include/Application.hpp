@@ -9,7 +9,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
-
+#include <SFML/Audio/SoundBuffer.hpp>
 
 
 /**
@@ -34,6 +34,11 @@ class Application
 		 * \brief Variable, which contains all fonts for this app.
 		 */
 		FontHolder				mFonts;
+
+		/**
+		* \brief Variable, which contains all sounds for this app.
+		*/
+		SoundBufferHolder		mSounds;
 
 		/**
 		 * \brief Variable, which contains all player's data.
@@ -62,25 +67,25 @@ class Application
 
 
 	private:
-		void					processInput();
-		void					update(sf::Time dt);
-		void					render();
+		void	processInput();
+		void	update(sf::Time dt);
+		void	render();
 	
-		void					updateStatistics(sf::Time dt);
-		void					registerStates();
+		void	updateStatistics(sf::Time dt);
+		void	registerStates();
 
 
 	public:
 		/**
 		 * \brief Default constructor.
 		 */
-								Application();
+				Application();
 
 		
 		/**
 		 * \brief Main app loop.
 		 */
-		void					run();
+		void	run();
 };
 
 #endif // APPLICATION_HPP

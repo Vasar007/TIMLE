@@ -41,21 +41,21 @@ Bullet::Bullet(Type::ID Id, const TextureHolder& textures, const FontHolder& fon
 	mSprite.setScale(0.5f, 0.5f);
 }
 
-void Bullet::update(float time)
+void Bullet::update(float dt)
 {
 
 	//x += mSpeed*time*(targetX - x) /20;	// Само движение пули по х
 	//y += mSpeed*time*(targetY - y) /20;	// По у
 
-	x += mVx * time * mSpeed;
-	y += mVy * time * mSpeed;
+	x += mVx * dt * mSpeed;
+	y += mVy * dt * mSpeed;
 
 	if (x <= 0.f)
 		x = -mSprite.getLocalBounds().width;	// Задержка пули в левой стене, чтобы при проседании кадров она случайно не вылетела за предел карты и не было ошибки
 	if (y <= 0.f)
 		y = -mSprite.getLocalBounds().height;
-	x += dx * time;	// Само движение пули по х
-	y += dy * time;	// По у
+	x += dx * dt;	// Само движение пули по х
+	y += dy * dt;	// По у
 	for (size_t i = 0; i < mLevelObjects.size(); i++)	// Проход по объектам solid
 	{
 		if (getRect().intersects(mLevelObjects[i].mRect))	// Если этот объект столкнулся с пулей,
@@ -70,9 +70,9 @@ void Bullet::update(float time)
 
 	mSprite.setPosition(x + (mWidth / 2.f) - 2.f, y + (mHeight / 2.f) - 2.f);	// Задается позицию пуле
 
-	mMoveTimer += time;	// Наращиваем таймер
+	mMoveTimer += dt;	// Наращиваем таймер
 
-	mCurrentFrame += 0.005f * time;
+	mCurrentFrame += 0.005f * dt;
 	if (mCurrentFrame > 5)
 		mCurrentFrame -= 5;
 	mSprite.setTextureRect(sf::IntRect(13 * static_cast<int>(mCurrentFrame), 0, 13, 13));

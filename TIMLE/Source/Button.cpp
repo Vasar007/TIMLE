@@ -9,15 +9,18 @@
 namespace GUI
 {
 
-Button::Button(const FontHolder& fonts, const TextureHolder& textures)
+Button::Button(const FontHolder& fonts, const TextureHolder& textures, const SoundBufferHolder& soundBuffer)
 : mCallback()
 , mNormalTexture(textures.get(Textures::ButtonNormal))
 , mSelectedTexture(textures.get(Textures::ButtonSelected))
 , mPressedTexture(textures.get(Textures::ButtonPressed))
+, mSoundBuffer(soundBuffer.get(Sounds::ButtonCLick))
+, mSound()
 , mSprite()
 , mText("", fonts.get(Fonts::Main), 16)
 , mIsToggle(false)
 {
+	mSound.setBuffer(mSoundBuffer);
 	mSprite.setTexture(mNormalTexture);
 
 	sf::FloatRect bounds = mSprite.getLocalBounds();
@@ -48,7 +51,8 @@ bool Button::isSelectable() const
 void Button::select()
 {
 	Component::select();
-
+	
+	mSound.play();
 	mSprite.setTexture(mSelectedTexture);
 }
 
@@ -65,7 +69,10 @@ void Button::activate()
 
 	// If we are toggle then we should show that the button is pressed and thus "toggled".
 	if (mIsToggle)
+	{
+		mSound.play();
 		mSprite.setTexture(mPressedTexture);
+	}
 
 	if (mCallback)
 		mCallback();

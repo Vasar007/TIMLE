@@ -2,15 +2,22 @@
 #define RESOURCEIDENTIFIERS_HPP
 
 
-// Forward declaration of SFML classes
+// Forward declaration of SFML classes.
 namespace sf
 {
 	class Texture;
 	class Font;
+	class SoundBuffer;
 }
 
+/**
+ * \brief Additional namespace for keeping id of the textures.
+ */
 namespace Textures
 {
+	/**
+	 * \brief Enumeration of identificators of all app textures.
+	 */
 	enum ID
 	{
 		Archer,
@@ -64,20 +71,47 @@ namespace Textures
 	};
 }
 
+/**
+ * \brief Additional namespace for keeping id of the fonts.
+ */
 namespace Fonts
 {
+	/**
+	 * \brief Enumeration of identificators of all app fonts.
+	 */
 	enum ID
 	{
 		Main,
 	};
 }
 
+/**
+* \brief Additional namespace for keeping id of the sound buffers.
+*/
+namespace Sounds
+{
+	/**
+	* \brief Enumeration of identificators of all app sounds.
+	*/
+	enum ID
+	{
+		ButtonCLick,
 
-// Forward declaration and a few type definitions
+		StartingDialog,
+		Death,
+
+		Bullet
+	};
+}
+
+
+// Forward declaration and a few type definitions.
+
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
 typedef ResourceHolder<sf::Texture, Textures::ID>	TextureHolder;
 typedef ResourceHolder<sf::Font, Fonts::ID>			FontHolder;
+typedef ResourceHolder<sf::SoundBuffer, Sounds::ID>	SoundBufferHolder;
 
 #endif // RESOURCEIDENTIFIERS_HPP

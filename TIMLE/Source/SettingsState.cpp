@@ -7,11 +7,14 @@
 
 SettingsState::SettingsState(StateStack& stack, Context context)
 : State(stack, context)
+, mBackgroundSprite()
 , mGUIContainer()
+, mSound()
 {
 	mBackgroundSprite.setTexture(context.mTextures->get(Textures::TitleScreen));
+	mSound.setBuffer(context.mSounds->get(Sounds::ButtonCLick));
 	
-	// Build key binding buttons and labels
+	// Build key binding buttons and labels.
 	addButtonLabel(PlayerInfo::MoveLeft,		300.f, L"Двигаться влево", context);
 	addButtonLabel(PlayerInfo::MoveRight,		350.f, L"Двигаться вправо", context);
 	addButtonLabel(PlayerInfo::MoveUp,			400.f, L"Прыжок", context);
@@ -21,7 +24,7 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 
 	updateLabels();
 
-	auto backButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures);
+	auto backButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
 	backButton->setPosition(80.f, 620.f);
 	backButton->setText(L"Вернуться в меню");
 	backButton->setCallback(std::bind(&SettingsState::requestStackPop, this));
@@ -44,9 +47,14 @@ bool SettingsState::update(sf::Time)
 
 bool SettingsState::handleEvent(const sf::Event& event)
 {
+	if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+	{
+		mSound.play();
+	}
+
 	bool isKeyBinding = false;
 	
-	// Iterate through all key binding buttons to see if they are being pressed, waiting for the user to enter a key
+	// Iterate through all key binding buttons to see if they are being pressed, waiting for the user to enter a key.
 	for (std::size_t action = 0; action < PlayerInfo::ActionCount; ++action)
 	{
 		if (mBindingButtons[action]->isActive())
@@ -61,7 +69,7 @@ bool SettingsState::handleEvent(const sf::Event& event)
 		}
 	}
 
-	// If pressed button changed key bindings, update labels; otherwise consider other buttons in container
+	// If pressed button changed key bindings, update labels; otherwise consider other buttons in container.
 	if (isKeyBinding)
 		updateLabels();
 	else
@@ -83,7 +91,7 @@ void SettingsState::updateLabels()
 
 void SettingsState::addButtonLabel(PlayerInfo::Action action, float y, const sf::String& text, Context context)
 {
-	mBindingButtons[action] = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures);
+	mBindingButtons[action] = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
 	mBindingButtons[action]->setPosition(80.f, y);
 	mBindingButtons[action]->setText(text);
 	mBindingButtons[action]->setToggle(true);

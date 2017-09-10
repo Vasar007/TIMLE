@@ -15,11 +15,13 @@
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio.hpp>
 
 #include <array>
 #include <queue>
 #include <list>
+#include "AudioManager.hpp"
 
 
 // Forward declaration.
@@ -28,6 +30,9 @@ namespace sf
 	class RenderWindow;
 }
 
+/**
+ * \brief One of the main classes of this app. Contains all data about this level and context of the app.
+ */
 class World : private sf::NonCopyable
 {
 	private:
@@ -100,39 +105,49 @@ class World : private sf::NonCopyable
 		sf::View				mWorldView;
 		TextureHolder&			mTextures;
 		FontHolder&				mFonts;
+		SoundBufferHolder&		mSounds;
+		AudioManager&			mAudioManager;
 		Level*					mLevel;
+
 	
 		sf::FloatRect			mWorldBounds;
 		sf::Vector2f			mSpawnPosition;
-		int						mLevelNumber;
+		size_t					mLevelNumber;
 		sf::Vector2f			mPosition;
 		float					mScrollSpeed;
 		Player*					mPlayerHero;
 		PlayerInfo*				mPlayerInfo;
 		LifeBar*				mLifeBar;
 
+
 		ShadowBoss				mShadowBoss;
 		GolemBoss				mGolemBoss;
+
 	
 		std::list<Entity*>		mEntities;
-		std::vector<SpawnPoint>	mEnemySpawnPoints;
-		std::vector<Enemy*>		mEnemies;
+		std::vector<SpawnPoint>	mEnemySpawnPoints;	// Not using now.
+		std::vector<Enemy*>		mEnemies;	// Not using now.
 		std::vector<Object>		mObjects;
+
 
 		Object*					mTempObject;
 
-		sf::Music				mMusic;
-		sf::SoundBuffer			mSoundBuffer;
-		sf::SoundBuffer			mCasualSoundBuffer;
-		sf::SoundBuffer			mDarkSoundBuffer;
+
+		/**
+		 * \brief Need to loading different sounds in this variable and play them.
+		 */
 		sf::Sound				mSound;
 
+
+		/**
+		 * \brief Boolean flag for enabling debug-mode.
+		 */
 		bool					mDebug;
 	
 
 	private:
-		void					setPlayerCoordinateForView(float x, float y, int levelNumber);
-		void					handleCollisions(float time);
+		void					setPlayerCoordinateForView(float x, float y, size_t levelNumber);
+		void					handleCollisions(float dt);
 	
 		void					buildScene();
 		void					addObjects();
@@ -145,8 +160,9 @@ class World : private sf::NonCopyable
 
 
 	public:
-		explicit				World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, PlayerInfo* playerInfo);
-		void					loadLevel(int levelNumber);
+		explicit				World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
+									  SoundBufferHolder& sounds, PlayerInfo* playerInfo, AudioManager& audioManager);
+		void					loadLevel(size_t levelNumber);
 		void					update(sf::Time dt);
 		void					draw();
 		void					handleEvent();

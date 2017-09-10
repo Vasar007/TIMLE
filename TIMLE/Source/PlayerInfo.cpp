@@ -12,25 +12,25 @@ PlayerInfo::PlayerInfo()
 , mLoaded(false)
 {
 	/*
-	 *	Ќабор квестов:
-	 *	0 Ц разговор с Oswald
-	 *	1 Ц убийство DwarvenCommanderM и получение ключа-активатора
-	 *	2 Ц разговор с Heinrich
-	 *	3 Ц победа над боссом Shadow
-	 *	4 Ц победа над мини-боссом GolemDark
+	 *	Set of the quests:
+	 *	0 Ц talking with Oswald;
+	 *	1 Ц killing DwarvenCommanderM and getting key;
+	 *	2 Ц talking with Heinrich;
+	 *	3 Ц killing first boss Shadow;
+	 *	4 Ц killing first mini-boss GolemDark.
 	 */
 	for (size_t i = 0; i < mQuests.size(); i++)
 		mQuests[i] = false;
 
 	/*
-	 *	—писок сделанных выборов:
-	 *	0 - мародЄрство трупов рыцар€ и дворфов
-	 *	1 - действи€ с тЄмным големом
+	 *	List of the made choices:
+	 *	0 - pillage knight's and dwarven bodies;
+	 *	1 - choosing option to interactive with GolemDark.
 	 */
 	for (size_t i = 0; i < mChosenSolution.size(); i++)
 		mChosenSolution[i] = 0;
 
-	// Set initial key bindings
+	// Set initial key bindings.
 	mKeyBinding[sf::Keyboard::Left] = MoveLeft;
 	mKeyBinding[sf::Keyboard::Right] = MoveRight;
 	mKeyBinding[sf::Keyboard::Up] = MoveUp;
@@ -38,7 +38,7 @@ PlayerInfo::PlayerInfo()
 	mKeyBinding[sf::Keyboard::Space] = Fire;
 	mKeyBinding[sf::Keyboard::M] = LaunchMissile;
 
-	// Set initial action bindings
+	// Set initial action bindings.
 	initializeActions();
 
 	// Assign all categories to player's aircraft
@@ -46,7 +46,7 @@ PlayerInfo::PlayerInfo()
 		//pair.second.category = Category::PlayerAircraft;
 }
 
-void PlayerInfo::showDialog(int number)
+void PlayerInfo::showDialog(size_t number)
 {
 	mDialogNumber = number;
 
@@ -68,7 +68,7 @@ void PlayerInfo::showDialog(int number)
 
 void PlayerInfo::assignKey(Action action, sf::Keyboard::Key key)
 {
-	// Remove all keys that already map to action
+	// Remove all keys that already map to action.
 	for (auto itr = mKeyBinding.begin(); itr != mKeyBinding.end(); )
 	{
 		if (itr->second == action)
@@ -77,7 +77,7 @@ void PlayerInfo::assignKey(Action action, sf::Keyboard::Key key)
 			++itr;
 	}
 
-	// Insert new binding
+	// Insert new binding.
 	mKeyBinding[key] = action;
 }
 
@@ -116,15 +116,15 @@ bool PlayerInfo::isRealtimeAction(Action action)
 {
 	switch (action)
 	{
-	case MoveLeft:
-	case MoveRight:
-	case MoveDown:
-	case MoveUp:
-	case Fire:
-		return true;
+		case MoveLeft:
+		case MoveRight:
+		case MoveDown:
+		case MoveUp:
+		case Fire:
+			return true;
 
-	default:
-		return false;
+		default:
+			return false;
 	}
 }
 
