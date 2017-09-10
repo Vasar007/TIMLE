@@ -25,11 +25,14 @@
 #include <limits>
 
 
-World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, PlayerInfo* playerInfo)
+World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
+			 SoundBufferHolder& sounds, PlayerInfo* playerInfo, AudioManager& audioManager)
 : mWindow(window)
 , mWorldView(window.getDefaultView())
 , mTextures(textures)
 , mFonts(fonts)
+, mSounds(sounds)
+, mAudioManager(audioManager)
 , mLevel(nullptr)
 , mWorldBounds(0.f, 0.f, 13072.f, 3200.f)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
@@ -45,39 +48,29 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , mEnemies()
 , mObjects()
 , mTempObject(nullptr)
-, mMusic()
-, mSoundBuffer()
-, mCasualSoundBuffer()
-, mDarkSoundBuffer()
 , mSound()
 , mDebug(false)
 {
 	srand(static_cast<unsigned int>(time(NULL)));
 
-	mSoundBuffer.loadFromFile("Media/Sounds/firebol3.ogg");
-	mCasualSoundBuffer.loadFromFile("Media/Sounds/music.ogg");
-	mDarkSoundBuffer.loadFromFile("Media/Sounds/DarkMusic.ogg");
+	mSound.setBuffer(mSounds.get(Sounds::Bullet));
 
-	mSound.setBuffer(mSoundBuffer);
-
-	mMusic.openFromFile("Media/Sounds/music.ogg");
-	mMusic.play();
-	mMusic.setLoop(true);
+	mAudioManager.setMusic(AudioManager::FirstMainMusic);
 
 	buildScene();
 	mWorldView.reset(sf::FloatRect(0, 0, 1280, 720));
 	mWorldView.zoom(0.5f);
 
-	//mObjects = mLevel->getObjects("solid"); // Strange line
+	//mObjects = mLevel->getObjects("solid"); // Strange line.
 }
 
-void World::loadLevel(int levelNumber)
+void World::loadLevel(size_t levelNumber)
 {
 	mLevelNumber = levelNumber;
 	switch (mLevelNumber)
 	{
 		case 1:
-			mLevel->loadFromFile("Level1.tmx"); // Нужно будет положить в Levels/
+			mLevel->loadFromFile("Level1.tmx"); // Need to reload into Levels/
 			break;
 		case 2:
 			mLevel->loadFromFile("Level2.tmx");
@@ -86,7 +79,7 @@ void World::loadLevel(int levelNumber)
 			mLevel->loadFromFile("Level3.tmx");
 			break;
 		case 4:
-			mLevel->loadFromFile("test_map.tmx");	// Test level for Vasar.
+			mLevel->loadFromFile("test_map.tmx");	// Test level for Vasily.
 			break;
 		case 5:
 			mLevel->loadFromFile("supertest_map.tmx");	// Test level for Gusev.
@@ -130,10 +123,11 @@ void World::update(sf::Time time)
 		// Если выстрелили, то появляется пуля, enum передаем как int
 		mEntities.push_back(new Bullet(Type::ID::AlliedBullet, mTextures, mFonts, *mLevel, 
 			mPlayerHero->x + (mPlayerHero->mWidth / 2.f), mPlayerHero->y + 6.f, 7, 7, mPlayerHero->mState));
-		mSound.play();	// Играем звук пули
+		//Play bullet's sound.
+		mSound.play();
 	}
 
-	// Обновляем действия босса-тени
+	// Updates ShadowBoss actions.
 	if (mShadowBoss.mIsActive)
 	{
 		for (std::list<Tentacle*>::iterator it = mShadowBoss.mTentaclesStatic.begin(); it != mShadowBoss.mTentaclesStatic.end();)
@@ -168,19 +162,19 @@ void World::update(sf::Time time)
 		mShadowBoss.mShadow->update(static_cast<float>(time.asMilliseconds()));
 	}
 
-	// Обновляем действия мини-босса голема
+	// Updates GolemDark actions.
 	if (mGolemBoss.mIsActive)
 	{
 		mGolemBoss.mGolemLifeBar->update(mGolemBoss.mGolem->mHitpoints);
 		mGolemBoss.mGolem->update(static_cast<float>(time.asMilliseconds()));
 	}
 
-	// Обновляем полосу здоровья
+	// Updates player's lifebar.
 	mLifeBar->update(mPlayerHero->mHitpoints);
 
 	mPlayerHero->update(static_cast<float>(time.asMilliseconds()));
 
-	// Проверка столкновений
+	// Checks collision between different objects.
 	handleCollisions(static_cast<float>(time.asMilliseconds()));
 
 	mPlayerInfo->mDialogNumber = 0;
@@ -198,7 +192,7 @@ void World::draw()
 {
 	mWindow.setView(mWorldView);
 
-	// Рисуем новую карту
+	// Draws a level.
 	mLevel->draw(mWindow);
 
 	sf::Vector2f center = mWindow.getView().getCenter();
@@ -476,7 +470,7 @@ bool World::hasPlayerReachedEnd() const
 	return mPlayerHero->mIsRichedEnd;
 }
 
-void World::setPlayerCoordinateForView(float x, float y, int levelNumber)
+void World::setPlayerCoordinateForView(float x, float y, size_t levelNumber)
 {
 	float tempX = x, tempY = y;
 
@@ -568,11 +562,11 @@ void World::setPlayerCoordinateForView(float x, float y, int levelNumber)
 
 void World::buildScene()
 {
-	// Инициализация уровня
+	// Initialization of level.
 	mLevel = new Level();
 	loadLevel(mLevelNumber);
 
-	// Добавление игрока
+	// Adds player.
 	Object playerObj = mLevel->getObject("player");
 	mPlayerHero = new Player(Type::Archer, mTextures, mFonts, *mLevel, playerObj.mRect.left, playerObj.mRect.top, 20, 30, mPlayerInfo);
 	mPlayerInfo->setPlayer(mPlayerHero);
@@ -602,16 +596,16 @@ void World::buildScene()
 	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8656, 2144));
 	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8736, 2160));
 
-	// Добавление врагов
+	// Adds objects and enemies.
 	addObjects();
 }
 
 void World::addObjects()
 {
-	// Все объкты врага на tmx-карте будут храниться в векторе
+	// All objects, which contains tmx-file, we read into temporary vector.
 	std::vector<Object> e = mLevel->getObjects("enemyGhost");
 
-	// Проходимся по элементам вектора с врагами
+	// Adds all objects with current name to list of objects.
 	for (size_t i = 0; i < e.size(); i++)
 	{
 		mEntities.push_back(new Ghost(Type::Ghost, mTextures, mFonts, *mLevel, e[i].mRect.left, e[i].mRect.top, 51, 36, e[i].mType));
@@ -830,7 +824,7 @@ sf::FloatRect World::getViewBounds() const
 
 sf::FloatRect World::getBattlefieldBounds() const
 {
-	// Return view bounds + some area at top, where enemies spawn
+	// Return view bounds + some area at top, where enemies spawn.
 	sf::FloatRect bounds = getViewBounds();
 	bounds.top -= 100.f;
 	bounds.height += 100.f;
@@ -838,7 +832,7 @@ sf::FloatRect World::getBattlefieldBounds() const
 	return bounds;
 }
 
-void World::handleCollisions(float time)
+void World::handleCollisions(float dt)
 {
 	mPlayerHero->mOnPlatform = 0.f;
 
@@ -855,8 +849,7 @@ void World::handleCollisions(float time)
 			if (!mShadowBoss.mShadow->mIsStarted)
 			{
 				mShadowBoss.mShadow->mIsStarted = true;
-				//mMusic.pause();
-				//mDarkMusic.play();
+				mAudioManager.setMusic(AudioManager::FirstBossMusic);
 			}
 			else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
 			{
@@ -950,8 +943,7 @@ void World::handleCollisions(float time)
 	{
 		mShadowBoss.mIsActive = false;
 		mPlayerInfo->mQuests[3] = true;
-		//mDarkMusic.pause();
-		//mMusic.play();
+		mAudioManager.setMusic(AudioManager::FirstMainMusic);
 	}
 
 
@@ -973,8 +965,7 @@ void World::handleCollisions(float time)
 			{
 				mGolemBoss.mGolem->mIsStarted = true;
 				mGolemBoss.mGolem->mCurrentDeath = 5.f;
-				//mMusic.pause();
-				//mDarkMusic.play();
+				mAudioManager.setMusic(AudioManager::FirstBossMusic);
 			}
 			else if (mGolemBoss.mGolem->getRect().intersects(playersRect))
 			{
@@ -1025,8 +1016,9 @@ void World::handleCollisions(float time)
 		mLevel->mObjects.push_back(*mTempObject);
 		mPlayerHero->mLevelObjects.push_back(*mTempObject);
 
-		//mDarkMusic.pause();
-		//mMusic.play();
+		mTempObject = nullptr;
+
+		mAudioManager.setMusic(AudioManager::FirstMainMusic);
 	}
 
 	for (std::list<Entity*>::iterator it = mEntities.begin(); it != mEntities.end(); ++it)
@@ -1040,7 +1032,7 @@ void World::handleCollisions(float time)
 				if (mPlayerHero->y + mPlayerHero->mHeight < (*it)->y + (*it)->mHeight)
 				{
 					mPlayerHero->y = (*it)->y - mPlayerHero->mHeight + 3.f;
-					mPlayerHero->x += (*it)->dx * time;
+					mPlayerHero->x += (*it)->dx * dt;
 					mPlayerHero->dy = 0;
 					mPlayerHero->mOnPlatform = (*it)->dx;
 					// То выталкиваем игрока так, чтобы он как бы стоял на платформе
@@ -1079,7 +1071,7 @@ void World::handleCollisions(float time)
 			if ((*it)->mIsAttacked)
 			{
 				(*it)->mCurrentFrame = 0.f;
-				(*it)->mMoveTimer += 0.005f * time;
+				(*it)->mMoveTimer += 0.005f * dt;
 				if ((*it)->mMoveTimer > 24.f)
 					(*it)->mMoveTimer -= 24.f;
 				//fireDamage.setPosition(mPlayerHero->x - 49.f, mPlayerHero->y - 185.f);
@@ -1538,6 +1530,8 @@ void World::handleCollisions(float time)
 			mTempObject->mRect = objectRect;
 			mLevel->mObjects.push_back(*mTempObject);
 			mPlayerHero->mLevelObjects.push_back(*mTempObject);
+
+			mTempObject = nullptr;
 		}
 
 		/// Добавляем закрытые врата в смертельные объекты для проверки коллизии
@@ -1558,6 +1552,8 @@ void World::handleCollisions(float time)
 			mTempObject->mRect = objectRect;
 			mLevel->mObjects.push_back(*mTempObject);
 			mPlayerHero->mLevelObjects.push_back(*mTempObject);
+
+			mTempObject = nullptr;
 		}
 
 		/// Проверка столкновений объектов между собой

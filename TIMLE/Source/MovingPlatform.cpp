@@ -11,11 +11,11 @@ MovingPlatform::MovingPlatform(Type::ID Id, const TextureHolder& textures, const
 	dx = 0.08f;
 }
 
-void MovingPlatform::update(float time)
+void MovingPlatform::update(float dt)
 {
 	// Движение по горизонтали
-	x += dx * time;
-	mMoveTimer += time;
+	x += dx * dt;
+	mMoveTimer += dt;
 	if (mMoveTimer > 2000.f)
 	{
 		dx *= -1.f;

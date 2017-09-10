@@ -17,12 +17,15 @@ DialogState::DialogState(StateStack& stack, Context context)
 , mText()
 , mTalking()
 , mGUIContainer()
+, mSound()
 , mDialogText()
 , mDialogTalking()
 , mPlayerInfo(context.mPlayerInfo)
 {
 	sf::Vector2f windowSize(context.mWindow->getView().getSize());
 	sf::Vector2f windowCenter(context.mWindow->getView().getCenter());
+
+	mSound.setBuffer(context.mSounds->get(Sounds::ButtonCLick));
 
 	mTalking.setFont(context.mFonts->get(Fonts::Main));
 	mTalking.setCharacterSize(24);
@@ -66,8 +69,8 @@ DialogState::DialogState(StateStack& stack, Context context)
 			addText(L"Откуда вы знаете моё имя, отродья Преисподней!?", L"Сэр Генрих");
 			addText(L"Сэр Освальд мне его сказал.", L"Арантир");
 			addText(L"Освальд?", L"Сэр Генрих");
-			// Артём: Тут он типа пару шагов делает, так?
-			// Василий: Ничего не знаю про шаги...
+			// Artem: Тут он типа пару шагов делает, так?
+			// Vasily: Ничего не знаю про шаги...
 			addText(L"Святые лики, да вы же Герой Стратклайда!", L"Сэр Генрих");
 			addText(L"Да-да, это я...", L"Арантир");
 			addText(L"Слава Святым, я спасён. Немного прошёл во тьму, оступился и упал на самое дно пещеры. Там стал    отступать от приближающихся дворфов и гоблинов, а потом... А потом нескольких прирезал и вдруг   тьма. Думал, что всё, дни мои сочтены.", L"Сэр Генрих");
@@ -101,7 +104,7 @@ DialogState::DialogState(StateStack& stack, Context context)
 
 	setText(mTextNumber);
 
-	auto nextButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures);
+	auto nextButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
 	nextButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 107.f);
 	nextButton->setText(L"Дальше");
 	nextButton->setCallback([this] ()
@@ -171,7 +174,7 @@ DialogState::DialogState(StateStack& stack, Context context)
 	});
 	mGUIContainer.pack(nextButton);
 
-	auto skipButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures);
+	auto skipButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
 	skipButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 57.f);
 	skipButton->setText(L"Пропустить");
 	skipButton->setCallback([this]()
@@ -232,12 +235,10 @@ bool DialogState::update(sf::Time)
 
 bool DialogState::handleEvent(const sf::Event& event)
 {
-	/*	
-	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-		requestStackPush(States::Pause);
-
-	return true;
-	*/
+	if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+	{
+		mSound.play();
+	}
 
 	mGUIContainer.handleEvent(event);
 	return false;

@@ -28,7 +28,6 @@ DeadMan::DeadMan(Type::ID Id, const TextureHolder& textures, const FontHolder& f
 	}
 }
 
-void DeadMan::update(float time)
+void DeadMan::update(float dt)
 {
-
 }

@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <SFML/Audio/Sound.hpp>
 
 
 /**
@@ -32,13 +33,16 @@ class Button : public Component
 
 
 	private:
-		Callback			mCallback;
-		const sf::Texture&	mNormalTexture;
-		const sf::Texture&	mSelectedTexture;
-		const sf::Texture&	mPressedTexture;
-		sf::Sprite			mSprite;
-		sf::Text			mText;
-		bool				mIsToggle;
+		Callback				mCallback;
+		const sf::Texture&		mNormalTexture;
+		const sf::Texture&		mSelectedTexture;
+		const sf::Texture&		mPressedTexture;
+		const sf::SoundBuffer&	mSoundBuffer;
+
+		sf::Sound				mSound;
+		sf::Sprite				mSprite;
+		sf::Text				mText;
+		bool					mIsToggle;
 	
 	
 	private:
@@ -46,7 +50,7 @@ class Button : public Component
 
 
 	public:
-							Button(const FontHolder& fonts, const TextureHolder& textures);
+							Button(const FontHolder& fonts, const TextureHolder& textures, const SoundBufferHolder& soundBuffer);
 
 		void				setCallback(Callback callback);
 		void				setText(const sf::String& text);

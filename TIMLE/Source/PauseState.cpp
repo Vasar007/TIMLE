@@ -13,10 +13,13 @@ PauseState::PauseState(StateStack& stack, Context context)
 , mBackgroundSprite()
 , mPausedText()
 , mGUIContainer()
+, mSound()
 , mPlayerInfo(context.mPlayerInfo)
 {
 	sf::Font& font = context.mFonts->get(Fonts::Main);
 	sf::Vector2f windowSize(context.mWindow->getSize());
+
+	mSound.setBuffer(context.mSounds->get(Sounds::ButtonCLick));
 
 	mPausedText.setFont(font);
 	mPausedText.setString(L"Игра приостановлена");	
@@ -24,7 +27,7 @@ PauseState::PauseState(StateStack& stack, Context context)
 	centerOrigin(mPausedText);
 	mPausedText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 
-	auto returnButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures);
+	auto returnButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
 	returnButton->setPosition(0.5f * windowSize.x - 100, 0.4f * windowSize.y + 75);
 	returnButton->setText(L"Вернуться");
 	returnButton->setCallback([this] ()
@@ -32,7 +35,7 @@ PauseState::PauseState(StateStack& stack, Context context)
 		requestStackPop();
 	});
 
-	auto backToMenuButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures);
+	auto backToMenuButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
 	backToMenuButton->setPosition(0.5f * windowSize.x - 100, 0.4f * windowSize.y + 125);
 	backToMenuButton->setText(L"Выйти в меню");
 	backToMenuButton->setCallback([this] ()
@@ -68,6 +71,11 @@ bool PauseState::update(sf::Time)
 
 bool PauseState::handleEvent(const sf::Event& event)
 {
+	if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+	{
+		mSound.play();
+	}
+
 	mGUIContainer.handleEvent(event);
 	return false;
 }

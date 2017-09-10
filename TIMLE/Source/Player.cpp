@@ -44,11 +44,11 @@ Player::Player(Type::ID Id, const TextureHolder& textures, const FontHolder& fon
 	mSprite.setScale(0.33f, 0.33f);
 }
 
-void Player::control(float time)
+void Player::control(float dt)
 {
 	if (!mCanShoted)
 	{
-		mShootTimer += time;
+		mShootTimer += dt;
 		if (mShootTimer > 750.f)
 		{
 			mShootTimer = 0.f;
@@ -67,7 +67,7 @@ void Player::control(float time)
 
 	if (mCanDoubleJump)
 	{
-		mJumpTimer += time;
+		mJumpTimer += dt;
 		if (mJumpTimer > 333.f)
 		{
 			mJumpTimer = 0.f;
@@ -120,7 +120,7 @@ void Player::control(float time)
 		mState = Left;
 		mSpeed = 0.09f;
 		mIsLeft = true;
-		mMoveTimer += time;
+		mMoveTimer += dt;
 	}
 	else if (mIsLeft)
 	{
@@ -137,7 +137,7 @@ void Player::control(float time)
 		mState = Right;
 		mSpeed = 0.09f;
 		mIsRight = true;
-		mMoveTimer += time;
+		mMoveTimer += dt;
 	}
 	else if (mIsRight)
 	{
@@ -255,7 +255,7 @@ void Player::checkCollisionWithMap(float Dx, float Dy)
 		}
 }
 
-void Player::update(float time)
+void Player::update(float dt)
 {
 	if (mPlayerInfo->mQuests[1])
 		mGotKey = true;
@@ -272,7 +272,7 @@ void Player::update(float time)
 		case Type::ID::Archer:
 			if (mLife && (mHitpoints > 0) && !mIsRichedEnd)
 			{
-				control(time);
+				control(dt);
 			}
 
 			// В зависимости от направления
@@ -304,18 +304,18 @@ void Player::update(float time)
 			if (mOnPlatform != 0.f)
 			{
 				if (dx > 0.f)
-					x += dx * time + (mOnPlatform > 0.f ? 0.f : -mOnPlatform) * time;
+					x += dx * dt + (mOnPlatform > 0.f ? 0.f : -mOnPlatform) * dt;
 				else if (dx < 0.f)
-					x += dx * time + (mOnPlatform > 0.f ? -mOnPlatform : 0.f) * time;
+					x += dx * dt + (mOnPlatform > 0.f ? -mOnPlatform : 0.f) * dt;
 			}
 			else if (!mShooted)
 			{
-				x += dx * time;
+				x += dx * dt;
 			}
 
 			// Обрабатываем столкновения по x
 			checkCollisionWithMap(dx, 0.f);
-			y += dy * time;
+			y += dy * dt;
 		
 			// Обрабатываем столкновения по y
 			checkCollisionWithMap(0.f, dy);
@@ -334,7 +334,7 @@ void Player::update(float time)
 				mBeforeJump = y;
 
 			// Притяжение к земле
-			dy += 0.0015f * time;
+			dy += 0.0015f * dt;
 
 
 			if ((dx < 0.05f) && (dx > -0.05f))
@@ -345,14 +345,14 @@ void Player::update(float time)
 			if (mLife && (mHitpoints > 0))
 			{
 				if (mOnGround)
-					mCurrentFrame += 0.006f * time;
+					mCurrentFrame += 0.006f * dt;
 
 				if (mCurrentFrame > 4.f)
 					mCurrentFrame -= 4.f;
 
 				if (mShooted)
 				{
-					mCurrentAttack += 0.0035f * time;
+					mCurrentAttack += 0.0035f * dt;
 					if (mCurrentAttack > 2.f)
 					{
 						mCurrentAttack = 0.f;
@@ -412,7 +412,7 @@ void Player::update(float time)
 					}
 					if (dx == 0.f)
 					{
-						mStayTimer += time;
+						mStayTimer += dt;
 						if (mStayTimer > 150.f)
 						{
 							mIsJumped = true;
@@ -428,14 +428,14 @@ void Player::update(float time)
 
 			if (mHitpoints <= 0)
 			{
-				mCurrentDeath += 0.003f * time;
+				mCurrentDeath += 0.003f * dt;
 				dx = 0.f;
 				if (y > 2350.f)
 					dy = 0.f;
 				if (mCurrentDeath > 2.f)
 				{
 					mCurrentDeath = 2.f;
-					mMoveTimer += time;
+					mMoveTimer += dt;
 					if (mMoveTimer > 1000.f)
 					{
 						mMoveTimer = 0.f;

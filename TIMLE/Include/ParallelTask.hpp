@@ -10,21 +10,23 @@
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 
 
 class ParallelTask
 {
 	private:
-		sf::Thread		mThread;
-		sf::Thread		mThreadClock;
-		bool			mFinished;
-		bool			mFinishedLoading;
-		sf::Clock		mElapsedTime;
-		sf::Mutex		mMutex;
+		sf::Thread			mThread;
+		sf::Thread			mThreadClock;
+		bool				mFinished;
+		bool				mFinishedLoading;
+		sf::Clock			mElapsedTime;
+		sf::Mutex			mMutex;
 
-		TextureHolder&	mTextures;
+		TextureHolder&		mTextures;
+		SoundBufferHolder&	mSounds;
 
-		PlayerInfo*		mPlayerInfo;
+		PlayerInfo*			mPlayerInfo;
 	
 	
 	private:
@@ -33,7 +35,7 @@ class ParallelTask
 
 
 	public:
-		explicit 		ParallelTask(TextureHolder& textures, PlayerInfo* playerInfo);
+		explicit 		ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds, PlayerInfo* playerInfo);
 		void			execute();
 		bool			isFinished();
 		float			getCompletion();

@@ -20,6 +20,7 @@ class SettingsState : public State
 		GUI::Container											mGUIContainer;
 		std::array<GUI::Button::Ptr, PlayerInfo::ActionCount>	mBindingButtons;
 		std::array<GUI::Label::Ptr, PlayerInfo::ActionCount> 	mBindingLabels;
+		sf::Sound												mSound;
 	
 	
 	private:

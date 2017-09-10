@@ -37,7 +37,7 @@ void GameOverState::draw()
 	if (mOpacity < 255)
 		mOpacity += 5;
 
-	// Create dark, semitransparent background
+	// Create dark, semitransparent background.
 	sf::RectangleShape backgroundShape;
 	backgroundShape.setFillColor(sf::Color(0, 0, 0, mOpacity));
 	backgroundShape.setSize(window.getView().getSize());
@@ -48,7 +48,7 @@ void GameOverState::draw()
 
 bool GameOverState::update(sf::Time dt)
 {
-	// Show state for 5 seconds, after return to menu
+	// Show state for 5 seconds, after return to menu.
 	mElapsedTime += dt;
 	if (mElapsedTime > sf::seconds(5))
 	{

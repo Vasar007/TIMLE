@@ -93,12 +93,6 @@
     <ClCompile Include="Source\MovingPlatform.cpp">
       <Filter>Файлы исходного кода\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AnimatedSprite.cpp">
-      <Filter>Файлы исходного кода\Mechanics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Animation.cpp">
-      <Filter>Файлы исходного кода\Mechanics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Application.cpp">
       <Filter>Файлы исходного кода\Mechanics</Filter>
     </ClCompile>
@@ -213,6 +207,9 @@
     <ClCompile Include="Source\TitreState.cpp">
       <Filter>Файлы исходного кода\States</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AudioManager.cpp">
+      <Filter>Файлы исходного кода\Mechanics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TinyXML\tinystr.h">
@@ -241,12 +238,6 @@
     </ClInclude>
     <ClInclude Include="Include\Darksoldier.hpp">
       <Filter>Заголовочные файлы\Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\AnimatedSprite.hpp">
-      <Filter>Заголовочные файлы\Mechanics</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Animation.hpp">
-      <Filter>Заголовочные файлы\Mechanics</Filter>
     </ClInclude>
     <ClInclude Include="Include\Button.hpp">
       <Filter>Заголовочные файлы\Interface</Filter>
@@ -367,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="Include\TitreState.hpp">
       <Filter>Заголовочные файлы\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioManager.hpp">
+      <Filter>Заголовочные файлы\Mechanics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

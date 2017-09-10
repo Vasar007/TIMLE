@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 
 class DialogState : public State
@@ -20,6 +21,7 @@ class DialogState : public State
 		sf::Text				mText;
 		sf::Text				mTalking;
 		GUI::Container 			mGUIContainer;
+		sf::Sound				mSound;
 
 		std::vector<sf::String>	mDialogText;
 		std::vector<sf::String>	mDialogTalking;

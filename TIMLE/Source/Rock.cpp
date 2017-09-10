@@ -41,15 +41,15 @@ void Rock::checkCollisionWithMap(float Dx, float Dy)
 		}
 }
 
-void Rock::update(float time)
+void Rock::update(float dt)
 {
 	if (mIsAttacked)
 	{
-		mCurrentFrame += 0.005f * time;
+		mCurrentFrame += 0.005f * dt;
 
 		// Притяжение к земле
-		dy += 0.0005f * time;
-		y += dy * time;
+		dy += 0.0005f * dt;
+		y += dy * dt;
 		checkCollisionWithMap(0.f, dy);
 
 		mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));

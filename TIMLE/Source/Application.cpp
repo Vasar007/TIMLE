@@ -20,8 +20,9 @@ Application::Application()
 : mWindow(sf::VideoMode(1280, 720), "Timle", sf::Style::Close)
 , mTextures()
 , mFonts()
+, mSounds()
 , mPlayer()
-, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer))
+, mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mPlayer))
 , mStatisticsText()
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
@@ -29,13 +30,15 @@ Application::Application()
 	mWindow.setKeyRepeatEnabled(false);
 	mWindow.setVerticalSyncEnabled(true);
 
-	mFonts.load(Fonts::Main, 		"Media/Other/Noto Serif.ttf");
+	mFonts.load(Fonts::Main, 	"Media/Other/Noto Serif.ttf");
 
 	mTextures.load(Textures::TitleScreen,		"Media/Textures/Menu/back.png");
 	mTextures.load(Textures::ButtonNormal,		"Media/Textures/Menu/ButtonNormal.png");
 	mTextures.load(Textures::ButtonSelected,	"Media/Textures/Menu/ButtonSelected.png");
 	mTextures.load(Textures::ButtonPressed,		"Media/Textures/Menu/ButtonPressed.png");
 	mTextures.load(Textures::DialogBox,			"Media/Textures/Interface/DialogBox.png");
+
+	mSounds.load(Sounds::ButtonCLick, "Media/Sounds/MenuSelectionClick.wav");
 
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
 	mStatisticsText.setPosition(5.f, 5.f);
@@ -61,7 +64,7 @@ void Application::run()
 			processInput();
 			update(TimePerFrame);
 
-			// Check inside this loop, because stack might be empty before update() call
+			// Check inside this loop, because stack might be empty before update() call.
 			if (mStateStack.isEmpty())
 				mWindow.close();
 		}
