@@ -12,17 +12,23 @@
 #include "../Include/LoadingState.hpp"
 #include "../Include/ChoosingState.hpp"
 #include "../Include/TitreState.hpp"
+#include "../Include/ChangingState.hpp"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
+const std::vector<sf::Color> Application::mColorConstants = { sf::Color(85, 170, 255), 
+															  sf::Color(86, 97, 104) };
+
 Application::Application()
-: mWindow(sf::VideoMode(1280, 720), "Timle", sf::Style::Close)
+: mWindow(sf::VideoMode(1280, 720), "TIMLE", sf::Style::Close)
 , mTextures()
 , mFonts()
 , mSounds()
-, mPlayer()
-, mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mPlayer))
+, mPlayerInfo()
+, mCurrentSettings(mWindow.getSize(), State::WindowStyle::Close, 100.f, 
+				   Fonts::Main, State::ActualLanguage::Russian)
+, mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mPlayerInfo, mCurrentSettings))
 , mStatisticsText()
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
@@ -66,7 +72,9 @@ void Application::run()
 
 			// Check inside this loop, because stack might be empty before update() call.
 			if (mStateStack.isEmpty())
+			{
 				mWindow.close();
+			}
 		}
 
 		updateStatistics(dt);
@@ -82,7 +90,9 @@ void Application::processInput()
 		mStateStack.handleEvent(event);
 
 		if (event.type == sf::Event::Closed)
+		{
 			mWindow.close();
+		}
 	}
 }
 
@@ -93,7 +103,22 @@ void Application::update(sf::Time dt)
 
 void Application::render()
 {
-	mWindow.clear(sf::Color(85, 170, 255));
+	switch (mPlayerInfo.getLevelNumber())
+	{
+		case 1:
+			mWindow.clear(mColorConstants[0]);
+			break;
+		case 2:
+			mWindow.clear(mColorConstants[1]);
+			break;
+		case 3:
+			mWindow.clear(mColorConstants[0]);
+			break;
+		default:
+			mWindow.clear(mColorConstants[0]);
+			break;
+	}
+	//mWindow.clear(sf::Color(85, 170, 255));
 
 	mStateStack.draw();
 
@@ -128,4 +153,5 @@ void Application::registerStates()
 	mStateStack.registerState<DialogState>(States::Dialog);
 	mStateStack.registerState<ChoosingState>(States::Choosing);
 	mStateStack.registerState<TitreState>(States::Titre);
+	mStateStack.registerState<ChanginState>(States::Changing);
 }

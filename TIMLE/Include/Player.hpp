@@ -6,7 +6,7 @@
 #include "PlayerInfo.hpp"
 
 
-class Player :public Entity {
+class Player : public Entity {
 public:
 	enum State
 	{
@@ -28,8 +28,9 @@ public:
 	float			mAfterJump;
 	float			mFallingHeight;
 				
-	int				mCounter;
-	int				mDialogNumber;
+	size_t			mCounter;
+	size_t			mDialogNumber;
+	size_t			mMaxHitpoints;
 				
 	bool			mIsShoot; 
 	bool			mCanShoted; 
@@ -58,7 +59,7 @@ public:
 
 	void			control(float dt);
 	void			checkCollisionWithMap(float Dx, float Dy);	// Функция взаимодейтсвия с картой
-	virtual void	update(float dt);	// Функция "оживления" класса
+	void			update(float dt) override;	// Функция "оживления" класса
 
 };
 

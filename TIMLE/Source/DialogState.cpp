@@ -104,8 +104,10 @@ DialogState::DialogState(StateStack& stack, Context context)
 
 	setText(mTextNumber);
 
-	auto nextButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-	nextButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 107.f);
+	auto nextButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
+													*context.mSounds);
+	nextButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+							windowCenter.y + windowSize.y / 2.f - 107.f);
 	nextButton->setText(L"Дальше");
 	nextButton->setCallback([this] ()
 	{
@@ -115,7 +117,8 @@ DialogState::DialogState(StateStack& stack, Context context)
 			requestStackPush(States::Choosing);
 			mChoosing = true;
 		}
-		else if ((mPlayerInfo->mDialogNumber == 7) && (mPlayerInfo->mChosenSolution[0] != 0) && (mTextNumber == 0))
+		else if ((mPlayerInfo->mDialogNumber == 7) && (mPlayerInfo->mChosenSolution[0] != 0) &&
+			(mTextNumber == 0))
 		{
 			if (mPlayerInfo->mChosenSolution[0] == 1)
 			{
@@ -131,13 +134,15 @@ DialogState::DialogState(StateStack& stack, Context context)
 			mChoosing = false;
 		}
 
-		else if ((mPlayerInfo->mDialogNumber == 8) && (mPlayerInfo->mChosenSolution[1] == 0) && (mTextNumber == 1))
+		else if ((mPlayerInfo->mDialogNumber == 8) && (mPlayerInfo->mChosenSolution[1] == 0) &&
+			(mTextNumber == 1))
 		{
 			mPlayerInfo->mChoosingNumber = 2;
 			requestStackPush(States::Choosing);
 			mChoosing = true;
 		}
-		else if ((mPlayerInfo->mDialogNumber == 8) && (mPlayerInfo->mChosenSolution[1] != 0) && (mTextNumber == 1))
+		else if ((mPlayerInfo->mDialogNumber == 8) && (mPlayerInfo->mChosenSolution[1] != 0) &&
+			(mTextNumber == 1))
 		{
 			if (mPlayerInfo->mChosenSolution[1] == 1)
 			{
@@ -174,8 +179,10 @@ DialogState::DialogState(StateStack& stack, Context context)
 	});
 	mGUIContainer.pack(nextButton);
 
-	auto skipButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-	skipButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 57.f);
+	auto skipButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
+													*context.mSounds);
+	skipButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+							windowCenter.y + windowSize.y / 2.f - 57.f);
 	skipButton->setText(L"Пропустить");
 	skipButton->setCallback([this]()
 	{
@@ -195,8 +202,11 @@ void DialogState::setText(size_t number)
 	sf::String& text = mDialogText[number];
 	for (size_t i = 0; i < text.getSize(); i++)
 	{
-		if (i % static_cast<int>(mSprite.getGlobalBounds().width / (mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		if (i % static_cast<int>(mSprite.getGlobalBounds().width /
+			(mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		{
 			text.insert(i, "\n");
+		}
 	}
 	mText.setString(text);
 	mTalking.setString(mDialogTalking[number]);
@@ -212,9 +222,12 @@ void DialogState::draw()
 
 	mSprite.setScale(size.x / mSprite.getLocalBounds().width, 1.5f);
 
-	mText.setPosition(center.x - size.x / 2.f + 20.f, center.y + size.y / 2.f - mSprite.getGlobalBounds().height + 10.f);
-	mTalking.setPosition(center.x - size.x / 2.f + 20.f, center.y + size.y / 2.f - mSprite.getGlobalBounds().height - 30.f);
-	mSprite.setPosition(center.x - size.x / 2.f, center.y + size.y / 2.f - mSprite.getGlobalBounds().height);
+	mText.setPosition(center.x - size.x / 2.f + 20.f,
+					  center.y + size.y / 2.f - mSprite.getGlobalBounds().height + 10.f);
+	mTalking.setPosition(center.x - size.x / 2.f + 20.f,
+						 center.y + size.y / 2.f - mSprite.getGlobalBounds().height - 30.f);
+	mSprite.setPosition(center.x - size.x / 2.f,
+						center.y + size.y / 2.f - mSprite.getGlobalBounds().height);
 
 	sf::RectangleShape backgroundShape;
 	backgroundShape.setFillColor(sf::Color(0, 0, 0, 150));

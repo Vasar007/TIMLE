@@ -108,13 +108,13 @@ class Shadow final : public Entity
 
 	private:
 		/**
-		 * \brief		Helper function for appearing this object, that's means the end of teleporting.
+		 * \brief		Appearing this object, that's means the end of teleporting.
 		 * \param dt	Delta time parameter.
 		 */
 		void						appear(float dt);
 
 		/**
-		 * \brief		Helper function for disappearing this object, that's means the start of teleporting.
+		 * \brief		Disappearing this object, that's means the start of teleporting.
 		 * \param dt	Delta time parameter.
 		 */
 		void						disappear(float dt);
@@ -133,7 +133,9 @@ class Shadow final : public Entity
 		 * \param height	Height if this object.
 		 * \param Type		An additional parameter for interaction with map.
 		 */
-									Shadow(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string Type = "0");
+									Shadow(Type::ID Id, const TextureHolder& textures,
+										   const FontHolder& fonts, Level& lvl, float X, float Y,
+										   int width, int height, std::string Type = "0");
 
 
 		/**

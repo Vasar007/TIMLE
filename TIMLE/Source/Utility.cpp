@@ -7,6 +7,7 @@
 #include <cmath>
 #include <ctime>
 #include <cassert>
+#include <Windows.h>
 
 
 namespace
@@ -128,6 +129,9 @@ std::string toString(sf::Keyboard::Key key)
 		BOOK_KEYTOSTRING_CASE(F14)
 		BOOK_KEYTOSTRING_CASE(F15)
 		BOOK_KEYTOSTRING_CASE(Pause)
+
+		default:
+			break;
 	}
 
 	return "";
@@ -136,13 +140,15 @@ std::string toString(sf::Keyboard::Key key)
 void centerOrigin(sf::Sprite& sprite)
 {
 	sf::FloatRect bounds = sprite.getLocalBounds();
-	sprite.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+	sprite.setOrigin(floor(bounds.left + bounds.width / 2.f), 
+					 floor(bounds.top + bounds.height / 2.f));
 }
 
 void centerOrigin(sf::Text& text)
 {
 	sf::FloatRect bounds = text.getLocalBounds();
-	text.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+	text.setOrigin(floor(bounds.left + bounds.width / 2.f), 
+				   floor(bounds.top + bounds.height / 2.f));
 }
 
 float toDegree(float radian)
@@ -170,4 +176,30 @@ sf::Vector2f unitVector(sf::Vector2f vector)
 {
 	assert(vector != sf::Vector2f(0.f, 0.f));
 	return vector / length(vector);
+}
+
+sf::RectangleShape buildBorderLines(sf::Vector2f position, sf::Vector2f size, sf::Color fillColor,
+									sf::Color outlineColor, float outlineThickness)
+{
+	sf::RectangleShape shape;
+	shape.setPosition(position);
+	shape.setSize(size);
+	shape.setFillColor(fillColor);
+	shape.setOutlineColor(outlineColor);
+	shape.setOutlineThickness(outlineThickness);
+
+	return shape;
+}
+
+sf::RectangleShape buildBorderLines(sf::FloatRect rect, sf::Color fillColor,
+									sf::Color outlineColor, float outlineThickness)
+{
+	sf::RectangleShape shape;
+	shape.setPosition(sf::Vector2f(rect.left, rect.top));
+	shape.setSize(sf::Vector2f(rect.width, rect.height));
+	shape.setFillColor(fillColor);
+	shape.setOutlineColor(outlineColor);
+	shape.setOutlineThickness(outlineThickness);
+
+	return shape;
 }

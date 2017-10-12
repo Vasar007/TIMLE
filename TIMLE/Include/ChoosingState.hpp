@@ -9,7 +9,7 @@
 #include <SFML/Audio/Sound.hpp>
 
 
-class ChoosingState : public State
+class ChoosingState final : public State
 {
 	private:
 		int						mTextNumber;
@@ -29,9 +29,9 @@ class ChoosingState : public State
 
 		void					addText(sf::String text);
 		void					setText(size_t number);
-		virtual void			draw();
-		virtual bool			update(sf::Time dt);
-		virtual bool			handleEvent(const sf::Event& event);
+		void					draw() override;
+		bool					update(sf::Time dt) override;
+		bool					handleEvent(const sf::Event& event) override;
 };
 
 #endif // CHOOSINGSTATE_HPP

@@ -1,7 +1,8 @@
 #include "../Include/DarkSoldier.hpp"
 
 
-DarkSoldier::DarkSoldier(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, std::string Type)
+DarkSoldier::DarkSoldier(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
+						 Level &lvl, float X, float Y, int width, int height, std::string Type)
 : Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
 {
 	mTexture = textures.get(Textures::DarkSoldier);
@@ -14,6 +15,7 @@ DarkSoldier::DarkSoldier(Type::ID Id, const TextureHolder& textures, const FontH
 void DarkSoldier::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -48,12 +50,15 @@ void DarkSoldier::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
-void DarkSoldier::update(float time)
+void DarkSoldier::update(float dt)
 {
 	if (mIsTurned)
-		mMoveTimer += time;
+	{
+		mMoveTimer += dt;
+	}
 	if (mMoveTimer > 2000.f && mIsTurned)
 	{
 		dx = -dx;
@@ -65,7 +70,7 @@ void DarkSoldier::update(float time)
 	{
 		if (!mIsAttacked && !mIsTurned)
 		{
-			x += dx * time;
+			x += dx * dt;
 			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 9.f);
 		}
 		else if (!mIsTurned)
@@ -79,18 +84,18 @@ void DarkSoldier::update(float time)
 		checkCollisionWithMap(dx, 0.f);
 
 		// Притяжение к земле
-		dy += 0.0015f * time;
-		y += dy * time;
+		dy += 0.0015f * dt;
+		y += dy * dt;
 		checkCollisionWithMap(0.f, dy);
 
-		mCurrentFrame += 0.005f * time;
+		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 5.f)
 		{
 			mCurrentFrame -= 5.f;
 		}
 		if (mIsAttacked)
 		{
-			mCurrentAttack += 0.005f * time;
+			mCurrentAttack += 0.005f * dt;
 			if (mCurrentAttack > 4.f)
 			{
 				mCurrentAttack = 0.f;
@@ -128,7 +133,7 @@ void DarkSoldier::update(float time)
 
 	if (mHitpoints <= 0)
 	{
-		mCurrentDeath += 0.0035f * time;
+		mCurrentDeath += 0.0035f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		if (mCurrentDeath > 5.f)

@@ -18,7 +18,7 @@ class Gate : public Entity
 	
 		void	close();
 		void	checkCollisionWithMap(float Dx, float Dy);
-		void	update(float time);
+		void	update(float dt) override;
 };
 
 #endif // GATE_HPP

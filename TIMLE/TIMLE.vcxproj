@@ -102,13 +102,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Custom</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Common Files\SFML-2.4.2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Common Files\SFML-2.4.2\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -128,34 +128,34 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Custom</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Common Files\SFML-2.4.2-windows-vc14-32-bit\SFML-2.4.2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;_MBCS;%(PreprocessorDefinitions) </PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Common Files\SFML-2.4.2-windows-vc14-32-bit\SFML-2.4.2\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-audio.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutConsole|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Custom</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Common Files\SFML-2.4.2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;_MBCS;%(PreprocessorDefinitions) </PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Common Files\SFML-2.4.2\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-main.lib;sfml-audio.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
@@ -195,6 +195,7 @@
     <ClCompile Include="Source\AudioManager.cpp" />
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Button.cpp" />
+    <ClCompile Include="Source\ChangingState.cpp" />
     <ClCompile Include="Source\ChoosingState.cpp" />
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\Container.cpp" />
@@ -206,6 +207,7 @@
     <ClCompile Include="Source\Dwarf.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\Flamestrike.cpp" />
     <ClCompile Include="Source\GameOverState.cpp" />
     <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\Gate.cpp" />
@@ -225,6 +227,7 @@
     <ClCompile Include="Source\PauseState.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PlayerInfo.cpp" />
+    <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\Rock.cpp" />
     <ClCompile Include="Source\SettingsState.cpp" />
     <ClCompile Include="Source\Shadow.cpp" />
@@ -245,6 +248,7 @@
     <ClInclude Include="Include\AudioManager.hpp" />
     <ClInclude Include="Include\Bullet.hpp" />
     <ClInclude Include="Include\Button.hpp" />
+    <ClInclude Include="Include\ChangingState.hpp" />
     <ClInclude Include="Include\ChoosingState.hpp" />
     <ClInclude Include="Include\Component.hpp" />
     <ClInclude Include="Include\Container.hpp" />
@@ -256,6 +260,7 @@
     <ClInclude Include="Include\Dwarf.hpp" />
     <ClInclude Include="Include\Enemy.hpp" />
     <ClInclude Include="Include\Entity.hpp" />
+    <ClInclude Include="Include\Flamestrike.hpp" />
     <ClInclude Include="Include\Foreach.hpp" />
     <ClInclude Include="Include\GameOverState.hpp" />
     <ClInclude Include="Include\GameState.hpp" />
@@ -276,6 +281,7 @@
     <ClInclude Include="Include\Pickup.hpp" />
     <ClInclude Include="Include\Player.hpp" />
     <ClInclude Include="Include\PlayerInfo.hpp" />
+    <ClInclude Include="Include\Projectile.hpp" />
     <ClInclude Include="Include\ResourceHolder.hpp" />
     <ClInclude Include="Include\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Rock.hpp" />

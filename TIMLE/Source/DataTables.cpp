@@ -5,6 +5,24 @@
 #include "../Include/Pickup.hpp"
 
 
+/*
+ * Constant values of width and height for every object:
+ *		– Ghost:					w=51,		h=36
+ *		– Golem:					w=45,		h=38
+ *		– DarkSoldier:				w=20,		h=30
+ *		– Goblin:					w=25,		h=28
+ *		– MinotaurMage:				w=40,		h=40
+ *		– Dwarf (all):				w=40,		h=27
+ *		– Tentacle:					w=13,		h=45
+ *		– Rock:						w=type*16,	h=16
+ *		– Gate (all):				w=16,		h=type*16
+ *		– DialogPerson (Oswald):	w=16,		h=20
+ *		– DialogPerson (Heinrich):	w=29,		h=32
+ *		– MovingPlatform:			w=48,		h=11
+ *		– DeadMan (DeadJuggernaut):	w=35,		h=15
+ *		– DeadMan (DeadDwarf):		w=25,		h=15
+ */
+
 // For std::bind() placeholders _1, _2, ...
 using namespace std::placeholders;
 
@@ -94,9 +112,13 @@ std::vector<ProjectileData> initializeProjectileData()
 	data[Type::EnemyBullet - Type::HeroCount - Type::EnemyCount].speed = 300.f;
 	data[Type::EnemyBullet - Type::HeroCount - Type::EnemyCount].texture = Textures::Bullet;
 
-	data[Type::FireBall - Type::HeroCount - Type::EnemyCount].damage = 10;
-	data[Type::FireBall - Type::HeroCount - Type::EnemyCount].speed = 300.f;
-	data[Type::FireBall - Type::HeroCount - Type::EnemyCount].texture = Textures::Fire;
+	data[Type::Flamestrike - Type::HeroCount - Type::EnemyCount].damage = 10;
+	data[Type::Flamestrike - Type::HeroCount - Type::EnemyCount].speed = 300.f;
+	data[Type::Flamestrike - Type::HeroCount - Type::EnemyCount].texture = Textures::Fire;
+
+	data[Type::Fireball - Type::HeroCount - Type::EnemyCount].damage = 50;
+	data[Type::Fireball - Type::HeroCount - Type::EnemyCount].speed = 300.f;
+	data[Type::Fireball - Type::HeroCount - Type::EnemyCount].texture = Textures::Fire;
 
 	return data;
 }

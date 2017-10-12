@@ -9,7 +9,7 @@
 #include <SFML/Audio/Sound.hpp>
 
 
-class DialogState : public State
+class DialogState final : public State
 {
 	private:
 		int						mTextNumber;
@@ -34,9 +34,9 @@ class DialogState : public State
 
 		void					addText(sf::String text, sf::String talking);
 		void					setText(size_t number);
-		virtual void			draw();
-		virtual bool			update(sf::Time dt);
-		virtual bool			handleEvent(const sf::Event& event);
+		void					draw() override;
+		bool					update(sf::Time dt) override;
+		bool					handleEvent(const sf::Event& event) override;
 };
 
 #endif // DIALOGSTATE_HPP

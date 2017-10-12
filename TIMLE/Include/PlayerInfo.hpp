@@ -38,7 +38,23 @@ class PlayerInfo final
 			LevelComplete,
 			GameOver
 		};
-	
+
+
+		/**
+		 * \brief Data structure that keeping player's save point.
+		 */
+		struct SavePoint
+		{
+			SavePoint(float x, float y)
+				: x(x)
+				, y(y)
+			{
+			}
+
+			float x;
+			float y;
+		};
+
 	
 	private:
 		/**
@@ -52,7 +68,17 @@ class PlayerInfo final
 		 * \brief Current game status, using for interactiving with world.
 		 */
 		GameStatus 							mCurrentGameStatus;
-	
+
+		/**
+		 * \brief Current level number.
+		 */
+		size_t								mCurrentLevelNumber;
+
+		/**
+		 * \brief Current player's class for interacting.
+		 */
+		Player*								mPlayer;
+
 
 	public:
 		/**
@@ -81,18 +107,37 @@ class PlayerInfo final
 		std::vector<bool>					mQuests;
 
 		/**
-		 * \brief Current player's class for interacting.
-		 */
-		Player*								mPlayer;
-
-		/**
-		 * \brief Boolean flag for notification of completion of download level and resources.
+		 * \brief Boolean flag for notification of completion downloading level and resources.
 		 */
 		bool								mLoaded;
 
+		/**
+		 * \brief Lives counter of the player's hero.
+		 */
+		size_t								mLivesCount;
+
+		/**
+		 * \brief Last save point of the current game.
+		 */
+		SavePoint							mLastSavePoint;
+
+		/**
+		 * \brief Define we can ressurect player's hero or not.
+		 */
+		bool								mCanRessurect;
+
 
 	private:
+		/**
+		 * \brief Default starter binding keys with action (action is only function<void>).
+		 */
 		void				initializeActions();
+
+		/**
+		 * \brief			Check if sending action is realtime action or not.
+		 * \param action	Action for checking.
+		 * \return			True if action is realtime or false otherwise.
+		 */
 		static bool			isRealtimeAction(Action action);
 
 
@@ -108,22 +153,66 @@ class PlayerInfo final
 		 */
 		void				showDialog(size_t number);
 
+		/**
+		 * \brief			Bind action with key.
+		 * \param action	Action for binding.
+		 * \param key		Key for binding.
+		 */
 		void				assignKey(Action action, sf::Keyboard::Key key);
+
+		/**
+		 * \brief			Get key that assigned with current action.
+		 * \param action	Action for searching assigned key.
+		 * \return			Found key or Key::Unknown.
+		 */
 		sf::Keyboard::Key	getAssignedKey(Action action) const;
 	
+		/**
+		 * \brief			Change current game status of the app.
+		 * \param status	New game status.
+		 */
 		void 				setGameStatus(GameStatus status);
+
+
+		/**
+		 * \brief	Get current game status (Needs for different checking).
+		 * \return	Current game status.
+		 */
 		GameStatus 			getGameStatus() const;
 
 		/**
-		 * \brief			Changes current player's class.
+		 * \brief			Change current level number.
+		 * \param number	New level number.
+		 */
+		void 				setLevelNumber(size_t number);
+
+		/**
+		 * \brief	Get current level number.
+		 * \return	Current level number.
+		 */
+		size_t 				getLevelNumber() const;
+
+		/**
+		 * \brief			Change current player's class.
 		 * \param player	Pointer to a new player's class for interacting.
 		 */
 		void				setPlayer(Player* player);
 
 		/**
-		 * \brief Resets all data about current game session.
+		 * \brief	Get current binded player's class.
+		 * \return	Pointer to current player's class.
+		 */
+		Player*				getPlayer() const;
+
+		/**
+		 * \brief Reset all data about current game session.
 		 */
 		void				resetData();
+
+		/**
+		 * \brief Reset some player's data (not reset ALL data) and ressurect at last save point.
+		 */
+		void				ressurectPlayer();
 };
 
 #endif // PLAYERINFO_HPP

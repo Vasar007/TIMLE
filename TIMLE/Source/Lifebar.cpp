@@ -2,9 +2,9 @@
 
 
 LifeBar::LifeBar(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, int hitpoints)
-: mTexture()
+: mMax(hitpoints)
+, mTexture()
 , mTextureEmpty()
-, mMax(hitpoints)
 , mType(Id)
 , mBossName("", fonts.get(Fonts::Main))
 {
@@ -46,13 +46,21 @@ LifeBar::LifeBar(Type::ID Id, const TextureHolder& textures, const FontHolder& f
 void LifeBar::update(int points)
 {
 	if (points < 0)
+	{
 		points = 0;
-	if (points < mMax)
+	}
+	if (points <= mMax)
 	{
 		if ((mType == Type::ShadowBossBar) || (mType == Type::GolemDarkBossBar))
-			mSprite.setTextureRect(sf::IntRect(0, 0, static_cast<int>(334 * (static_cast<float>(points) / static_cast<float>(mMax))), 24));
+		{
+			mSprite.setTextureRect(sf::IntRect(0, 0, static_cast<int>(334 * 
+								   (static_cast<float>(points) / static_cast<float>(mMax))), 24));
+		}
 		else
-			mSprite.setTextureRect(sf::IntRect(0, 0, static_cast<int>(206 * (static_cast<float>(points) / static_cast<float>(mMax))), 28));
+		{
+			mSprite.setTextureRect(sf::IntRect(0, 0, static_cast<int>(206 * 
+								   (static_cast<float>(points) / static_cast<float>(mMax))), 28));
+		}
 	}
 }
 
@@ -74,7 +82,9 @@ void LifeBar::draw(sf::RenderWindow& window)
 	}
 
 	if ((mType == Type::ShadowBossBar) || (mType == Type::GolemDarkBossBar))
+	{
 		window.draw(mBossName);
+	}
 
 	window.draw(mSpriteEmpty);
 	window.draw(mSprite);

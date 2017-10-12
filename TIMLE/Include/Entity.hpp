@@ -17,6 +17,7 @@ class Entity
 		float				dy;	// Ускорение по y
 		float				mSpeed;	// Скорость
 		float				mMoveTimer;	// Таймер
+		float				mDeathTimer;
 		float				mCurrentFrame;	// Таймер анимации
 		float				mCurrentAttack;
 		float				mCurrentDeath;
@@ -24,7 +25,7 @@ class Entity
 		int					mWidth;	// Ширина
 		int					mHeight;	// Высота
 		int					mHitpoints;	// Количество здоровья
-		int					mDamage;
+		size_t				mDamage;
 
 		bool				mLife; // Жизнь сущности
 		bool				mIsMove;	// Разрешение движения
@@ -52,10 +53,16 @@ class Entity
 	
 	
 	public:
-							Entity(Type::ID Id, float X, float Y, int width, int height, float speed, int hitpoints, int damage, std::string Type = "0");
+							Entity(Type::ID Id, float X, float Y, int width, int height, 
+								   float speed, int hitpoints, size_t damage, 
+								   std::string Type = "0");
 		virtual				~Entity();
 	
 		sf::FloatRect		getRect() const;	// Функция получения прямоугольника, его координат и размеров(ширина, высота)
+
+		sf::Vector2f		getWorldPosition() const;
+		sf::Transform		getWorldTransform() const;
+		virtual void		draw(sf::RenderTarget& target) const;
 	
 		virtual void		update(float dt) = 0;
 };

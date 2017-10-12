@@ -7,24 +7,24 @@
 #include <SFML/Graphics/Text.hpp>
 
 
-class TitreState : public State
+class TitreState final : public State
 {
 	private:
-		sf::Sprite		mBackgroundSprite;
-		sf::Text		mText;
+		sf::Sprite	mBackgroundSprite;
+		sf::Text	mText;
 	
-		sf::Time		mTextEffectTime;
-		sf::Time		mTextAppearenceTime;
+		sf::Time	mTextEffectTime;
+		sf::Time	mTextAppearenceTime;
 
 	private:
-		void			setText();
+		void		setText();
 
 	public:
-						TitreState(StateStack& stack, Context context);
+					TitreState(StateStack& stack, Context context);
 
-		virtual void	draw();
-		virtual bool	update(sf::Time dt);
-		virtual bool	handleEvent(const sf::Event& event);
+		void		draw() override;
+		bool		update(sf::Time dt) override;
+		bool		handleEvent(const sf::Event& event) override;
 };
 
 #endif // TITRESTATE_HPP

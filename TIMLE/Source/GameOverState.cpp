@@ -20,9 +20,13 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 
 	mGameOverText.setFont(font);
 	if (context.mPlayerInfo->getGameStatus() == PlayerInfo::GameOver)
+	{
 		mGameOverText.setString(L"Игра окончена!");
+	}
 	else
+	{
 		mGameOverText.setString(L"Уровень пройден!");
+	}
 
 	mGameOverText.setCharacterSize(70);
 	centerOrigin(mGameOverText);
@@ -35,7 +39,9 @@ void GameOverState::draw()
 	window.setView(window.getDefaultView());
 
 	if (mOpacity < 255)
+	{
 		mOpacity += 5;
+	}
 
 	// Create dark, semitransparent background.
 	sf::RectangleShape backgroundShape;

@@ -1,9 +1,10 @@
 #include "../Include/Rock.hpp"
 
 
-Rock::Rock(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int height, std::string type)
-: Entity(Id, X, Y, std::stoi(type) * 16, height, 50.f, 100, 0, type)
-, mSize(std::stoi(type))
+Rock::Rock(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, 
+		   float X, float Y, int height, std::string type)
+: Entity(Id, X, Y, stoi(type) * 16, height, 50.f, 100, 0, type)
+, mSize(stoi(type))
 {
 	mLevelObjects = lvl.getObjects("solid");
 
@@ -21,6 +22,8 @@ void Rock::fall()
 void Rock::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -39,6 +42,7 @@ void Rock::checkCollisionWithMap(float Dx, float Dy)
 				}
 			}
 		}
+	}
 }
 
 void Rock::update(float dt)

@@ -8,7 +8,7 @@
 #include <SFML/Graphics/Text.hpp>
 
 
-class LoadingState : public State
+class LoadingState final : public State
 {
 	private:
 		sf::Text			mLoadingText;
@@ -21,9 +21,9 @@ class LoadingState : public State
 	public:
 							LoadingState(StateStack& stack, Context context);
 	
-		virtual void		draw();
-		virtual bool		update(sf::Time dt);
-		virtual bool		handleEvent(const sf::Event& event);
+		void				draw() override;
+		bool				update(sf::Time dt) override;
+		bool				handleEvent(const sf::Event& event) override;
 	
 		void				setCompletion(float percent);
 };

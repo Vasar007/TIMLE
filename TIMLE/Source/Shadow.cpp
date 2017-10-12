@@ -6,7 +6,8 @@ namespace
 	const ShadowData STable = initializeShadowData();
 }
 
-Shadow::Shadow(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string Type)
+Shadow::Shadow(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl,
+			   float X, float Y, int width, int height, std::string Type)
 : Entity(Id, X, Y, width, height, STable.speed, STable.hitpoints, STable.damage)
 , mCounter(0)
 , mNumTelPoint(0)
@@ -19,13 +20,13 @@ Shadow::Shadow(Type::ID Id, const TextureHolder& textures, const FontHolder& fon
 , mIsTeleporting(false)
 , mIsDisappeared(false)
 , mIsDisappearing(false)
-, mIsStay(false)
 , mIsNeedStay(false)
-, mIsDelay(false)
 , mIsNeedDelay(false)
+, mTeleporPoints(STable.teleportPoints)
+, mIsStay(false)
+, mIsDelay(false)
 , mIsCalling(false)
 , mIsWithdrawing(false)
-, mTeleporPoints(STable.teleportPoints)
 {
 	mTexture = textures.get(Textures::Shadow);
 	mSprite.setTexture(mTexture);
@@ -94,7 +95,9 @@ void Shadow::update(float time)
 	{
 		mMoveTimer = 0.f;
 		if (mHitpoints <= 0)
+		{
 			mCounter++;
+		}
 	}
 
 	if (mLife && (mHitpoints > 0))
@@ -242,7 +245,9 @@ void Shadow::update(float time)
 		{
 			mCurrentDeath = 0.f;
 			if (mCounter == 6)
+			{
 				mLife = false;
+			}
 		}
 		mSprite.setPosition(x + (mWidth / 2.f) + (mInaccuracy > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 8.f);
 		mSprite.setTextureRect(sf::IntRect(80 * (static_cast<int>(mCurrentDeath) % 4), 70 * (static_cast<int>(mCurrentDeath) / 4), 80, 70));

@@ -210,6 +210,15 @@
     <ClCompile Include="Source\AudioManager.cpp">
       <Filter>Файлы исходного кода\Mechanics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ChangingState.cpp">
+      <Filter>Файлы исходного кода\States</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Flamestrike.cpp">
+      <Filter>Файлы исходного кода\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Projectile.cpp">
+      <Filter>Файлы исходного кода\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TinyXML\tinystr.h">
@@ -361,6 +370,15 @@
     </ClInclude>
     <ClInclude Include="Include\AudioManager.hpp">
       <Filter>Заголовочные файлы\Mechanics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ChangingState.hpp">
+      <Filter>Заголовочные файлы\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Flamestrike.hpp">
+      <Filter>Заголовочные файлы\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Projectile.hpp">
+      <Filter>Заголовочные файлы\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,7 +17,8 @@ TitreState::TitreState(StateStack& stack, Context context)
 	mText.setString(L"SoftForAll                                                      Создатели:                                                     Васильев Василий                                               Зыков Артём                                                    Гусев Данила                                                   Нажмите любую кнопку для продолжения");
 	setText();
 	centerOrigin(mText);
-	mText.setPosition(sf::Vector2f(context.mWindow->getSize().x / 2.f, context.mWindow->getSize().y / 2.f + 350.f));
+	mText.setPosition(sf::Vector2f(context.mWindow->getSize().x / 2.f, 
+								   context.mWindow->getSize().y / 2.f + 350.f));
 	mText.setOutlineColor(sf::Color::Black);
 }
 
@@ -36,7 +37,8 @@ bool TitreState::update(sf::Time dt)
 
 	if (mTextEffectTime >= sf::seconds(0.01f))
 	{
-		mText.setPosition(mText.getPosition().x, mText.getPosition().y - static_cast<float>(mTextEffectTime.asSeconds()) * 100.f);
+		mText.setPosition(mText.getPosition().x, mText.getPosition().y - 
+						  static_cast<float>(mTextEffectTime.asSeconds()) * 100.f);
 		mTextEffectTime = sf::Time::Zero;
 	}
 
@@ -66,8 +68,11 @@ void TitreState::setText()
 	sf::String text = mText.getString();
 	for (size_t i = 0; i < text.getSize(); i++)
 	{
-		if (i % static_cast<int>(mBackgroundSprite.getGlobalBounds().width / (mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		if (i % static_cast<int>(mBackgroundSprite.getGlobalBounds().width /
+			(mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		{
 			text.insert(i, "\n");
+		}
 	}
 	mText.setString(text);
 }

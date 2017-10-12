@@ -9,13 +9,14 @@
 
 
 // Forward declaration.
+
 namespace sf
 {
 	class Event;
 }
 
 /**
- * \brief Additional namespace for convenience.
+ * \brief Additional namespace for working with GUI elements.
  */
 namespace GUI
 {
@@ -26,27 +27,78 @@ namespace GUI
 class Component : public sf::Drawable, public sf::Transformable, private sf::NonCopyable
 {
 	public:
+		/**
+		 * \brief Syntactic sugar. ( std::shared_ptr<Component> ).
+		 */
 		typedef std::shared_ptr<Component> Ptr;
 
 
 	private:
+		/**
+		 * \brief Selection flag of the component.
+		 */
 		bool			mIsSelected;
+
+		/**
+		 * \brief Active flag of the component.
+		 */
 		bool			mIsActive;
 
 
 	public:
+		/**
+		 * \brief Default constructor.
+		 */
 						Component();
-		virtual			~Component();
 
+		/**
+		 * \brief Default destructor.
+		 */
+		virtual			~Component() = default;
+
+
+		/**
+		 * \brief	Check if component can be selectable.
+		 * \return	True if component is selectable or false otherwise.
+		 */
 		virtual bool	isSelectable() const = 0;
+
+		/**
+		 * \brief	Check if component is already selected.
+		 * \return	True if this component is selected or not otherwise.
+		 */
 		bool			isSelected() const;
+
+		/**
+		 * \brief Change focus on the other component.
+		 */
 		virtual void	select();
+
+		/**
+		 * \brief Remove select flag from this component.
+		 */
 		virtual void	deselect();
 
+		/**
+		 * \brief	Check if this component is active.
+		 * \return	True if this component is active or false otherwise.
+		 */
 		virtual bool	isActive() const;
+
+		/**
+		 * \brief Toggle active flag on true.
+		 */
 		virtual void	activate();
+
+		/**
+		 * \brief Toggle active flag on false.
+		 */
 		virtual void	deactivate();
 
+		/**
+		 * \brief		Handle input events.
+		 * \param event The event that was sent.
+		 */
 		virtual void	handleEvent(const sf::Event& event) = 0;
 };
 

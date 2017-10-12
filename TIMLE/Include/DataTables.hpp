@@ -11,6 +11,7 @@
 
 
 // Forward declaration.
+
 class Player;
 class Enemy;
 
@@ -32,7 +33,7 @@ namespace Type
 	/**
 	 * \brief Constant for counting projectiles types.
 	 */
-	const size_t ProjectilesCount = 3;
+	const size_t ProjectilesCount = 4;
 
 	/**
 	 * \brief Identifiers of all entities.
@@ -57,7 +58,8 @@ namespace Type
 
 		AlliedBullet,
 		EnemyBullet,
-		FireBall,
+		Flamestrike,
+		Fireball,
 
 		MovingPlatform,
 		Rock,
@@ -112,8 +114,8 @@ struct TeleportPoint
  */
 struct EntityData
 {
-	int								hitpoints;
-	int								damage;
+	size_t							hitpoints;
+	size_t							damage;
 	float							speed;
 	Textures::ID					texture;
 	sf::Time						fireInterval;
@@ -125,8 +127,8 @@ struct EntityData
  */
 struct ShadowData
 {
-	int								hitpoints;
-	int								damage;
+	size_t							hitpoints;
+	size_t							damage;
 	float							speed;
 	Textures::ID					texture;
 	sf::Time						timeInterval;
@@ -138,8 +140,8 @@ struct ShadowData
  */
 struct GolemDarkData
 {
-	int								hitpoints;
-	int								damage;
+	size_t							hitpoints;
+	size_t							damage;
 	float							speed;
 	Textures::ID					texture;
 	sf::Time						timeInterval;
@@ -150,7 +152,7 @@ struct GolemDarkData
  */
 struct ProjectileData
 {
-	int								damage;
+	size_t							damage;
 	float							speed;
 	Textures::ID					texture;
 };

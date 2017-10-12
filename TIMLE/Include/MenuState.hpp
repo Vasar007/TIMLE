@@ -9,7 +9,7 @@
 #include <SFML/Audio/Sound.hpp>
 
 
-class MenuState : public State
+class MenuState final : public State
 {
 	private:
 		sf::Sprite		mBackgroundSprite;
@@ -20,9 +20,9 @@ class MenuState : public State
 	public:
 						MenuState(StateStack& stack, Context context);
 
-		virtual void	draw();
-		virtual bool	update(sf::Time dt);
-		virtual bool	handleEvent(const sf::Event& event);
+		void			draw() override;
+		bool			update(sf::Time dt) override;
+		bool			handleEvent(const sf::Event& event) override;
 };
 
 #endif // MENUSTATE_HPP

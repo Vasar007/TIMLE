@@ -8,7 +8,7 @@
 
 
 /**
- * \brief Additional namespace for convenience.
+ * \brief Additional namespace for working with GUI elements.
  */
 namespace GUI
 {
@@ -16,33 +16,81 @@ namespace GUI
 /**
  * \brief Element, which can contain other GUI elements.
  */
-class Container : public Component
+class Container final : public Component
 {
 	public:
+		/**
+		 * \brief Syntactic sugar. ( std::shared_ptr<Container> ).
+		 */
 		typedef std::shared_ptr<Container> Ptr;
 			
 
 	private:
+		/**
+		 * \brief Array that contains all elements for manipulating them.
+		 */
 		std::vector<Component::Ptr>	mChildren;
+
+		/**
+		 * \brief Number of the selected child.
+		 */
 		int							mSelectedChild;
 	
 	
 	private:
-		void						draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		/**
+		 * \brief			Draw the object to a render target.
+		 * \param target	Render target to draw to.
+		 * \param states	Current render states.
+		 */
+		void				draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	
-		bool						hasSelection() const;
-		void						select(std::size_t index);
-		void						selectNext();
-		void						selectPrevious();
+		/**
+		 * \brief	Defines selected item or not.
+		 * \return	True if it has selection or false otherwise.
+		 */
+		bool				hasSelection() const;
+
+		/**
+		 * \brief		Change focus on the element with given parameter.
+		 * \param index	Number of the element that we select.
+		 */
+		void				select(size_t index);
+
+		/**
+		 * \brief Change focus on the next element in the list.
+		 */
+		void				selectNext();
+
+		/**
+		 * \brief Change focus on the previous element in the list.
+		 */
+		void				selectPrevious();
 
 
 	public:
-									Container();
+		/**
+		 * \brief Default constructor.
+		 */
+							Container();
 
-		void						pack(Component::Ptr component);
+		/**
+		 * \brief			Pack new component in this container.
+		 * \param component Component that need to pack.
+		 */
+		void				pack(Component::Ptr component);
 
-		bool						isSelectable() const override;
-		void						handleEvent(const sf::Event& event) override;
+		/**
+		 * \brief	Check if container can be selectable.
+		 * \return	True if container is selectable or false otherwise.
+		 */
+		bool				isSelectable() const override;
+
+		/**
+		 * \brief		Handle input events.
+		 * \param event The event that was sent.
+		 */
+		void				handleEvent(const sf::Event& event) override;
 };
 
 }

@@ -15,7 +15,7 @@ class Rock : public Entity
 	
 		void	fall();
 		void	checkCollisionWithMap(float Dx, float Dy);
-		void	update(float time);
+		void	update(float time) override;
 };
 
 #endif // ROCK_HPP

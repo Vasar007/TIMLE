@@ -88,6 +88,7 @@ bool Level::loadFromFile(std::string filename)
 	std::vector<sf::Rect<int>> subRects;
 
 	for (int y = 0; y < rows; y++)
+	{
 		for (int x = 0; x < columns; x++)
 		{
 			sf::Rect<int> rect;
@@ -99,6 +100,7 @@ bool Level::loadFromFile(std::string filename)
 
 			subRects.push_back(rect);
 		}
+	}
 
 	// Работа со слоями
 	TiXmlElement *layerElement = map->FirstChildElement("layer");
@@ -148,7 +150,8 @@ bool Level::loadFromFile(std::string filename)
 				sf::Sprite sprite;
 				sprite.setTexture(mTtilesetImage);
 				sprite.setTextureRect(subRects[subRectToUse]);
-				sprite.setPosition(static_cast<float>(x * mTileWidth), static_cast<float>(y * mTileHeight));
+				sprite.setPosition(static_cast<float>(x * mTileWidth), 
+								   static_cast<float>(y * mTileHeight));
 				sprite.setColor(sf::Color(255, 255, 255, layer.mOpacity));
 
 				// Закидываем в слой спрайты тайлов
@@ -163,7 +166,9 @@ bool Level::loadFromFile(std::string filename)
 				x = 0;
 				y++;
 				if (y >= mHeight)
+				{
 					y = 0;
+				}
 			}
 		}
 
@@ -216,7 +221,8 @@ bool Level::loadFromFile(std::string filename)
 				{
 					width = subRects[atoi(objectElement->Attribute("gid")) - mFirstTileID].width;
 					height = subRects[atoi(objectElement->Attribute("gid")) - mFirstTileID].height;
-					sprite.setTextureRect(subRects[atoi(objectElement->Attribute("gid")) - mFirstTileID]);
+					sprite.setTextureRect(subRects[atoi(objectElement->Attribute("gid")) -
+										  mFirstTileID]);
 				}
 
 				// Экземпляр объекта
@@ -272,11 +278,13 @@ Object Level::getObject(std::string name)
 	Object *result = new Object();
 	// Только первый объект с заданным именем
 	for (size_t i = 0; i < mObjects.size(); i++)
+	{
 		if (mObjects[i].mName == name)
 		{
 			*result = mObjects[i];
 			return *result;	// objects[i]
 		}
+	}
 
 	std::cout << "Error! Couldn't find object with this name!" << std::endl;
 	return *result;
@@ -287,8 +295,12 @@ std::vector<Object> Level::getObjects(std::string name)
 	// Все объекты с заданным именем
 	std::vector<Object> vec;
 	for (size_t i = 0; i < mObjects.size(); i++)
+	{
 		if (mObjects[i].mName == name)
+		{
 			vec.push_back(mObjects[i]);
+		}
+	}
 
 	return vec;
 }
@@ -309,8 +321,12 @@ void Level::drawAll(sf::RenderWindow& window)
 {
 	// Рисуем все тайлы (объекты не рисуем!)
 	for (size_t layer = 0; layer < mLayers.size(); layer++)
+	{
 		for (size_t tile = 0; tile < mLayers[layer].mTiles.size(); tile++)
+		{
 			window.draw(mLayers[layer].mTiles[tile]);
+		}
+	}
 }
 
 void Level::draw(sf::RenderWindow& window)
@@ -318,9 +334,11 @@ void Level::draw(sf::RenderWindow& window)
 	sf::Vector2f center = window.getView().getCenter();
 	sf::Vector2f size = window.getView().getSize();
 
-	mDrawingBounds = sf::FloatRect(center.x - (size.x / 2.f) - 25.f, center.y - (size.y / 2.f) - 25.f, size.x + 25.f, size.y + 25.f);
+	mDrawingBounds = sf::FloatRect(center.x - (size.x / 2.f) - 25.f,
+								   center.y - (size.y / 2.f) - 25.f, size.x + 25.f, size.y + 25.f);
 
 	for (size_t layer = 0; layer < mLayers.size(); layer++)
+	{
 		for (size_t tile = 0; tile < mLayers[layer].mTiles.size(); tile++)
 		{
 			if (mDrawingBounds.contains(mLayers[layer].mTiles[tile].getPosition()))
@@ -328,4 +346,5 @@ void Level::draw(sf::RenderWindow& window)
 				window.draw(mLayers[layer].mTiles[tile]);
 			}
 		}
+	}
 }

@@ -11,7 +11,7 @@ AudioManager::AudioManager()
 
 void AudioManager::buildMusic()
 {
-	sf::Music* music = new sf::Music;
+	auto music = new sf::Music;
 
 	music->openFromFile("Media/Sounds/MainMenuTheme.ogg");
 	music->setLoop(true);
@@ -30,14 +30,18 @@ void AudioManager::buildMusic()
 
 void AudioManager::stopAllMusics()
 {
-	for (size_t i = 0; i < mMusics.size(); i++)
-		mMusics[i]->stop();
+	for (const auto it : mMusics)
+	{
+		it->stop();
+	}
 }
 
 void AudioManager::setMusic(MusicType musicType)
 {
 	if (mCurrentMusic == musicType)
+	{
 		return;
+	}
 
 	switch (musicType)
 	{
@@ -70,5 +74,13 @@ AudioManager::MusicType AudioManager::getMusicType() const
 bool AudioManager::isPlaying() const
 {
 	return mCurrentState == Play;
+}
+
+void AudioManager::setMusicVolume(float volume)
+{
+	for (const auto it : mMusics)
+	{
+		it->setVolume(volume);
+	}
 }
 

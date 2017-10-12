@@ -1,7 +1,8 @@
 #include "../Include/Tentacle.hpp"
 
 
-Tentacle::Tentacle(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, std::string Type)
+Tentacle::Tentacle(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
+				   float X, float Y, int width, int height, std::string Type)
 : Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
 , mAppearing(0.f)
 , mDisappearing(0.f)
@@ -16,6 +17,7 @@ Tentacle::Tentacle(Type::ID Id, const TextureHolder& textures, const FontHolder&
 void Tentacle::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -25,11 +27,12 @@ void Tentacle::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
-void Tentacle::appear(float time)
+void Tentacle::appear(float dt)
 {
-	mAppearing += 0.0075f * time;
+	mAppearing += 0.0075f * dt;
 	if (mAppearing >= 13.f)
 	{
 		mAppearing = 0.f;
@@ -42,9 +45,9 @@ void Tentacle::appear(float time)
 
 }
 
-void Tentacle::disappear(float time)
+void Tentacle::disappear(float dt)
 {
-	mDisappearing += 0.0075f * time;
+	mDisappearing += 0.0075f * dt;
 	if (mDisappearing >= 13.f)
 	{
 		mDisappearing = 0.f;
@@ -57,7 +60,7 @@ void Tentacle::disappear(float time)
 		90 * (static_cast<int>(mDisappearing) < 8 ? 1 : 0), 25, 90));
 }
 
-void Tentacle::update(float time)
+void Tentacle::update(float dt)
 {
 	if (!mIsStarted)
 	{
@@ -68,7 +71,7 @@ void Tentacle::update(float time)
 	}
 	else if (!mIsEnd)
 	{
-		mCurrentDeath += 0.0075f * time;
+		mCurrentDeath += 0.0075f * dt;
 		if (mCurrentDeath > 12.f)
 		{
 			mCurrentDeath = 12.f;
@@ -85,17 +88,17 @@ void Tentacle::update(float time)
 	{
 		if (mIsEnabled)
 		{
-			appear(time);
+			appear(dt);
 		}
 
 		if (mIsDisabled)
 		{
-			disappear(time);
+			disappear(dt);
 		}
 
 		if (!mIsEnabled && !mIsDisabled && mIsEnabling)
 		{
-			mCurrentFrame += 0.0075f * time;
+			mCurrentFrame += 0.0075f * dt;
 			if (mCurrentFrame > 8.f)
 			{
 				mCurrentFrame -= 8.f;
@@ -104,7 +107,7 @@ void Tentacle::update(float time)
 
 			if (mIsAttacked)
 			{
-				mCurrentAttack += 0.005f * time;
+				mCurrentAttack += 0.005f * dt;
 				if (mCurrentAttack > 2.f)
 				{
 					mCurrentAttack -= 1.f;
@@ -133,7 +136,7 @@ void Tentacle::update(float time)
 
 	if (mHitpoints <= 0)
 	{
-		mCurrentDeath += 0.0075f * time;
+		mCurrentDeath += 0.0075f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		mIsTurned = false;

@@ -1,7 +1,8 @@
 #include "../Include/Ghost.hpp"
 
 
-Ghost::Ghost(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, std::string Type)
+Ghost::Ghost(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
+			 float X, float Y, int width, int height, std::string Type)
 : Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
 
 {
@@ -17,6 +18,7 @@ Ghost::Ghost(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts
 void Ghost::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -51,17 +53,20 @@ void Ghost::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
-void Ghost::update(float time)
+void Ghost::update(float dt)
 {
 	// Притяжение к земле
-	dy += 0.0015f * time;
-	y += dy * time;
+	dy += 0.0015f * dt;
+	y += dy * dt;
 	checkCollisionWithMap(0.f, dy);
 
 	if (mIsTurned)
-		mMoveTimer += time;
+	{
+		mMoveTimer += dt;
+	}
 	if (mMoveTimer > 500.f && mIsTurned)
 	{
 		dx = -dx;
@@ -74,7 +79,7 @@ void Ghost::update(float time)
 	{
 		if (!mIsAttacked && !mIsTurned)
 		{
-			x += dx * time;
+			x += dx * dt;
 			mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 15.f : -15.f), y + (mHeight / 2.f) - 20.f);
 		}
 		else if (!mIsTurned)
@@ -87,14 +92,14 @@ void Ghost::update(float time)
 		}
 		checkCollisionWithMap(dx, 0.f);
 
-		mCurrentFrame += 0.005f * time;
+		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 3.f)
 		{
 			mCurrentFrame -= 3.f;
 		}
 		if (mIsAttacked)
 		{
-			mCurrentAttack += 0.009f * time;
+			mCurrentAttack += 0.009f * dt;
 			if (mCurrentAttack > 10.f)
 			{
 				mCurrentAttack -= 10.f;
@@ -137,7 +142,7 @@ void Ghost::update(float time)
 
 	if (mHitpoints <= 0)
 	{
-		mCurrentDeath += 0.0035f * time;
+		mCurrentDeath += 0.0035f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		mIsTurned = false;

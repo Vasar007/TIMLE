@@ -3,13 +3,17 @@
 
 PlayerInfo::PlayerInfo()
 : mCurrentGameStatus(GameRunning)
+, mCurrentLevelNumber(0)
+, mPlayer(nullptr)
 , mDialogNumber(0)
 , mShowedDialogs()
 , mChoosingNumber(0)
 , mChosenSolution(2)
 , mQuests(5)
-, mPlayer(nullptr)
 , mLoaded(false)
+, mLivesCount(3)
+, mLastSavePoint(0, 0)
+, mCanRessurect(false)
 {
 	/*
 	 *	Set of the quests:
@@ -20,7 +24,9 @@ PlayerInfo::PlayerInfo()
 	 *	4 – killing first mini-boss GolemDark.
 	 */
 	for (size_t i = 0; i < mQuests.size(); i++)
+	{
 		mQuests[i] = false;
+	}
 
 	/*
 	 *	List of the made choices:
@@ -28,7 +34,9 @@ PlayerInfo::PlayerInfo()
 	 *	1 - choosing option to interactive with GolemDark.
 	 */
 	for (size_t i = 0; i < mChosenSolution.size(); i++)
+	{
 		mChosenSolution[i] = 0;
+	}
 
 	// Set initial key bindings.
 	mKeyBinding[sf::Keyboard::Left] = MoveLeft;
@@ -72,9 +80,13 @@ void PlayerInfo::assignKey(Action action, sf::Keyboard::Key key)
 	for (auto itr = mKeyBinding.begin(); itr != mKeyBinding.end(); )
 	{
 		if (itr->second == action)
+		{
 			mKeyBinding.erase(itr++);
+		}
 		else
+		{
 			++itr;
+		}
 	}
 
 	// Insert new binding.
@@ -86,7 +98,9 @@ sf::Keyboard::Key PlayerInfo::getAssignedKey(Action action) const
 	FOREACH(auto pair, mKeyBinding)
 	{
 		if (pair.second == action)
+		{
 			return pair.first;
+		}
 	}
 
 	return sf::Keyboard::Unknown;
@@ -102,6 +116,18 @@ PlayerInfo::GameStatus PlayerInfo::getGameStatus() const
 	return mCurrentGameStatus;
 }
 
+void PlayerInfo::setLevelNumber(size_t number)
+{
+	mCurrentLevelNumber = number;
+}
+
+size_t PlayerInfo::getLevelNumber() const
+{
+	return mCurrentLevelNumber;
+}
+
+
+
 void PlayerInfo::initializeActions()
 {
 	//mActionBinding[MoveLeft].action = derivedAction<Hero>(AircraftMover(-1, 0));
@@ -109,7 +135,8 @@ void PlayerInfo::initializeActions()
 	//mActionBinding[MoveUp].action = derivedAction<Hero>(AircraftMover(0, -1));
 	//mActionBinding[MoveDown].action = derivedAction<Hero>(AircraftMover(0, +1));
 	//mActionBinding[Fire].action = derivedAction<Hero>([](Hero& a, sf::Time) { a.fire(); });
-	//mActionBinding[LaunchMissile].action = derivedAction<Hero>([](Hero& a, sf::Time) { a.launchMissile(); });
+	//mActionBinding[LaunchMissile].action = derivedAction<Hero>([](Hero& a, sf::Time) 
+	//															 { a.launchMissile(); });
 }
 
 bool PlayerInfo::isRealtimeAction(Action action)
@@ -133,11 +160,50 @@ void PlayerInfo::setPlayer(Player* player)
 	mPlayer = player;
 }
 
+Player* PlayerInfo::getPlayer() const
+{
+	return mPlayer;
+}
+
+
 void PlayerInfo::resetData()
 {
 	for (size_t i = 0; i < mQuests.size(); i++)
+	{
 		mQuests[i] = false;
+	}
 
 	for (size_t i = 0; i < mChosenSolution.size(); i++)
+	{
 		mChosenSolution[i] = 0;
+	}
+
+	mLivesCount = 3;
+
+	mLastSavePoint.x = 0;
+	mLastSavePoint.y = 0;
 }
+
+void PlayerInfo::ressurectPlayer()
+{
+	if (mLivesCount == 0)
+	{
+		mCanRessurect = false;
+		return;
+	}
+
+	mLivesCount--;
+	mCanRessurect = true;
+
+	if (mQuests[2])
+	{
+		mLastSavePoint.x = 5056;
+		mLastSavePoint.y = 1264;
+	}
+	if (mQuests[3])
+	{
+		mLastSavePoint.x = 8060;
+		mLastSavePoint.y = 1184;
+	}
+}
+

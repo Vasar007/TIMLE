@@ -3,6 +3,7 @@
 
 
 // Forward declaration of SFML classes.
+
 namespace sf
 {
 	class Texture;
@@ -105,13 +106,18 @@ namespace Sounds
 }
 
 
-// Forward declaration and a few type definitions.
+// Forward declaration.
 
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
+// Syntactic sugar. ( ResourceHolder<sf::Texture, Textures::ID> ).
 typedef ResourceHolder<sf::Texture, Textures::ID>	TextureHolder;
+
+// Syntactic sugar. ( ResourceHolder<sf::Font, Fonts::ID>	 ).
 typedef ResourceHolder<sf::Font, Fonts::ID>			FontHolder;
+
+// Syntactic sugar. ( ResourceHolder<sf::SoundBuffer, Sounds::ID> ).
 typedef ResourceHolder<sf::SoundBuffer, Sounds::ID>	SoundBufferHolder;
 
 #endif // RESOURCEIDENTIFIERS_HPP
