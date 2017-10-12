@@ -6,7 +6,8 @@ namespace
 	const GolemDarkData GBTable = initializeGolemDarkData();
 }
 
-GolemDark::GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string Type)
+GolemDark::GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
+					 Level& lvl, float X, float Y, int width, int height, std::string Type)
 : Entity(Id, X, Y, width, height, GBTable.speed, GBTable.hitpoints, GBTable.damage)
 , mCounter(0)
 , mIsTurned(false)
@@ -14,8 +15,12 @@ GolemDark::GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolde
 	// Initialize basic objects for interaction golem with it.
 	std::vector<Object> levelObjects = lvl.getObjects("enemyBorder");
 	for (size_t i = 0; i < levelObjects.size(); i++)
+	{
 		if (levelObjects[i].mType == Type)
+		{
 			mLevelObjects.push_back(levelObjects[i]);
+		}
+	}
 
 	levelObjects = lvl.getObjects("death");
 	for (size_t i = 0; i < levelObjects.size(); i++)
@@ -34,6 +39,7 @@ GolemDark::GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolde
 void GolemDark::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Check collision with borders.
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -68,6 +74,7 @@ void GolemDark::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
 void GolemDark::update(float time)
@@ -112,14 +119,18 @@ void GolemDark::update(float time)
 	{
 		mMoveTimer = 0.f;
 		if (mHitpoints <= 0)
+		{
 			mCounter++;
+		}
 	}
 
 	if (mLife && (mHitpoints > 0))
 	{
 		// Moving phase.
 		if (!mIsAttacked && !mIsTurned)
+		{
 			x += dx * time;
+		}
 		checkCollisionWithMap(dx, 0.f);
 
 		mSprite.setPosition(x + (mWidth / 2.f) + 11.f, y + (mHeight / 2.f) - 2.f);
@@ -189,7 +200,9 @@ void GolemDark::update(float time)
 		{
 			mCurrentDeath = 6.f;
 			if (mCounter == 6)
+			{
 				mLife = false;
+			}
 		}
 		mSprite.setTexture(mTextureDeath);
 		mSprite.setPosition(x + (mWidth / 2.f) + 5.f, y + (mHeight / 2.f) + 1.f);

@@ -1,7 +1,8 @@
 #include "../Include/ParallelTask.hpp"
 
 
-ParallelTask::ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds, PlayerInfo* playerInfo)
+ParallelTask::ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds,
+						   PlayerInfo* playerInfo)
 : mThread(&ParallelTask::loadTextures, this)
 , mThreadClock(&ParallelTask::runTask, this)
 , mFinished(false)
@@ -45,7 +46,9 @@ void ParallelTask::runTask()
 	{
 		sf::Lock lock(mMutex); // Protect the clock.
 		if (mElapsedTime.getElapsedTime().asSeconds() >= 3.f)
+		{
 			ended = true;
+		}
 	}
 
 	{ // mFinished may be accessed from multiple threads, protect it.

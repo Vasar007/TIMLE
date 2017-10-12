@@ -1,7 +1,8 @@
 #include "../Include/Dwarf.hpp"
 
 
-Dwarf::Dwarf(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, std::string Type, int dwarfType)
+Dwarf::Dwarf(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
+			 float X, float Y, int width, int height, std::string Type, int dwarfType)
 : Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
 , mDwarfType(dwarfType)
 , mInaccuracy(0.f)
@@ -21,6 +22,7 @@ Dwarf::Dwarf(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts
 void Dwarf::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -55,18 +57,19 @@ void Dwarf::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
-void Dwarf::update(float time)
+void Dwarf::update(float dt)
 {
 	// Притяжение к земле
-	dy += 0.0015f * time;
-	y += dy * time;
+	dy += 0.0015f * dt;
+	y += dy * dt;
 	checkCollisionWithMap(0.f, dy);
 
 	if (!mIsStarted)
 	{
-		mCurrentDeath += 0.005f * time;
+		mCurrentDeath += 0.005f * dt;
 		if (mCurrentDeath > 4.f)
 		{
 			mCurrentDeath -= 4.f;
@@ -78,7 +81,7 @@ void Dwarf::update(float time)
 	}
 	else if (!mIsEnd)
 	{
-		mCurrentAttack -= 0.0025f * time;
+		mCurrentAttack -= 0.0025f * dt;
 		if (mCurrentAttack < 0.f)
 		{
 			mCurrentAttack = 0.f;
@@ -104,7 +107,9 @@ void Dwarf::update(float time)
 	}
 
 	if (mIsTurned)
-		mMoveTimer += time;
+	{
+		mMoveTimer += dt;
+	}
 	if (mMoveTimer > 2000.f && mIsTurned)
 	{
 		dx = -dx;
@@ -116,19 +121,21 @@ void Dwarf::update(float time)
 	if (mLife && (mHitpoints > 0))
 	{
 		if (!mIsAttacked && !mIsTurned)
-			x += dx * time;
+		{
+			x += dx * dt;
+		}
 		checkCollisionWithMap(dx, 0.f);
 
 		mSprite.setPosition(x + (mWidth / 2) + (dx > 0 ? 10.f : -10.f), y + (mHeight / 2) - 19.f);
 
-		mCurrentFrame += 0.005f * time;
+		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 6.f)
 		{
 			mCurrentFrame -= 6.f;
 		}
 		if (mIsAttacked)
 		{
-			mCurrentAttack += 0.005f * time;
+			mCurrentAttack += 0.005f * dt;
 			if (mCurrentAttack > 4.f)
 			{
 				mCurrentAttack -= 4.f;
@@ -176,20 +183,22 @@ void Dwarf::update(float time)
 
 	if (mHitpoints <= 0)
 	{
-		mMoveTimer += time;
+		mMoveTimer += dt;
 		if (mMoveTimer > 1000.f)
 		{
 			mCounter++;
 			mMoveTimer = 0.f;
 		}
-		mCurrentDeath += 0.0035f * time;
+		mCurrentDeath += 0.0035f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		if (mCurrentDeath > 2.f)
 		{
 			mCurrentDeath = 2.f;
 			if (mCounter == 6)
+			{
 				mLife = false;
+			}
 		}
 		mSprite.setPosition(x + (mWidth / 2.f) + (mInaccuracy > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 19.f);
 		mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + (static_cast<int>(mCurrentDeath) == 0? 0 : 13)), 80 * mDwarfType, 100, 80));

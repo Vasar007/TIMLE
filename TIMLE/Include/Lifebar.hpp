@@ -54,11 +54,12 @@ class LifeBar
 	/**
 	 * \brief			A constructor with basic parameters.
 	 * \param Id		The identifier of the entity.
-	 * \param textures	The reference to an associative array with textures.
-	 * \param fonts		The reference to an associative array with fonts.
+	 * \param textures	The reference to textures holder for extracting necessary textures.
+	 * \param fonts		The reference to fonts holder for extracting necessary textures.
 	 * \param hitpoints	Number of the HP entity.
 	 */
-							LifeBar(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, int hitpoints);
+							LifeBar(Type::ID Id, const TextureHolder& textures, 
+									const FontHolder& fonts, int hitpoints);
 	
 		/**
 		 * \brief			Updating this object and its states.

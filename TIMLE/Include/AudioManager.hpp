@@ -97,6 +97,12 @@ class AudioManager
 		 */
 		bool			isPlaying() const;
 
+		/**
+		 * \brief			Set music volume.
+		 * \param volume	New value for setting.
+		 */
+		void			setMusicVolume(float volume);
+
 
 };
 

@@ -6,20 +6,28 @@ namespace
 	const std::vector<EntityData> ETable = initializeEnemyData();
 }
 
-Enemy::Enemy(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string Type)
-: Entity(Id, X, Y, width, height, ETable[Id - Type::HeroCount].speed, ETable[Id - Type::HeroCount].hitpoints, ETable[Id - Type::HeroCount].damage, Type)
+Enemy::Enemy(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl,
+			 float X, float Y, int width, int height, std::string Type)
+: Entity(Id, X, Y, width, height, ETable[Id - Type::HeroCount].speed, 
+		 ETable[Id - Type::HeroCount].hitpoints, ETable[Id - Type::HeroCount].damage, Type)
 , mCounter(0)
 , mIsTurned(false)
 {
 	// Инициализируем.получаем нужные объекты для взаимодействия врага с картой
 	std::vector<Object> levelObjects = lvl.getObjects("enemyBorder");
 	for (size_t i = 0; i < levelObjects.size(); i++)
+	{
 		if (levelObjects[i].mType == Type)
+		{
 			mLevelObjects.push_back(levelObjects[i]);
+		}
+	}
 
 	levelObjects = lvl.getObjects("death");
 	for (size_t i = 0; i < levelObjects.size(); i++)
+	{
 		mLevelObjects.push_back(levelObjects[i]);
+	}
 
 	/*
 	for (size_t i = 0; i < mLevelObjects.size(); i++)

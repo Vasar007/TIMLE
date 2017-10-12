@@ -25,7 +25,9 @@ void TitleState::draw()
 	window.draw(mBackgroundSprite);
 
 	if (mShowText)
+	{
 		window.draw(mText);
+	}
 }
 
 bool TitleState::update(sf::Time dt)

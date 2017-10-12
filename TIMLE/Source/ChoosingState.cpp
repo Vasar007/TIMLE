@@ -17,6 +17,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 , mDialogTalking()
 , mPlayerInfo(context.mPlayerInfo)
 {
+	// Define some variables for convenience.
 	sf::Vector2f windowSize(context.mWindow->getView().getSize());
 	sf::Vector2f windowCenter(context.mWindow->getView().getCenter());
 
@@ -31,8 +32,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 		case 1:
 		{
 			addText(L"Хотите ли вы обыскать тела?");
-			auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-			firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 257.f);
+			auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
+															 *context.mSounds);
+			firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+									 windowCenter.y + windowSize.y / 2.f - 257.f);
 			firstButton->setText(L"Да");
 			firstButton->setCallback([this]()
 			{
@@ -41,8 +44,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 			});
 			mGUIContainer.pack(firstButton);
 
-			auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-			secondButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 207.f);
+			auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
+															  *context.mSounds);
+			secondButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+									  windowCenter.y + windowSize.y / 2.f - 207.f);
 			secondButton->setText(L"Нет");
 			secondButton->setCallback([this]()
 			{
@@ -58,8 +63,11 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 
 			if (mPlayerInfo->mChosenSolution[0] == 1)
 			{
-				auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-				firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 307.f);
+				auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, 
+																 *context.mTextures, 
+																 *context.mSounds);
+				firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+										 windowCenter.y + windowSize.y / 2.f - 307.f);
 				firstButton->setText(L"Сказать фразу");
 				firstButton->setCallback([this]()
 				{
@@ -68,8 +76,11 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				});
 				mGUIContainer.pack(firstButton);
 
-				auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-				secondButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 257.f);
+				auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, 
+																  *context.mTextures, 
+																  *context.mSounds);
+				secondButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f,
+										  windowCenter.y + windowSize.y / 2.f - 257.f);
 				secondButton->setText(L"Атаковать монстра");
 				secondButton->setCallback([this]()
 				{
@@ -78,8 +89,11 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				});
 				mGUIContainer.pack(secondButton);
 
-				auto thirdButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-				thirdButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 207.f);
+				auto thirdButton = std::make_shared<GUI::Button>(*context.mFonts, 
+																 *context.mTextures, 
+																 *context.mSounds);
+				thirdButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+										 windowCenter.y + windowSize.y / 2.f - 207.f);
 				thirdButton->setText(L"Подождать");
 				thirdButton->setCallback([this]()
 				{
@@ -90,8 +104,11 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 			}
 			else if (mPlayerInfo->mChosenSolution[0] == 2)
 			{
-				auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-				firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 257.f);
+				auto firstButton = std::make_shared<GUI::Button>(*context.mFonts,
+																 *context.mTextures, 
+																 *context.mSounds);
+				firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
+					windowCenter.y + windowSize.y / 2.f - 257.f);
 				firstButton->setText(L"Атаковать монстра");
 				firstButton->setCallback([this]()
 				{
@@ -100,8 +117,11 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				});
 				mGUIContainer.pack(firstButton);
 
-				auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, *context.mSounds);
-				secondButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, windowCenter.y + windowSize.y / 2.f - 207.f);
+				auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, 
+																  *context.mTextures,
+																  *context.mSounds);
+				secondButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f,
+										  windowCenter.y + windowSize.y / 2.f - 207.f);
 				secondButton->setText(L"Подождать");
 				secondButton->setCallback([this]()
 				{
@@ -131,8 +151,11 @@ void ChoosingState::setText(size_t number)
 	/*
 	 for (size_t i = 0; i < text.getSize(); i++)
 	{
-		if (i % static_cast<int>(getContext().window.getView().getSize().x / (mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		if (i % static_cast<int>(getContext().window.getView().getSize().x /
+			(mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		{
 			text.insert(i, "\n");
+		}
 	}
 	*/
 	mText.setString(text);

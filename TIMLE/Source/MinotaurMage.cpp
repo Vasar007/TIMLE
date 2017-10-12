@@ -1,7 +1,8 @@
 #include "../Include/MinotaurMage.hpp"
 
 
-MinotaurMage::MinotaurMage(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, std::string Type)
+MinotaurMage::MinotaurMage(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
+						   Level &lvl, float X, float Y, int width, int height, std::string Type)
 : Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
 {
 	mTexture = textures.get(Textures::MinotaurMage);
@@ -14,6 +15,7 @@ MinotaurMage::MinotaurMage(Type::ID Id, const TextureHolder& textures, const Fon
 void MinotaurMage::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -48,17 +50,20 @@ void MinotaurMage::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
-void MinotaurMage::update(float time)
+void MinotaurMage::update(float dt)
 {
 	// Притяжение к земле
-	dy += 0.0015f * time;
-	y += dy * time;
+	dy += 0.0015f * dt;
+	y += dy * dt;
 	checkCollisionWithMap(0.f, dy);
 
 	if (mIsTurned)
-		mMoveTimer += time;
+	{
+		mMoveTimer += dt;
+	}
 	if (mMoveTimer > 2000.f && mIsTurned)
 	{
 		dx = -dx;
@@ -74,26 +79,30 @@ void MinotaurMage::update(float time)
 		checkCollisionWithMap(dx, 0.f);
 
 		/// Animation
-		mCurrentFrame += 0.003f * time;
+		mCurrentFrame += 0.003f * dt;
 		if (mCurrentFrame > 2.f)
 		{
 			mCurrentFrame -= 2.f;
 		}
-		mSprite.setPosition(x + (mWidth / 2.f) - 12.f, y + (mHeight / 2.f) - 14.f);
+
+		mSprite.setPosition(x + (mWidth / 2.f) - 12.f + (dx > 0 ? 0.f : 24.f), y + (mHeight / 2.f) - 14.f);
+
 		if (mIsAttacked)
 		{
-			mCurrentAttack += 0.005f * time;
+			mCurrentAttack += 0.005f * dt;
 			if (mCurrentAttack > 5.f)
 			{
 				mCurrentAttack -= 5.f;
 				mIsAttacked = false;
 				mIsBack = false;
+				mIsHittedOnce = false;
 			}
-			else if (static_cast<int>(mCurrentAttack) == 4)
+			else if (static_cast<int>(mCurrentAttack) == 4 && !mIsHittedOnce)
 			{
 				mIsHitted = true;
+				mIsHittedOnce = true;
 			}
-			else
+			else 
 			{
 				mIsHitted = false;
 			}
@@ -122,13 +131,13 @@ void MinotaurMage::update(float time)
 
 	if (mHitpoints <= 0)
 	{
-		mMoveTimer += time;
+		mMoveTimer += dt;
 		if (mMoveTimer > 1000.f)
 		{
 			mCounter++;
 			mMoveTimer = 0.f;
 		}
-		mCurrentDeath += 0.005f * time;
+		mCurrentDeath += 0.0075f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		if (mCurrentDeath > 11.f)

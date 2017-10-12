@@ -6,7 +6,8 @@ namespace
 	const std::vector<EntityData> Table = initializeHeroData();
 }
 
-Player::Player(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, PlayerInfo* playerInfo)
+Player::Player(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
+			   float X, float Y, int width, int height, PlayerInfo* playerInfo)
 : Entity(Id, X, Y, width, height, Table[Id].speed, Table[Id].hitpoints, Table[Id].damage)
 , mStayTimer(0.f)
 , mOnPlatform(0.f)
@@ -17,6 +18,7 @@ Player::Player(Type::ID Id, const TextureHolder& textures, const FontHolder& fon
 , mFallingHeight(0.f)
 , mCounter(0)
 , mDialogNumber(0)
+, mMaxHitpoints(Table[Id].hitpoints)
 , mIsShoot(false)
 , mCanShoted(true)
 , mIsJumped(false)
@@ -55,7 +57,8 @@ void Player::control(float dt)
 			mCanShoted = true;
 		}
 	}
-	else if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::Fire)) && mCanShoted)
+	else if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::Fire)) &&
+		mCanShoted)
 	{
 		mIsShoot = true;
 		mCanShoted = false;
@@ -100,7 +103,7 @@ void Player::control(float dt)
 		else if (mDoubleJump)
 		{
 			//mState = jump;
-			dy = -0.5f;
+			dy = -0.425f;
 
 			// Прыжок != на земле
 			mOnGround = false;
@@ -161,6 +164,7 @@ void Player::checkCollisionWithMap(float Dx, float Dy)
 	mDialogNumber = 0;
 
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -177,12 +181,16 @@ void Player::checkCollisionWithMap(float Dx, float Dy)
 					mPressJump = false;
 
 					if (mBeforeJump != 0.f)
+					{
 						mAfterJump = y;
+					}
 
 					mFallingHeight = mAfterJump - mBeforeJump;
 
 					if (mFallingHeight > 100.f)
-						mHitpoints -=  static_cast<int>(0.4f * (mFallingHeight - 100.f));
+					{
+						mHitpoints -= static_cast<int>(0.4f * (mFallingHeight - 100.f));
+					}
 
 					mBeforeJump = 0.f;
 					mAfterJump = 0.f;
@@ -251,14 +259,19 @@ void Player::checkCollisionWithMap(float Dx, float Dy)
 			mOnGround = false;
 
 			if (mBeforeJump == 0.f)
+			{
 				mBeforeJump = y;
+			}
 		}
+	}
 }
 
 void Player::update(float dt)
 {
 	if (mPlayerInfo->mQuests[1])
+	{
 		mGotKey = true;
+	}
 
 	if ((mDialogNumber == 9) && !mHasTeleported)
 	{
@@ -304,9 +317,13 @@ void Player::update(float dt)
 			if (mOnPlatform != 0.f)
 			{
 				if (dx > 0.f)
+				{
 					x += dx * dt + (mOnPlatform > 0.f ? 0.f : -mOnPlatform) * dt;
+				}
 				else if (dx < 0.f)
+				{
 					x += dx * dt + (mOnPlatform > 0.f ? -mOnPlatform : 0.f) * dt;
+				}
 			}
 			else if (!mShooted)
 			{
@@ -322,16 +339,24 @@ void Player::update(float dt)
 
 			// Обнуляем скорость, чтобы объект остановился
 			if (!mIsMove)
+			{
 				mSpeed = 0.f;
+			}
 			mSprite.setPosition(x + (mWidth / 2.f) - 13.f, y + (mHeight / 2.f) - 10.f);
 
 			if (mSpeed > 0.f)
+			{
 				mSpeed -= 0.0085f;
+			}
 			else if (mSpeed < 0.f)
+			{
 				mSpeed = 0.f;
+			}
 
 			if (mBeforeJump == 0.f && dy > 0.f && !mOnGround)
+			{
 				mBeforeJump = y;
+			}
 
 			// Притяжение к земле
 			dy += 0.0015f * dt;
@@ -345,10 +370,14 @@ void Player::update(float dt)
 			if (mLife && (mHitpoints > 0))
 			{
 				if (mOnGround)
+				{
 					mCurrentFrame += 0.006f * dt;
+				}
 
 				if (mCurrentFrame > 4.f)
+				{
 					mCurrentFrame -= 4.f;
+				}
 
 				if (mShooted)
 				{
@@ -430,19 +459,23 @@ void Player::update(float dt)
 			{
 				mCurrentDeath += 0.003f * dt;
 				dx = 0.f;
-				if (y > 2350.f)
-					dy = 0.f;
+				dy = 0.f;
+
 				if (mCurrentDeath > 2.f)
 				{
 					mCurrentDeath = 2.f;
-					mMoveTimer += dt;
-					if (mMoveTimer > 1000.f)
+					mDeathTimer += dt;
+					if (mCounter == 2)
 					{
-						mMoveTimer = 0.f;
+						mCounter = 0;
+						mCurrentDeath = 2.f;
+						mLife = false;
+					}
+					else if (mDeathTimer > 1000.f)
+					{
+						mDeathTimer = 0.f;
 						mCounter++;
 					}
-					if (mCounter == 2)
-						mLife = false;
 				}
 				mSprite.setPosition(x + (mWidth / 2.f) - 14.f, y + (mHeight / 2.f) - 10.f);
 				if (static_cast<int>(mCurrentDeath) == 0)
@@ -464,5 +497,15 @@ void Player::update(float dt)
 		default:
 			std::cout << "Invalid hero type!" << std::endl;
 			break;
+	}
+
+	if (!mLife && mPlayerInfo->mCanRessurect)
+	{
+		mCurrentDeath = 0.f;
+		mLife = true;
+		mHitpoints = mMaxHitpoints;
+		x = mPlayerInfo->mLastSavePoint.x;
+		y = mPlayerInfo->mLastSavePoint.y;
+		mPlayerInfo->mCanRessurect = false;
 	}
 }

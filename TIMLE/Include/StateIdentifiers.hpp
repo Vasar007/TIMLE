@@ -16,7 +16,8 @@ namespace States
 		GameOver,
 		Dialog,
 		Choosing,
-		Titre
+		Titre,
+		Changing
 	};
 }
 

@@ -20,12 +20,12 @@ LoadingState::LoadingState(StateStack& stack, Context context)
 	mLoadingText.setPosition(viewSize.x / 2.f, viewSize.y / 2.f + 50.f);
 
 	mProgressBarBackground.setFillColor(sf::Color::White);
-	mProgressBarBackground.setSize(sf::Vector2f(viewSize.x - 20, 10));
-	mProgressBarBackground.setPosition(10, mLoadingText.getPosition().y + 40);
+	mProgressBarBackground.setSize(sf::Vector2f(viewSize.x - 20.f, 10.f));
+	mProgressBarBackground.setPosition(10.f, mLoadingText.getPosition().y + 40.f);
 
 	mProgressBar.setFillColor(sf::Color(100,100,100));
-	mProgressBar.setSize(sf::Vector2f(200, 10));
-	mProgressBar.setPosition(10, mLoadingText.getPosition().y + 40);
+	mProgressBar.setSize(sf::Vector2f(200.f, 10.f));
+	mProgressBar.setPosition(10.f, mLoadingText.getPosition().y + 40.f);
 
 	setCompletion(0.f);
 
@@ -65,8 +65,12 @@ bool LoadingState::handleEvent(const sf::Event& event)
 
 void LoadingState::setCompletion(float percent)
 {
-	if (percent > 1.f) // clamp
+	// Clamp.
+	if (percent > 1.f)
+	{
 		percent = 1.f;
+	}
 
-	mProgressBar.setSize(sf::Vector2f(mProgressBarBackground.getSize().x * percent, mProgressBar.getSize().y));
+	mProgressBar.setSize(sf::Vector2f(mProgressBarBackground.getSize().x * percent,
+									  mProgressBar.getSize().y));
 }

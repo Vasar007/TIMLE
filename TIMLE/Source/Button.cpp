@@ -9,7 +9,8 @@
 namespace GUI
 {
 
-Button::Button(const FontHolder& fonts, const TextureHolder& textures, const SoundBufferHolder& soundBuffer)
+Button::Button(const FontHolder& fonts, const TextureHolder& textures, 
+			   const SoundBufferHolder& soundBuffer)
 : mCallback()
 , mNormalTexture(textures.get(Textures::ButtonNormal))
 , mSelectedTexture(textures.get(Textures::ButtonSelected))
@@ -75,11 +76,15 @@ void Button::activate()
 	}
 
 	if (mCallback)
+	{
 		mCallback();
+	}
 
 	// If we are not a toggle then deactivate the button since we are just momentarily activated.
 	if (!mIsToggle)
+	{
 		deactivate();
+	}
 }
 
 void Button::deactivate()
@@ -90,9 +95,13 @@ void Button::deactivate()
 	{
 		// Reset texture to right one depending on if we are selected or not.
 		if (isSelected())
+		{
 			mSprite.setTexture(mSelectedTexture);
+		}
 		else
+		{
 			mSprite.setTexture(mNormalTexture);
+		}
 	}
 }
 

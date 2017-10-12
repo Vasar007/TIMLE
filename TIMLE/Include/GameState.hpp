@@ -8,7 +8,7 @@
 #include <SFML/Graphics/Text.hpp>
 
 
-class GameState : public State
+class GameState final : public State
 {
 	private:
 		World			mWorld;
@@ -18,9 +18,9 @@ class GameState : public State
 	public:
 						GameState(StateStack& stack, Context context);
 
-		virtual void	draw();
-		virtual bool	update(sf::Time dt);
-		virtual bool	handleEvent(const sf::Event& event);
+		void			draw() override;
+		bool			update(sf::Time dt) override;
+		bool			handleEvent(const sf::Event& event) override;
 };
 
 #endif // GAMESTATE_HPP

@@ -2,12 +2,15 @@
 
 
 
-DialogPerson::DialogPerson(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string type)
+DialogPerson::DialogPerson(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
+						   Level& lvl, float X, float Y, int width, int height, std::string type)
 : Entity(Id, X, Y, width, height, 50.f, 100, 0, type)
-, mDialogNumber(std::stoi(type))
+, mDialogNumber(stoi(type))
 {
 	if (Id == Type::Oswald || Id == Type::Heinrich)
+	{
 		mTexture = textures.get(Textures::Knight);
+	}
 	mSprite.setTexture(mTexture);
 	switch(Id)
 	{

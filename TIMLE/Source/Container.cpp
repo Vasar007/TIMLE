@@ -20,7 +20,9 @@ void Container::pack(Component::Ptr component)
 	mChildren.push_back(component);
 
 	if (!hasSelection() && component->isSelectable())
+	{
 		select(mChildren.size() - 1);
+	}
 }
 
 bool Container::isSelectable() const
@@ -48,7 +50,9 @@ void Container::handleEvent(const sf::Event& event)
 		else if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
 		{
 			if (hasSelection())
+			{
 				mChildren[mSelectedChild]->activate();
+			}
 		}
 	}
 }
@@ -58,7 +62,9 @@ void Container::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	states.transform *= getTransform();
 
 	FOREACH(const Component::Ptr& child, mChildren)
+	{
 		target.draw(*child, states);
+	}
 }
 
 bool Container::hasSelection() const
@@ -66,12 +72,14 @@ bool Container::hasSelection() const
 	return mSelectedChild >= 0;
 }
 
-void Container::select(std::size_t index)
+void Container::select(size_t index)
 {
 	if (mChildren[index]->isSelectable())
 	{
 		if (hasSelection())
+		{
 			mChildren[mSelectedChild]->deselect();
+		}
 
 		mChildren[index]->select();
 		mSelectedChild = index;
@@ -81,12 +89,16 @@ void Container::select(std::size_t index)
 void Container::selectNext()
 {
 	if (!hasSelection())
+	{
 		return;
+	}
 
 	// Search next component that is selectable, wrap around if necessary.
 	int next = mSelectedChild;
 	do
+	{
 		next = (next + 1) % mChildren.size();
+	}
 	while (!mChildren[next]->isSelectable());
 
 	// Select that component.
@@ -96,12 +108,16 @@ void Container::selectNext()
 void Container::selectPrevious()
 {
 	if (!hasSelection())
+	{
 		return;
+	}
 
 	// Search previous component that is selectable, wrap around if necessary.
 	int prev = mSelectedChild;
 	do
+	{
 		prev = (prev + mChildren.size() - 1) % mChildren.size();
+	}
 	while (!mChildren[prev]->isSelectable());
 
 	// Select that component.

@@ -1,7 +1,8 @@
 #include "../Include/Goblin.hpp"
 
 
-Goblin::Goblin(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, float X, float Y, int width, int height, std::string Type)
+Goblin::Goblin(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl,
+			   float X, float Y, int width, int height, std::string Type)
 : Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
 {
 	mTexture = textures.get(Textures::Goblin);
@@ -14,6 +15,7 @@ Goblin::Goblin(Type::ID Id, const TextureHolder& textures, const FontHolder& fon
 void Goblin::checkCollisionWithMap(float Dx, float Dy)
 {
 	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
 		{
@@ -48,17 +50,20 @@ void Goblin::checkCollisionWithMap(float Dx, float Dy)
 				mHitpoints = 0;
 			}
 		}
+	}
 }
 
-void Goblin::update(float time)
+void Goblin::update(float dt)
 {
 	// Притяжение к земле
-	dy += 0.0015f * time;
-	y += dy * time;
+	dy += 0.0015f * dt;
+	y += dy * dt;
 	checkCollisionWithMap(0.f, dy);
 
 	if (mIsTurned)
-		mMoveTimer += time;
+	{
+		mMoveTimer += dt;
+	}
 	if (mMoveTimer > 2000.f && mIsTurned)
 	{
 		dx = -dx;
@@ -69,10 +74,12 @@ void Goblin::update(float time)
 	if (mLife && (mHitpoints > 0))
 	{
 		if (!mIsAttacked && !mIsTurned)
-			x += dx * time;
+		{
+			x += dx * dt;
+		}
 		checkCollisionWithMap(dx, 0.f);
 
-		mCurrentFrame += 0.005f * time;
+		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 6.f)
 		{
 			mCurrentFrame -= 6.f;
@@ -83,7 +90,7 @@ void Goblin::update(float time)
 		if (mIsAttacked)
 		{
 			int temp;
-			mCurrentAttack += 0.0075f * time;
+			mCurrentAttack += 0.0075f * dt;
 			if (mCurrentAttack > 7.f)
 			{
 				mCurrentAttack -= 7.f;
@@ -158,20 +165,22 @@ void Goblin::update(float time)
 
 	if (mHitpoints <= 0)
 	{
-		mMoveTimer += time;
+		mMoveTimer += dt;
 		if (mMoveTimer > 1000.f)
 		{
 			mCounter++;
 			mMoveTimer = 0.f;
 		}
-		mCurrentDeath += 0.0035f * time;
+		mCurrentDeath += 0.0035f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		if (mCurrentDeath > 2.f)
 		{
 			mCurrentDeath = 2.f;
 			if (mCounter == 6)
+			{
 				mLife = false;
+			}
 		}
 		mSprite.setPosition(x + (mWidth / 2.f) - 5.f, y + (mHeight / 2.f) - 5.f);
 		mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentDeath) + 10, 259, 50, 56));

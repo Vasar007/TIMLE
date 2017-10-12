@@ -2,16 +2,25 @@
 #define PROJECTILE_HPP
 
 #include "Entity.hpp"
-#include "ResourceIdentifiers.hpp"
-
-#include <SFML/Graphics/Sprite.hpp>
-#include "DataTables.hpp"
 
 
 class Projectile : public Entity
 {
+	private:
+		enum Category
+		{
+			EnemyProjectile,
+			AlliedProjectile
+		};
+
+		sf::Vector2f			mTargetDirection;
+		bool					mGuided;
+
+
 	public:
-								Projectile(Type::ID type, const TextureHolder& textures);
+								Projectile(Type::ID Id, const TextureHolder& textures, 
+										   const FontHolder& fonts, Level &lvl, float X, float Y, 
+										   int width, int height);
 
 		void					guideTowards(sf::Vector2f position);
 		bool					isGuided() const;
@@ -21,16 +30,11 @@ class Projectile : public Entity
 		float					getMaxSpeed() const;
 		int						getDamage() const;
 
-	
-	private:
-		virtual void			update(sf::Time);
-		virtual void			draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-
-	private:
-		Type::ID				mType;
-		sf::Sprite				mSprite;
-		sf::Vector2f			mTargetDirection;
+		/**
+		 * \brief		Pure virtual and overrided funtion for updating this object and its states.
+		 * \param dt	Delta time parameter.
+		 */
+		void					update(float dt) override = 0;
 };
 
 #endif // PROJECTILE_HPP

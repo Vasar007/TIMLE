@@ -11,6 +11,7 @@
 #include "Shadow.hpp"
 #include "Tentacle.hpp"
 #include "GolemDark.hpp"
+#include "AudioManager.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -21,21 +22,25 @@
 #include <array>
 #include <queue>
 #include <list>
-#include "AudioManager.hpp"
 
 
 // Forward declaration.
+
 namespace sf
 {
 	class RenderWindow;
 }
 
 /**
- * \brief One of the main classes of this app. Contains all data about this level and context of the app.
+ * \brief One of the main classes of this app. 
+ *		  Contains all data about this level and context of the app.
  */
 class World : private sf::NonCopyable
 {
 	private:
+		/**
+		 * \brief Data-structure that keeping coordinate for spawning entities with current type.
+		 */
 		struct SpawnPoint
 		{
 			SpawnPoint(Type::ID type, float x, float y)
@@ -50,6 +55,9 @@ class World : private sf::NonCopyable
 			float		y;
 		};
 
+		/**
+	 	 * \brief Additional data-structure that contains info about boss of the first level.
+		 */
 		struct ShadowBoss
 		{
 			ShadowBoss()
@@ -63,7 +71,7 @@ class World : private sf::NonCopyable
 			{
 			}
 
-			const int				mNumberOfTentacles;
+			const size_t			mNumberOfTentacles;
 
 			bool					mIsActive;
 			bool					mIsFinished;
@@ -74,6 +82,9 @@ class World : private sf::NonCopyable
 			std::list<Tentacle*>	mTentaclesStatic;
 		};
 
+		/**
+		 * \brief Additional data-structure that contains info about mini-boss of the first level.
+		 */
 		struct GolemBoss
 		{
 			GolemBoss()
@@ -130,9 +141,6 @@ class World : private sf::NonCopyable
 		std::vector<Object>		mObjects;
 
 
-		Object*					mTempObject;
-
-
 		/**
 		 * \brief Need to loading different sounds in this variable and play them.
 		 */
@@ -147,28 +155,53 @@ class World : private sf::NonCopyable
 
 	private:
 		void					setPlayerCoordinateForView(float x, float y, size_t levelNumber);
+		
 		void					handleCollisions(float dt);
 	
 		void					buildScene();
+		
 		void					addObjects();
+		
 		void					addEnemy(Type::ID type, float relX, float relY);
+		
 		void					spawnEnemies();
+		
 		void					destroyEntitiesOutsideView();
+		
 		void					guideMissiles();
+		
 		sf::FloatRect			getViewBounds() const;
+		
 		sf::FloatRect			getBattlefieldBounds() const;
 
 
 	public:
-		explicit				World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-									  SoundBufferHolder& sounds, PlayerInfo* playerInfo, AudioManager& audioManager);
+		/**
+		 * \brief				Default explicit constructor.
+		 * \param window		Active window for rendering all stuff.
+		 * \param textures		Textures holder for extracting necessary textures.
+		 * \param fonts			Fonts holder for extracting necessary textures.
+		 * \param sounds		Sounds holder for extracting necessary textures.
+		 * \param playerInfo	Class that contains player's data.
+		 * \param audioManager	Audio manager for manipulating app's music.
+		 */
+		explicit				World(sf::RenderWindow& window, TextureHolder& textures,
+									  FontHolder& fonts, SoundBufferHolder& sounds, 
+									  PlayerInfo* playerInfo, AudioManager& audioManager);
+
 		void					loadLevel(size_t levelNumber);
+		
 		void					update(sf::Time dt);
+		
 		void					draw();
+		
 		void					handleEvent();
 								
 		bool 					hasAlivePlayer() const;
+		
 		bool 					hasPlayerReachedEnd() const;
+
+		size_t					getLevelNumber() const;
 };
 
 #endif // WORLD_HPP

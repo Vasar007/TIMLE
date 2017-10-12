@@ -1,13 +1,6 @@
 #include "../Include/Projectile.hpp"
 #include "../Include/DataTables.hpp"
 #include "../Include/Utility.hpp"
-#include "../Include/ResourceHolder.hpp"
-
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-
-#include <cmath>
-#include <cassert>
 
 
 namespace
@@ -15,54 +8,53 @@ namespace
 	const std::vector<ProjectileData> Table = initializeProjectileData();
 }
 
-Projectile::Projectile(Type::ID type, const TextureHolder& textures)
-: Entity(1)
-, mType(type)
-, mSprite(textures.get(Table[type].texture))
+Projectile::Projectile(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts,
+					   Level &lvl, float X, float Y, int width, int height)
+: Entity(Id, X, Y, width, height, Table[Id - Type::HeroCount - Type::EnemyCount].speed, 100,
+		 Table[Id - Type::HeroCount - Type::EnemyCount].damage)
 , mTargetDirection()
+, mGuided(false)
 {
-	centerOrigin(mSprite);
 }
 
 void Projectile::guideTowards(sf::Vector2f position)
 {
-	assert(isGuided());
 	mTargetDirection = unitVector(position - getWorldPosition());
 }
 
 bool Projectile::isGuided() const
 {
-	return mType == Missile;
+	return mGuided;
 }
 
-void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
-{
-	if (isGuided())
-	{
-		const float approachRate = 200.f;
-
-		sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection + getVelocity());
-		newVelocity *= getMaxSpeed();
-		float angle = std::atan2(newVelocity.y, newVelocity.x);
-
-		setRotation(toDegree(angle) + 90.f);
-		setVelocity(newVelocity);
-	}
-
-	Entity::updateCurrent(dt, commands);
-}
-
-void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	target.draw(mSprite, states);
-}
+//void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
+//{
+//	if (isGuided())
+//	{
+//		const float approachRate = 200.f;
+//
+//		sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection +
+//								   getVelocity());
+//		newVelocity *= getMaxSpeed();
+//		float angle = std::atan2(newVelocity.y, newVelocity.x);
+//
+//		setRotation(toDegree(angle) + 90.f);
+//		setVelocity(newVelocity);
+//	}
+//
+//	Entity::updateCurrent(dt, commands);
+//}
 
 unsigned int Projectile::getCategory() const
 {
-	if (mType == EnemyBullet)
-		return Category::EnemyProjectile;
+	if (mTypeID == (Type::EnemyBullet | Type::Fireball | Type::Flamestrike))
+	{
+		return EnemyProjectile;
+	}
 	else
-		return Category::AlliedProjectile;
+	{
+		return AlliedProjectile;
+	}
 }
 
 sf::FloatRect Projectile::getBoundingRect() const
@@ -72,10 +64,10 @@ sf::FloatRect Projectile::getBoundingRect() const
 
 float Projectile::getMaxSpeed() const
 {
-	return Table[mType].speed;
+	return Table[mTypeID - Type::HeroCount - Type::EnemyCount].speed;
 }
 
 int Projectile::getDamage() const
 {
-	return Table[mType].damage;
+	return Table[mTypeID - Type::HeroCount - Type::EnemyCount].damage;
 }

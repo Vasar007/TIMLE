@@ -14,5 +14,8 @@ int main()
 	catch (std::exception& e)
 	{
 		std::cout << "\nEXCEPTION: " << e.what() << std::endl;
+		return EXIT_FAILURE;
 	}
+
+	return EXIT_SUCCESS;
 }

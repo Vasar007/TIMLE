@@ -10,10 +10,6 @@ Component::Component()
 {
 }
 
-Component::~Component()
-{
-}
-
 bool Component::isSelected() const
 {
 	return mIsSelected;

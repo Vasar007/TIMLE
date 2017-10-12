@@ -35,7 +35,9 @@ class GolemDark final : public Entity
 		 * \param height	Height if this object.
 		 * \param Type		An additional parameter for interaction with map.
 		 */
-						GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string Type = "0");
+						GolemDark(Type::ID Id, const TextureHolder& textures, 
+								  const FontHolder& fonts, Level& lvl, float X, float Y, 
+								  int width, int height, std::string Type = "0");
 	
 
 		/**
