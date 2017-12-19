@@ -1,10 +1,10 @@
 #ifndef AUDIOMANAGER_HPP
 #define AUDIOMANAGER_HPP
 
-#include <SFML/Audio/Music.hpp>
-
 #include <vector>
 #include <iostream>
+
+#include <SFML/Audio/Music.hpp>
 
 
 /**
@@ -16,7 +16,7 @@ class AudioManager
 		/**
 		 * \brief Array of music's states.
 		 */
-		enum CurrentState
+		enum class CurrentState
 		{
 			Play,
 			Pause,
@@ -28,7 +28,7 @@ class AudioManager
 		/**
 		 * \brief Contains all music types for playing.
 		 */
-		enum MusicType
+		enum class MusicType
 		{
 			MainMenuTheme,
 			FirstMainMusic,
@@ -48,17 +48,17 @@ class AudioManager
 		/**
 		 * \brief Current playing music type.
 		 */
-		MusicType				mCurrentMusic;
+		MusicType				_currentMusic;
 
 		/**
 		 * \brief Current music's state.
 		 */
-		CurrentState			mCurrentState;
+		CurrentState			_currentState;
 
 		/**
 		* \brief Main array with all musics.
 		*/
-		std::vector<sf::Music*>	mMusics;
+		std::vector<sf::Music*>	_musics;
 
 
 	private:
@@ -76,9 +76,9 @@ class AudioManager
 
 		/**
 		 * \brief			Changes playing music for another.
-		 * \param musicType New music type for playing.
+		 * \param musicType New music type to play.
 		 */
-		void			setMusic(MusicType musicType);
+		void			setMusic(const MusicType musicType);
 
 		/**
 		 * \brief Stops all tracks even they aren't playing now.
@@ -99,9 +99,9 @@ class AudioManager
 
 		/**
 		 * \brief			Set music volume.
-		 * \param volume	New value for setting.
+		 * \param volume	New value to set.
 		 */
-		void			setMusicVolume(float volume);
+		void			setMusicVolume(const float volume);
 
 
 };

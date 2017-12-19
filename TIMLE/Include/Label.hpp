@@ -1,11 +1,11 @@
 #ifndef LABEL_HPP
 #define LABEL_HPP
 
+#include <SFML/Graphics/Text.hpp>
+
 #include "Component.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "ResourceHolder.hpp"
-
-#include <SFML/Graphics/Text.hpp>
 
 
 /**
@@ -23,14 +23,14 @@ class Label final : public Component
 		/**
 		 * \brief Syntactic sugar. ( std::shared_ptr<Label> ).
 		 */
-		typedef std::shared_ptr<Label> Ptr;
+		typedef std::shared_ptr<Label> shPtr;
 			
 
 	private:
 		/**
 		 * \brief Text of the label.
 		 */
-		sf::Text	mText;
+		sf::Text	_text;
 	
 	
 	private:

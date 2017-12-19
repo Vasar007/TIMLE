@@ -1,43 +1,43 @@
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
+
 #include "../Include/DialogState.hpp"
 #include "../Include/Button.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
-
 
 DialogState::DialogState(StateStack& stack, Context context)
 : State(stack, context)
-, mTextNumber(0)
-, mChoosing(false)
-, mTexture(context.mTextures->get(Textures::DialogBox))
-, mSprite()
-, mText()
-, mTalking()
-, mGUIContainer()
-, mSound()
-, mDialogText()
-, mDialogTalking()
-, mPlayerInfo(context.mPlayerInfo)
+, _textNumber(0u)
+, _choosing(false)
+, _texture(context.mTextures->get(Textures::ID::DialogBox))
+, _sprite()
+, _text()
+, _talking()
+, _guiContainer()
+, _sound()
+, _dialogText()
+, _dialogTalking()
+, _playerInfo(*context.mPlayerInfo)
 {
-	sf::Vector2f windowSize(context.mWindow->getView().getSize());
-	sf::Vector2f windowCenter(context.mWindow->getView().getCenter());
+	const auto windowSize(context.mWindow->getView().getSize());
+	const auto windowCenter(context.mWindow->getView().getCenter());
 
-	mSound.setBuffer(context.mSounds->get(Sounds::ButtonCLick));
+	_sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
 
-	mTalking.setFont(context.mFonts->get(Fonts::Main));
-	mTalking.setCharacterSize(24);
+	_talking.setFont(context.mFonts->get(Fonts::ID::Main));
+	_talking.setCharacterSize(24);
 
-	mText.setFont(context.mFonts->get(Fonts::Main));
-	mText.setCharacterSize(18);
-	mText.setFillColor(sf::Color::Black);
-	mSprite.setTexture(mTexture);
+	_text.setFont(context.mFonts->get(Fonts::ID::Main));
+	_text.setCharacterSize(18);
+	_text.setFillColor(sf::Color::Black);
+	_sprite.setTexture(_texture);
 
-	mSprite.setScale(windowSize.x / mSprite.getLocalBounds().width, 1.5f);
+	_sprite.setScale(windowSize.x / _sprite.getLocalBounds().width, 1.5f);
 
-	switch(mPlayerInfo->mDialogNumber)
+	switch(_playerInfo.mDialogNumber)
 	{
 		case 1:
 			addText(L"Зная, что силы Зла начнут наступление с Теневых Земель, находящихся за Чёрным Хребтом на           дальнем востоке королевства, герой Стратклайда отправляется на Восточную долину, принявшую на    себя основной удар во время Великой Войны десять лет назад.", L"Повествование");
@@ -83,11 +83,11 @@ DialogState::DialogState(StateStack& stack, Context context)
 			break;
 		case 8:
 			addText(L"Из груды темных камней перед вами вырос огромный голем.", L"Повествование");
-			if (mPlayerInfo->mChosenSolution[0] == 1)
+			if (_playerInfo.mChosenSolution[0] == 1)
 			{
 				addText(L"Видимо о нём и говорилось на том листке, что был у дворфа. Амулет, который взяли с собой, залился ярким пурпурным светом. Видимо, он реагирует на присутствие тёмных сил или просто на магические  ауры. Руна находится на пьедестале позади монстра.", L"Повествование");
 			}
-			else if (mPlayerInfo->mChosenSolution[0] == 2)
+			else if (_playerInfo.mChosenSolution[0] == 2)
 			{
 				addText(L"Трудно сказать наверняка, что он мог тут делать. Лишь в одном вы уверены наверняка – монстр здесь стоит не просто так. Позади него вы замечаете необычное свечение, но времени на разгядывание не  остаётся.", L"Повествование");
 			}
@@ -102,7 +102,7 @@ DialogState::DialogState(StateStack& stack, Context context)
 			break;
 	}
 
-	setText(mTextNumber);
+	setText(_textNumber);
 
 	auto nextButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
 													*context.mSounds);
@@ -111,73 +111,73 @@ DialogState::DialogState(StateStack& stack, Context context)
 	nextButton->setText(L"Дальше");
 	nextButton->setCallback([this] ()
 	{
-		if ((mPlayerInfo->mDialogNumber == 7) && (mPlayerInfo->mChosenSolution[0] == 0))
+		if (_playerInfo.mDialogNumber == 7 && _playerInfo.mChosenSolution[0] == 0)
 		{
-			mPlayerInfo->mChoosingNumber = 1;
-			requestStackPush(States::Choosing);
-			mChoosing = true;
+			_playerInfo.mChoosingNumber = 1;
+			requestStackPush(States::ID::Choosing);
+			_choosing = true;
 		}
-		else if ((mPlayerInfo->mDialogNumber == 7) && (mPlayerInfo->mChosenSolution[0] != 0) &&
-			(mTextNumber == 0))
+		else if (_playerInfo.mDialogNumber == 7 && _playerInfo.mChosenSolution[0] != 0 &&
+			_textNumber == 0)
 		{
-			if (mPlayerInfo->mChosenSolution[0] == 1)
+			if (_playerInfo.mChosenSolution[0] == 1)
 			{
 				addText(L"На теле одного из дворфов вы находите бумажку, на которой написано следующее: «Идиоты, у вас есть ещё неделя, чтобы докопаться до хранилища и забрать эту чёртову руну. Если не успеете, Кархаваль всех тварям на корм пустит, поэтому давайте живей! И не забудьте, что там голем, просто скажите  ему: ''A d’yeabl aep arse''. Это то ли заклинание, то ли ещё хрень какая, которая его отключает».", L"Повествование");
 				addText(L"В сжатой руке рыцаря вы находите маленький амулет с камнем пурпурного цвета. Последний ярко       светится. Чутьё говорит вам, что эта вещь зачарована.", L"Повествование");
 			}
-			else if (mPlayerInfo->mChosenSolution[0] == 2)
+			else if (_playerInfo.mChosenSolution[0] == 2)
 			{
 				addText(L"Вы решаете оставить мёртвых в покое.", L"Повествование");
 			}
-			mTextNumber++;
-			setText(mTextNumber);
-			mChoosing = false;
+			++_textNumber;
+			setText(_textNumber);
+			_choosing = false;
 		}
 
-		else if ((mPlayerInfo->mDialogNumber == 8) && (mPlayerInfo->mChosenSolution[1] == 0) &&
-			(mTextNumber == 1))
+		else if (_playerInfo.mDialogNumber == 8 && _playerInfo.mChosenSolution[1] == 0 &&
+			_textNumber == 1)
 		{
-			mPlayerInfo->mChoosingNumber = 2;
-			requestStackPush(States::Choosing);
-			mChoosing = true;
+			_playerInfo.mChoosingNumber = 2;
+			requestStackPush(States::ID::Choosing);
+			_choosing = true;
 		}
-		else if ((mPlayerInfo->mDialogNumber == 8) && (mPlayerInfo->mChosenSolution[1] != 0) &&
-			(mTextNumber == 1))
+		else if (_playerInfo.mDialogNumber == 8 && _playerInfo.mChosenSolution[1] != 0 &&
+			_textNumber == 1)
 		{
-			if (mPlayerInfo->mChosenSolution[1] == 1)
+			if (_playerInfo.mChosenSolution[1] == 1)
 			{
 				addText(L"A d’yeabl aep arse.", L"Арантир");
 				addText(L"С треском по телу голема начинают проходить массивные трещины. Однако через несколько секунд всё  останавливается – хранитель руны всё ещё стоит перед вами. Неудачно сработавшее заклятье не      смогло его разрушить. Монстр с грохотом начинает двигаться в вашу сторону.", L"Повествование");
 				addText(L"Проклятье!", L"Арантир");
 			}
-			else if (mPlayerInfo->mChosenSolution[1] == 2)
+			else if (_playerInfo.mChosenSolution[1] == 2)
 			{
 				addText(L"Я уничтожу тебя, порождение Бездны!", L"Арантир");
 				addText(L"Хранитель руны без единого звука начинает с грохотом идти в вашу сторону.", L"Повествование");
 			}
-			else if (mPlayerInfo->mChosenSolution[1] == 3)
+			else if (_playerInfo.mChosenSolution[1] == 3)
 			{
 				addText(L"Вы ждёте хоть какой-нибудь реакции от него.", L"Повествование");
 				addText(L"Спустя десяток секунд ожидания хранитель руны без единого звука начинает с грохотом идти в вашу   сторону.", L"Повествование");
 			}
-			mTextNumber++;
-			setText(mTextNumber);
-			mChoosing = false;
+			++_textNumber;
+			setText(_textNumber);
+			_choosing = false;
 		}
 
 
 
-		else if ((mTextNumber == mDialogText.size() - 1) && !mChoosing)
+		else if (_textNumber == _dialogText.size() - 1 && !_choosing)
 		{
 			requestStackPop();
 		}
 		else
 		{
-			mTextNumber++;
-			setText(mTextNumber);
+			++_textNumber;
+			setText(_textNumber);
 		}
 	});
-	mGUIContainer.pack(nextButton);
+	_guiContainer.pack(nextButton);
 
 	auto skipButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
 													*context.mSounds);
@@ -188,46 +188,46 @@ DialogState::DialogState(StateStack& stack, Context context)
 	{
 		requestStackPop();
 	});
-	mGUIContainer.pack(skipButton);
+	_guiContainer.pack(skipButton);
 }
 
-void DialogState::addText(sf::String text, sf::String talking)
+void DialogState::addText(const sf::String text, const sf::String talking)
 {
-	mDialogText.push_back(text);
-	mDialogTalking.push_back(talking);
+	_dialogText.push_back(text);
+	_dialogTalking.push_back(talking);
 }
 
-void DialogState::setText(size_t number)
+void DialogState::setText(const std::size_t number)
 {
-	sf::String& text = mDialogText[number];
-	for (size_t i = 0; i < text.getSize(); i++)
+	auto& text = _dialogText[number];
+	for (std::size_t i = 0; i < text.getSize(); ++i)
 	{
-		if (i % static_cast<int>(mSprite.getGlobalBounds().width /
-			(mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		if (i % static_cast<int>(_sprite.getGlobalBounds().width /
+			(_text.getCharacterSize() - 5.f)) == 0 && i > 0)
 		{
 			text.insert(i, "\n");
 		}
 	}
-	mText.setString(text);
-	mTalking.setString(mDialogTalking[number]);
+	_text.setString(text);
+	_talking.setString(_dialogTalking[number]);
 }
 
 void DialogState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
+	auto& window = *getContext().mWindow;
 	window.setView(window.getDefaultView());
 
-	sf::Vector2f center = window.getView().getCenter();
-	sf::Vector2f size = window.getView().getSize();
+	const auto center = window.getView().getCenter();
+	const auto size = window.getView().getSize();
 
-	mSprite.setScale(size.x / mSprite.getLocalBounds().width, 1.5f);
+	_sprite.setScale(size.x / _sprite.getLocalBounds().width, 1.5f);
 
-	mText.setPosition(center.x - size.x / 2.f + 20.f,
-					  center.y + size.y / 2.f - mSprite.getGlobalBounds().height + 10.f);
-	mTalking.setPosition(center.x - size.x / 2.f + 20.f,
-						 center.y + size.y / 2.f - mSprite.getGlobalBounds().height - 30.f);
-	mSprite.setPosition(center.x - size.x / 2.f,
-						center.y + size.y / 2.f - mSprite.getGlobalBounds().height);
+	_text.setPosition(center.x - size.x / 2.f + 20.f,
+					  center.y + size.y / 2.f - _sprite.getGlobalBounds().height + 10.f);
+	_talking.setPosition(center.x - size.x / 2.f + 20.f,
+						 center.y + size.y / 2.f - _sprite.getGlobalBounds().height - 30.f);
+	_sprite.setPosition(center.x - size.x / 2.f,
+						center.y + size.y / 2.f - _sprite.getGlobalBounds().height);
 
 	sf::RectangleShape backgroundShape;
 	backgroundShape.setFillColor(sf::Color(0, 0, 0, 150));
@@ -235,13 +235,13 @@ void DialogState::draw()
 
 	window.draw(backgroundShape);
 
-	window.draw(mSprite);
-	window.draw(mText);
-	window.draw(mTalking);
-	window.draw(mGUIContainer);
+	window.draw(_sprite);
+	window.draw(_text);
+	window.draw(_talking);
+	window.draw(_guiContainer);
 }
 
-bool DialogState::update(sf::Time)
+bool DialogState::update(const sf::Time)
 {
 	return false;
 }
@@ -250,9 +250,9 @@ bool DialogState::handleEvent(const sf::Event& event)
 {
 	if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
 	{
-		mSound.play();
+		_sound.play();
 	}
 
-	mGUIContainer.handleEvent(event);
+	_guiContainer.handleEvent(event);
 	return false;
 }

@@ -1,10 +1,6 @@
 #ifndef PARALLELTASK_HPP
 #define PARALLELTASK_HPP
 
-#include "ResourceIdentifiers.hpp"
-#include "ResourceHolder.hpp"
-#include "PlayerInfo.hpp"
-
 #include <SFML/System/Thread.hpp>
 #include <SFML/System/Mutex.hpp>
 #include <SFML/System/Lock.hpp>
@@ -12,21 +8,25 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 
+#include "ResourceIdentifiers.hpp"
+#include "ResourceHolder.hpp"
+#include "PlayerInfo.hpp"
+
 
 class ParallelTask
 {
 	private:
-		sf::Thread			mThread;
-		sf::Thread			mThreadClock;
-		bool				mFinished;
-		bool				mFinishedLoading;
-		sf::Clock			mElapsedTime;
-		sf::Mutex			mMutex;
+		sf::Thread			_thread;
+		sf::Thread			_threadClock;
+		bool				_finished;
+		bool				_finishedLoading;
+		sf::Clock			_elapsedTime;
+		sf::Mutex			_mutex;
 
-		TextureHolder&		mTextures;
-		SoundBufferHolder&	mSounds;
+		TextureHolder&		_textures;
+		SoundBufferHolder&	_sounds;
 
-		PlayerInfo*			mPlayerInfo;
+		PlayerInfo&			_playerInfo;
 	
 	
 	private:
@@ -35,7 +35,7 @@ class ParallelTask
 
 
 	public:
-		explicit 		ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds, PlayerInfo* playerInfo);
+		explicit 		ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds, PlayerInfo& playerInfo);
 		void			execute();
 		bool			isFinished();
 		float			getCompletion();

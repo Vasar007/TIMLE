@@ -1,21 +1,21 @@
 #ifndef LOADINGSTATE_HPP
 #define LOADINGSTATE_HPP
 
-#include "State.hpp"
-#include "ParallelTask.hpp"
-
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+
+#include "State.hpp"
+#include "ParallelTask.hpp"
 
 
 class LoadingState final : public State
 {
 	private:
-		sf::Text			mLoadingText;
-		sf::RectangleShape	mProgressBarBackground;
-		sf::RectangleShape	mProgressBar;
+		sf::Text			_loadingText;
+		sf::RectangleShape	_progressBarBackground;
+		sf::RectangleShape	_progressBar;
 	
-		ParallelTask		mLoadingTask;
+		ParallelTask		_loadingTask;
 
 
 	public:

@@ -20,7 +20,7 @@ class ResourceHolder
 		/**
 		 * \brief Resource map that contains all resources with current type (Identifier).
 		 */
-		std::map<Identifier, std::unique_ptr<Resource>>	mResourceMap;
+		std::map<Identifier, std::unique_ptr<Resource>>	_resourceMap;
 
 
 	private:
@@ -66,4 +66,5 @@ class ResourceHolder
 };
 
 #include "ResourceHolder.inl"
+
 #endif // RESOURCEHOLDER_HPP

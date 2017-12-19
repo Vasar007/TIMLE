@@ -1,17 +1,15 @@
 #ifndef STATESTACK_HPP
 #define STATESTACK_HPP
 
-#include "State.hpp"
-#include "StateIdentifiers.hpp"
-#include "ResourceIdentifiers.hpp"
+#include <vector>
+#include <functional>
+#include <map>
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>
 
-#include <vector>
-#include <utility>
-#include <functional>
-#include <map>
+#include "State.hpp"
+#include "StateIdentifiers.hpp"
 
 
 namespace sf
@@ -22,49 +20,48 @@ namespace sf
 
 class StateStack : private sf::NonCopyable
 {
-	enum Action
+	private:
+		enum class Action
 		{
 			Push,
 			Pop,
 			Clear,
 		};
 
-
-	private:
 		struct PendingChange
 		{
-			explicit		PendingChange(Action action, States::ID stateID = States::None);
+			explicit		PendingChange(Action action, States::ID stateID = States::ID::None);
 	
-			Action			action;
-			States::ID		stateID;
+			Action			mAction;
+			States::ID		mStateID;
 		};
 	
 	
 	private:
-		std::vector<State::Ptr>								mStack;
-		std::vector<PendingChange>							mPendingList;
+		std::vector<State::unPtr>							_stack;
+		std::vector<PendingChange>							_pendingList;
 	
-		State::Context										mContext;
-		std::map<States::ID, std::function<State::Ptr()>>	mFactories;
+		State::Context										_context;
+		std::map<States::ID, std::function<State::unPtr()>>	_factories;
 
 
 	private:
-		State::Ptr			createState(States::ID stateID);
+		State::unPtr		createState(const States::ID stateID);
 		void				applyPendingChanges();
 
 
 	public:		
-		explicit			StateStack(State::Context context);
+		explicit			StateStack(const State::Context context);
 		virtual				~StateStack() = default;
 
 		template <typename T>
-		void				registerState(States::ID stateID);
+		void				registerState(const States::ID stateID);
 
-		virtual void		update(sf::Time dt);
+		virtual void		update(const sf::Time dt);
 		void				draw();
 		void				handleEvent(const sf::Event& event);
 
-		void				pushState(States::ID stateID);
+		void				pushState(const States::ID stateID);
 		void				popState();
 		void				clearStates();
 
@@ -73,11 +70,11 @@ class StateStack : private sf::NonCopyable
 
 
 template <typename T>
-void StateStack::registerState(States::ID stateID)
+void StateStack::registerState(const States::ID stateID)
 {
-	mFactories[stateID] = [this] ()
+	_factories[stateID] = [this] ()
 	{
-		return State::Ptr(new T(*this, mContext));
+		return State::unPtr(new T(*this, _context));
 	};
 }
 

@@ -14,11 +14,13 @@ class Gate : public Entity
 
 	
 	public:
-				Gate(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, std::string type);
+				Gate(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+					const Level& lvl, const float X, const float Y, const int width,
+					const std::string& type);
 	
 		void	close();
-		void	checkCollisionWithMap(float Dx, float Dy);
-		void	update(float dt) override;
+		void	checkCollisionWithMap(const float Dx, const float Dy);
+		void	update(const float dt) override;
 };
 
 #endif // GATE_HPP

@@ -1,33 +1,33 @@
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
+
 #include "../Include/ChoosingState.hpp"
 #include "../Include/Button.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
-
 
 ChoosingState::ChoosingState(StateStack& stack, Context context)
 : State(stack, context)
-, mTextNumber(0)
-, mGUIContainer()
-, mSound()
-, mDialogText()
-, mDialogTalking()
-, mPlayerInfo(context.mPlayerInfo)
+, _textNumber(0)
+, _guiContainer()
+, _sound()
+, _dialogText()
+, _dialogTalking()
+, _playerInfo(*context.mPlayerInfo)
 {
 	// Define some variables for convenience.
-	sf::Vector2f windowSize(context.mWindow->getView().getSize());
-	sf::Vector2f windowCenter(context.mWindow->getView().getCenter());
+	const auto windowSize(context.mWindow->getView().getSize());
+	const auto windowCenter(context.mWindow->getView().getCenter());
 
-	mSound.setBuffer(context.mSounds->get(Sounds::ButtonCLick));
+	_sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
 
-	mText.setFont(context.mFonts->get(Fonts::Main));
-	mText.setCharacterSize(24);
-	mText.setFillColor(sf::Color::White);
+	_text.setFont(context.mFonts->get(Fonts::ID::Main));
+	_text.setCharacterSize(24);
+	_text.setFillColor(sf::Color::White);
 
-	switch(mPlayerInfo->mChoosingNumber)
+	switch(_playerInfo.mChoosingNumber)
 	{
 		case 1:
 		{
@@ -39,10 +39,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 			firstButton->setText(L"Да");
 			firstButton->setCallback([this]()
 			{
-				mPlayerInfo->mChosenSolution[0] = 1;
+				_playerInfo.mChosenSolution[0] = 1;
 				requestStackPop();
 			});
-			mGUIContainer.pack(firstButton);
+			_guiContainer.pack(firstButton);
 
 			auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
 															  *context.mSounds);
@@ -51,17 +51,17 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 			secondButton->setText(L"Нет");
 			secondButton->setCallback([this]()
 			{
-				mPlayerInfo->mChosenSolution[0] = 2;
+				_playerInfo.mChosenSolution[0] = 2;
 				requestStackPop();
 			});
-			mGUIContainer.pack(secondButton);
+			_guiContainer.pack(secondButton);
 			break;
 		}
 		case 2:
 		{
 			addText(L"Пока что голем не нападает. Что вы намерены сделать?");
 
-			if (mPlayerInfo->mChosenSolution[0] == 1)
+			if (_playerInfo.mChosenSolution[0] == 1)
 			{
 				auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, 
 																 *context.mTextures, 
@@ -71,10 +71,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				firstButton->setText(L"Сказать фразу");
 				firstButton->setCallback([this]()
 				{
-					mPlayerInfo->mChosenSolution[1] = 1;
+					_playerInfo.mChosenSolution[1] = 1;
 					requestStackPop();
 				});
-				mGUIContainer.pack(firstButton);
+				_guiContainer.pack(firstButton);
 
 				auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, 
 																  *context.mTextures, 
@@ -84,10 +84,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				secondButton->setText(L"Атаковать монстра");
 				secondButton->setCallback([this]()
 				{
-					mPlayerInfo->mChosenSolution[1] = 2;
+					_playerInfo.mChosenSolution[1] = 2;
 					requestStackPop();
 				});
-				mGUIContainer.pack(secondButton);
+				_guiContainer.pack(secondButton);
 
 				auto thirdButton = std::make_shared<GUI::Button>(*context.mFonts, 
 																 *context.mTextures, 
@@ -97,12 +97,12 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				thirdButton->setText(L"Подождать");
 				thirdButton->setCallback([this]()
 				{
-					mPlayerInfo->mChosenSolution[1] = 3;
+					_playerInfo.mChosenSolution[1] = 3;
 					requestStackPop();
 				});
-				mGUIContainer.pack(thirdButton);
+				_guiContainer.pack(thirdButton);
 			}
-			else if (mPlayerInfo->mChosenSolution[0] == 2)
+			else if (_playerInfo.mChosenSolution[0] == 2)
 			{
 				auto firstButton = std::make_shared<GUI::Button>(*context.mFonts,
 																 *context.mTextures, 
@@ -112,10 +112,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				firstButton->setText(L"Атаковать монстра");
 				firstButton->setCallback([this]()
 				{
-					mPlayerInfo->mChosenSolution[1] = 2;
+					_playerInfo.mChosenSolution[1] = 2;
 					requestStackPop();
 				});
-				mGUIContainer.pack(firstButton);
+				_guiContainer.pack(firstButton);
 
 				auto secondButton = std::make_shared<GUI::Button>(*context.mFonts, 
 																  *context.mTextures,
@@ -125,10 +125,10 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 				secondButton->setText(L"Подождать");
 				secondButton->setCallback([this]()
 				{
-					mPlayerInfo->mChosenSolution[1] = 3;
+					_playerInfo.mChosenSolution[1] = 3;
 					requestStackPop();
 				});
-				mGUIContainer.pack(secondButton);
+				_guiContainer.pack(secondButton);
 			}
 			break;
 		}
@@ -137,19 +137,19 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 			break;
 	}
 
-	setText(mTextNumber);
+	setText(_textNumber);
 }
 
-void ChoosingState::addText(sf::String text)
+void ChoosingState::addText(const sf::String text)
 {
-	mDialogText.push_back(text);
+	_dialogText.push_back(text);
 }
 
-void ChoosingState::setText(size_t number)
+void ChoosingState::setText(const std::size_t number)
 {
-	sf::String& text = mDialogText[number];
+	auto& text = _dialogText[number];
 	/*
-	 for (size_t i = 0; i < text.getSize(); i++)
+	 for (std::size_t i = 0; i < text.getSize(); ++i)
 	{
 		if (i % static_cast<int>(getContext().window.getView().getSize().x /
 			(mText.getCharacterSize() - 5.f)) == 0 && i > 0)
@@ -158,18 +158,18 @@ void ChoosingState::setText(size_t number)
 		}
 	}
 	*/
-	mText.setString(text);
+	_text.setString(text);
 }
 
 void ChoosingState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
+	auto& window = *getContext().mWindow;
 	window.setView(window.getDefaultView());
 
-	sf::Vector2f center = window.getView().getCenter();
-	sf::Vector2f size = window.getView().getSize();
+	const auto center = window.getView().getCenter();
+	//auto size = window.getView().getSize();
 
-	mText.setPosition(center.x - 200.f, center.y - 0.f);
+	_text.setPosition(center.x - 200.f, center.y - 0.f);
 
 	sf::RectangleShape backgroundShape;
 	backgroundShape.setFillColor(sf::Color(0, 0, 0, 150));
@@ -177,11 +177,11 @@ void ChoosingState::draw()
 
 	window.draw(backgroundShape);
 
-	window.draw(mText);
-	window.draw(mGUIContainer);
+	window.draw(_text);
+	window.draw(_guiContainer);
 }
 
-bool ChoosingState::update(sf::Time)
+bool ChoosingState::update(const sf::Time)
 {
 	return false;
 }
@@ -190,9 +190,9 @@ bool ChoosingState::handleEvent(const sf::Event& event)
 {
 	if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
 	{
-		mSound.play();
+		_sound.play();
 	}
 
-	mGUIContainer.handleEvent(event);
+	_guiContainer.handleEvent(event);
 	return false;
 }

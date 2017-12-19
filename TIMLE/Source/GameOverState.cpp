@@ -1,67 +1,76 @@
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
+
 #include "../Include/GameOverState.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/Player.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
-
 
 GameOverState::GameOverState(StateStack& stack, Context context)
 : State(stack, context)
-, mOpacity(0)
-, mGameOverText()
-, mElapsedTime(sf::Time::Zero)
-, mPlayerInfo(context.mPlayerInfo)
+, _opacity(0)
+, _gameOverText()
+, _elapsedTime(sf::Time::Zero)
+, _playerInfo(*context.mPlayerInfo)
 {
-	sf::Font& font = context.mFonts->get(Fonts::Main);
-	sf::Vector2f windowSize(context.mWindow->getSize());
+	auto& font = context.mFonts->get(Fonts::ID::Main);
+	const sf::Vector2f windowSize(context.mWindow->getSize());
 
-	mGameOverText.setFont(font);
+	_gameOverText.setFont(font);
 	if (context.mPlayerInfo->getGameStatus() == PlayerInfo::GameOver)
 	{
-		mGameOverText.setString(L"Игра окончена!");
+		_gameOverText.setString(L"Игра окончена!");
 	}
 	else
 	{
-		mGameOverText.setString(L"Уровень пройден!");
+		_gameOverText.setString(L"Уровень пройден!");
 	}
 
-	mGameOverText.setCharacterSize(70);
-	centerOrigin(mGameOverText);
-	mGameOverText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
+	_gameOverText.setCharacterSize(70);
+	centerOrigin(_gameOverText);
+	_gameOverText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 }
 
 void GameOverState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
+	auto& window = *getContext().mWindow;
 	window.setView(window.getDefaultView());
 
-	if (mOpacity < 255)
+	if (_opacity < 255)
 	{
-		mOpacity += 5;
+		_opacity += 5;
 	}
+
+	_playerInfo.getPlayer()->draw(window);
 
 	// Create dark, semitransparent background.
 	sf::RectangleShape backgroundShape;
-	backgroundShape.setFillColor(sf::Color(0, 0, 0, mOpacity));
+	backgroundShape.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(_opacity)));
 	backgroundShape.setSize(window.getView().getSize());
 
 	window.draw(backgroundShape);
-	window.draw(mGameOverText);
+	window.draw(_gameOverText);
 }
 
-bool GameOverState::update(sf::Time dt)
+bool GameOverState::update(const sf::Time dt)
 {
 	// Show state for 5 seconds, after return to menu.
-	mElapsedTime += dt;
-	if (mElapsedTime > sf::seconds(5))
+	_elapsedTime += dt;
+
+	_playerInfo.getPlayer()->dx = 0.09f;
+	_playerInfo.getPlayer()->dy = 0.f;
+	_playerInfo.getPlayer()->mState = Player::State::Right;
+	_playerInfo.getPlayer()->update(static_cast<float>(_elapsedTime.asMilliseconds()));
+
+	if (_elapsedTime > sf::seconds(5))
 	{
-		mPlayerInfo->mShowedDialogs.clear();
+		_playerInfo.mShowedDialogs.clear();
 		requestStateClear();
-		requestStackPush(States::Menu);
+		requestStackPush(States::ID::Menu);
 	}
+
 	return false;
 }
 

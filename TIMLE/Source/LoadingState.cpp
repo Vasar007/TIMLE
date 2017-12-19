@@ -1,64 +1,64 @@
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
+
 #include "../Include/LoadingState.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
-
 
 LoadingState::LoadingState(StateStack& stack, Context context)
 : State(stack, context)
-, mLoadingTask(*context.mTextures, *context.mSounds, context.mPlayerInfo)
+, _loadingTask(*context.mTextures, *context.mSounds, *context.mPlayerInfo)
 {
-	sf::RenderWindow& window = *getContext().mWindow;
-	sf::Font& font = context.mFonts->get(Fonts::Main);
-	sf::Vector2f viewSize = window.getView().getSize();
+	auto& window = *getContext().mWindow;
+	auto& font = context.mFonts->get(Fonts::ID::Main);
+	const auto viewSize = window.getView().getSize();
 
-	mLoadingText.setFont(font);
-	mLoadingText.setString(L"Загрузка...");
-	centerOrigin(mLoadingText);
-	mLoadingText.setPosition(viewSize.x / 2.f, viewSize.y / 2.f + 50.f);
+	_loadingText.setFont(font);
+	_loadingText.setString(L"Загрузка...");
+	centerOrigin(_loadingText);
+	_loadingText.setPosition(viewSize.x / 2.f, viewSize.y / 2.f + 50.f);
 
-	mProgressBarBackground.setFillColor(sf::Color::White);
-	mProgressBarBackground.setSize(sf::Vector2f(viewSize.x - 20.f, 10.f));
-	mProgressBarBackground.setPosition(10.f, mLoadingText.getPosition().y + 40.f);
+	_progressBarBackground.setFillColor(sf::Color::White);
+	_progressBarBackground.setSize(sf::Vector2f(viewSize.x - 20.f, 10.f));
+	_progressBarBackground.setPosition(10.f, _loadingText.getPosition().y + 40.f);
 
-	mProgressBar.setFillColor(sf::Color(100,100,100));
-	mProgressBar.setSize(sf::Vector2f(200.f, 10.f));
-	mProgressBar.setPosition(10.f, mLoadingText.getPosition().y + 40.f);
+	_progressBar.setFillColor(sf::Color(100,100,100));
+	_progressBar.setSize(sf::Vector2f(200.f, 10.f));
+	_progressBar.setPosition(10.f, _loadingText.getPosition().y + 40.f);
 
 	setCompletion(0.f);
 
-	mLoadingTask.execute();
+	_loadingTask.execute();
 }
 
 void LoadingState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
+	auto& window = *getContext().mWindow;
 
 	window.setView(window.getDefaultView());
 
-	window.draw(mLoadingText);
-	window.draw(mProgressBarBackground);
-	window.draw(mProgressBar);
+	window.draw(_loadingText);
+	window.draw(_progressBarBackground);
+	window.draw(_progressBar);
 }
 
 bool LoadingState::update(sf::Time)
 {
 	// Update the progress bar from the remote task or finish it.
-	if (mLoadingTask.isFinished())
+	if (_loadingTask.isFinished())
 	{
 		requestStackPop();
-		requestStackPush(States::Game);
+		requestStackPush(States::ID::Game);
 	}
 	else
 	{
-		setCompletion(mLoadingTask.getCompletion());
+		setCompletion(_loadingTask.getCompletion());
 	}
 	return true;
 }
 
-bool LoadingState::handleEvent(const sf::Event& event)
+bool LoadingState::handleEvent(const sf::Event&)
 {
 	return true;
 }
@@ -71,6 +71,6 @@ void LoadingState::setCompletion(float percent)
 		percent = 1.f;
 	}
 
-	mProgressBar.setSize(sf::Vector2f(mProgressBarBackground.getSize().x * percent,
-									  mProgressBar.getSize().y));
+	_progressBar.setSize(sf::Vector2f(_progressBarBackground.getSize().x * percent,
+									  _progressBar.getSize().y));
 }

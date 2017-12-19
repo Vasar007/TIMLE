@@ -4,22 +4,19 @@
 #include "State.hpp"
 #include "World.hpp"
 
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
-
 
 class GameState final : public State
 {
 	private:
-		World			mWorld;
-		PlayerInfo&		mPlayerInfo;
+		World			_world;
+		PlayerInfo&		_playerInfo;
 
 
 	public:
-						GameState(StateStack& stack, Context context);
+						GameState(StateStack& stack, const Context context);
 
 		void			draw() override;
-		bool			update(sf::Time dt) override;
+		bool			update(const sf::Time dt) override;
 		bool			handleEvent(const sf::Event& event) override;
 };
 

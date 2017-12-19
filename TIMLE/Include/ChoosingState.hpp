@@ -1,36 +1,35 @@
 #ifndef CHOOSINGSTATE_HPP
 #define CHOOSINGSTATE_HPP
 
-#include "State.hpp"
-#include "Container.hpp"
-
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Audio/Sound.hpp>
+
+#include "State.hpp"
+#include "Container.hpp"
 
 
 class ChoosingState final : public State
 {
 	private:
-		int						mTextNumber;
+		int						_textNumber;
 
-		sf::Text				mText;
-		GUI::Container 			mGUIContainer;
-		sf::Sound				mSound;
+		sf::Text				_text;
+		GUI::Container 			_guiContainer;
+		sf::Sound				_sound;
 
-		std::vector<sf::String>	mDialogText;
-		std::vector<sf::String>	mDialogTalking;
+		std::vector<sf::String>	_dialogText;
+		std::vector<sf::String>	_dialogTalking;
 
-		PlayerInfo*				mPlayerInfo;
+		PlayerInfo&				_playerInfo;
 
 
 	public:
 								ChoosingState(StateStack& stack, Context context);
 
-		void					addText(sf::String text);
-		void					setText(size_t number);
+		void					addText(const sf::String text);
+		void					setText(const std::size_t number);
 		void					draw() override;
-		bool					update(sf::Time dt) override;
+		bool					update(const sf::Time dt) override;
 		bool					handleEvent(const sf::Event& event) override;
 };
 

@@ -101,11 +101,12 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Custom</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\lib</AdditionalLibraryDirectories>
@@ -127,13 +128,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Custom</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;_MBCS;%(PreprocessorDefinitions) </PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -144,13 +146,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutConsole|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Custom</Optimization>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;_MBCS;%(PreprocessorDefinitions) </PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -193,13 +196,17 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AudioManager.cpp" />
+    <ClCompile Include="Source\Bloodsplat.cpp" />
+    <ClCompile Include="Source\Effect.cpp" />
+    <ClCompile Include="Source\MagicArrow.cpp" />
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\ChangingState.cpp" />
     <ClCompile Include="Source\ChoosingState.cpp" />
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\Container.cpp" />
-    <ClCompile Include="Source\Darksoldier.cpp" />
+    <ClCompile Include="Source\DarkArcher.cpp" />
+    <ClCompile Include="Source\DarkSoldier.cpp" />
     <ClCompile Include="Source\DataTables.cpp" />
     <ClCompile Include="Source\DeadMan.cpp" />
     <ClCompile Include="Source\DialogPerson.cpp" />
@@ -246,13 +253,17 @@
   <ItemGroup>
     <ClInclude Include="Include\Application.hpp" />
     <ClInclude Include="Include\AudioManager.hpp" />
+    <ClInclude Include="Include\Bloodsplat.hpp" />
+    <ClInclude Include="Include\Effect.hpp" />
+    <ClInclude Include="Include\MagicArrow.hpp" />
     <ClInclude Include="Include\Bullet.hpp" />
     <ClInclude Include="Include\Button.hpp" />
     <ClInclude Include="Include\ChangingState.hpp" />
     <ClInclude Include="Include\ChoosingState.hpp" />
     <ClInclude Include="Include\Component.hpp" />
     <ClInclude Include="Include\Container.hpp" />
-    <ClInclude Include="Include\Darksoldier.hpp" />
+    <ClInclude Include="Include\DarkArcher.hpp" />
+    <ClInclude Include="Include\DarkSoldier.hpp" />
     <ClInclude Include="Include\DataTables.hpp" />
     <ClInclude Include="Include\DeadMan.hpp" />
     <ClInclude Include="Include\DialogPerson.hpp" />
@@ -261,7 +272,6 @@
     <ClInclude Include="Include\Enemy.hpp" />
     <ClInclude Include="Include\Entity.hpp" />
     <ClInclude Include="Include\Flamestrike.hpp" />
-    <ClInclude Include="Include\Foreach.hpp" />
     <ClInclude Include="Include\GameOverState.hpp" />
     <ClInclude Include="Include\GameState.hpp" />
     <ClInclude Include="Include\Gate.hpp" />
@@ -278,7 +288,6 @@
     <ClInclude Include="Include\MovingPlatform.hpp" />
     <ClInclude Include="Include\ParallelTask.hpp" />
     <ClInclude Include="Include\PauseState.hpp" />
-    <ClInclude Include="Include\Pickup.hpp" />
     <ClInclude Include="Include\Player.hpp" />
     <ClInclude Include="Include\PlayerInfo.hpp" />
     <ClInclude Include="Include\Projectile.hpp" />

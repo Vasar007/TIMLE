@@ -11,11 +11,13 @@ class Rock : public Entity
 
 	
 	public:
-				Rock(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int height, std::string type);
+				Rock(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
+					 const Level& lvl, const float X, const float Y, const int height, 
+					 const std::string& type);
 	
 		void	fall();
-		void	checkCollisionWithMap(float Dx, float Dy);
-		void	update(float time) override;
+		void	checkCollisionWithMap(const float Dx, const float Dy);
+		void	update(const float time) override;
 };
 
 #endif // ROCK_HPP

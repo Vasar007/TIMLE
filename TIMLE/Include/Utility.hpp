@@ -1,13 +1,12 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
+#include <sstream>
+
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Window.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-
-#include <sstream>
 
 
 namespace sf
@@ -37,27 +36,29 @@ void			centerOrigin(sf::Text& text);
 
 // Degree/radian conversion.
 
-float			toDegree(float radian);
-float			toRadian(float degree);
+float			toDegree(const float radian);
+float			toRadian(const float degree);
 
 
 // Random number generation.
 
-int				randomInt(int exclusiveMax);
+int				randomInt(const int exclusiveMax);
 
 
 // Vector operations.
 
-float			length(sf::Vector2f vector);
-sf::Vector2f	unitVector(sf::Vector2f vector);
+float			length(const sf::Vector2f vector);
+sf::Vector2f	unitVector(const sf::Vector2f vector);
 
-// Debug operation.
+// Debug operations.
 
-sf::RectangleShape buildBorderLines(sf::Vector2f position, sf::Vector2f size, sf::Color fillColor,
-									sf::Color outlineColor, float outlineThickness);
+sf::RectangleShape buildBorderLines(const sf::Vector2f position, const sf::Vector2f size, 
+									const sf::Color fillColor, const sf::Color outlineColor, 
+									const float outlineThickness);
 
-sf::RectangleShape buildBorderLines(sf::FloatRect rect, sf::Color fillColor,
-									sf::Color outlineColor, float outlineThickness);
+sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fillColor,
+									const sf::Color outlineColor, const float outlineThickness);
 
 #include "Utility.inl"
+
 #endif // UTILITY_HPP

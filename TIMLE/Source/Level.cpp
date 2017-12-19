@@ -1,18 +1,18 @@
 #include "../Include/Level.hpp"
 
 
-int Object::getPropertyInt(std::string name)
+int Object::getPropertyInt(const std::string& name)
 {
 	// Возвращаем номер свойства в списке
 	return atoi(mProperties[name].c_str());
 }
 
-float Object::getPropertyFloat(std::string name)
+float Object::getPropertyFloat(const std::string& name)
 {
-	return static_cast<float>(strtod(mProperties[name].c_str(), NULL));
+	return static_cast<float>(strtod(mProperties[name].c_str(), nullptr));
 }
 
-std::string Object::getPropertyString(std::string name)
+std::string Object::getPropertyString(const std::string& name)
 {
 	// Получаем имя в виде строки
 	return mProperties[name];
@@ -20,20 +20,20 @@ std::string Object::getPropertyString(std::string name)
 
 
 Level::Level()
-: mWidth(0)
-, mHeight(0)
-, mTileWidth(0)
-, mTileHeight(0)
-, mFirstTileID(0)
-, mDrawingBounds()
-, mTtilesetImage()
-, mLayers()
-, mLevelNumber(0)
+: _width(0)
+, _height(0)
+, _tileWidth(0)
+, _tileHeight(0)
+, _firstTileID(0)
+, _drawingBounds()
+, _tilesetImage()
+, _layers()
+, mLevelNumber(0u)
 , mObjects()
 {
 }
 
-bool Level::loadFromFile(std::string filename)
+bool Level::loadFromFile(const std::string& filename)
 {
 	//Загружаем файл в TiXmlDocument
 	TiXmlDocument levelFile(filename.c_str());
@@ -41,7 +41,7 @@ bool Level::loadFromFile(std::string filename)
 	if (!levelFile.LoadFile())
 	{
 		// Если не удалось загрузить карту, выдаем ошибку
-		std::cout << "Loading level \"" << filename << "\" failed." << std::endl;
+		std::cout << "Loading level \"" << filename << "\" failed.\n";
 		return false;
 	}
 
@@ -51,18 +51,18 @@ bool Level::loadFromFile(std::string filename)
 	// width="10" height="10" tilewidth="34" tileheight="34">
 
 	// Извлекаем из нашей карты ее свойства, которые задавали при работе в Тайлмап редакторе
-	mWidth = atoi(map->Attribute("width"));
-	mHeight = atoi(map->Attribute("height"));
-	mTileWidth = atoi(map->Attribute("tilewidth"));
-	mTileHeight = atoi(map->Attribute("tileheight"));
+	_width		= atoi(map->Attribute("width"));
+	_height		= atoi(map->Attribute("height"));
+	_tileWidth	= atoi(map->Attribute("tilewidth"));
+	_tileHeight = atoi(map->Attribute("tileheight"));
 
 	// Берем описание тайлсета и идентификатор первого тайла
 	TiXmlElement *tilesetElement = map->FirstChildElement("tileset");
-	mFirstTileID = atoi(tilesetElement->Attribute("firstgid"));
+	_firstTileID = atoi(tilesetElement->Attribute("firstgid"));
 
 	// source - путь до картинки в контейнере image
-	TiXmlElement *image = tilesetElement->FirstChildElement("image");
-	std::string imagepath = image->Attribute("source");
+	TiXmlElement *image			= tilesetElement->FirstChildElement("image");
+	const std::string imagepath = image->Attribute("source");
 
 	// Пытаемся загрузить тайлсет
 	sf::Image img;
@@ -70,35 +70,35 @@ bool Level::loadFromFile(std::string filename)
 	if (!img.loadFromFile(imagepath))
 	{
 		// Если не удалось загрузить тайлсет-выводим ошибку в консоль
-		std::cout << "Failed to load tile sheet." << std::endl;
+		std::cout << "Failed to load tile sheet.\n";
 		return false;
 	}
 
 	// Для маски цвета.сейчас нет маски
 	img.createMaskFromColor(sf::Color(152, 172, 226));
-	mTtilesetImage.loadFromImage(img);
+	_tilesetImage.loadFromImage(img);
 	//Сглаживание
-	mTtilesetImage.setSmooth(false);
+	_tilesetImage.setSmooth(false);
 
 	// Получаем количество столбцов и строк тайлсета
-	int columns = mTtilesetImage.getSize().x / mTileWidth;
-	int rows = mTtilesetImage.getSize().y / mTileHeight;
+	const int columns	= _tilesetImage.getSize().x / _tileWidth;
+	const int rows		= _tilesetImage.getSize().y / _tileHeight;
 
 	// Вектор из прямоугольников изображений (TextureRect)
-	std::vector<sf::Rect<int>> subRects;
+	std::vector<sf::IntRect> subRects;
 
-	for (int y = 0; y < rows; y++)
+	for (int y = 0; y < rows; ++y)
 	{
-		for (int x = 0; x < columns; x++)
+		for (int x = 0; x < columns; ++x)
 		{
-			sf::Rect<int> rect;
+			sf::IntRect rect;
 
-			rect.top = y * mTileHeight;
-			rect.height = mTileHeight;
-			rect.left = x * mTileWidth;
-			rect.width = mTileWidth;
+			rect.top	= y * _tileHeight;
+			rect.height = _tileHeight;
+			rect.left	= x * _tileWidth;
+			rect.width	= _tileWidth;
 
-			subRects.push_back(rect);
+			subRects.push_back(std::move(rect));
 		}
 	}
 
@@ -109,30 +109,30 @@ bool Level::loadFromFile(std::string filename)
 		Layer layer;
 
 		// Если присутствует opacity, то задаем прозрачность слоя, иначе он полностью непрозрачен
-		if (layerElement->Attribute("opacity") != NULL)
+		if (layerElement->Attribute("opacity") != nullptr)
 		{
-			float opacity = static_cast<float>(strtod(layerElement->Attribute("opacity"), NULL));
-			layer.mOpacity = 255 * static_cast<int>(opacity);
+			const float opacity	= static_cast<float>(strtod(layerElement->Attribute("opacity"), nullptr));
+			layer.mOpacity		= 255 * static_cast<int>(opacity);
 		}
 		else
 		{
-			layer.mOpacity = 255;
+			layer.mOpacity	= 255;
 		}
 
 		// Контейнер <data>
 		TiXmlElement *layerDataElement = layerElement->FirstChildElement("data");
 
-		if (layerDataElement == NULL)
+		if (layerDataElement == nullptr)
 		{
-			std::cout << "Bad map. No layer information found." << std::endl;
+			std::cout << "Bad map. No layer information found.\n";
 		}
 
 		// Контейнер <tile> - описание тайлов каждого слоя
 		TiXmlElement *tileElement = layerDataElement->FirstChildElement("tile");
 
-		if (tileElement == NULL)
+		if (tileElement == nullptr)
 		{
-			std::cout << "Bad map. No tile information found." << std::endl;
+			std::cout << "Bad map. No tile information found.\n";
 			return false;
 		}
 
@@ -141,38 +141,38 @@ bool Level::loadFromFile(std::string filename)
 
 		while (tileElement)
 		{
-			int tileGID = atoi(tileElement->Attribute("gid"));
-			int subRectToUse = tileGID - mFirstTileID;
+			const int tileGID		= atoi(tileElement->Attribute("gid"));
+			const int subRectToUse	= tileGID - _firstTileID;
 
 			// Устанавливаем TextureRect каждого тайла
 			if (subRectToUse >= 0)
 			{
 				sf::Sprite sprite;
-				sprite.setTexture(mTtilesetImage);
-				sprite.setTextureRect(subRects[subRectToUse]);
-				sprite.setPosition(static_cast<float>(x * mTileWidth), 
-								   static_cast<float>(y * mTileHeight));
-				sprite.setColor(sf::Color(255, 255, 255, layer.mOpacity));
+				sprite.setTexture(_tilesetImage);
+				sprite.setTextureRect(subRects.at(subRectToUse));
+				sprite.setPosition(static_cast<float>(x * _tileWidth), 
+								   static_cast<float>(y * _tileHeight));
+				sprite.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(layer.mOpacity)));
 
 				// Закидываем в слой спрайты тайлов
-				layer.mTiles.push_back(sprite);
+				layer.mTiles.push_back(std::move(sprite));
 			}
 
 			tileElement = tileElement->NextSiblingElement("tile");
 
-			x++;
-			if (x >= mWidth)
+			++x;
+			if (x >= _width)
 			{
 				x = 0;
-				y++;
-				if (y >= mHeight)
+				++y;
+				if (y >= _height)
 				{
 					y = 0;
 				}
 			}
 		}
 
-		mLayers.push_back(layer);
+		_layers.push_back(std::move(layer));
 
 		layerElement = layerElement->NextSiblingElement("layer");
 	}
@@ -180,7 +180,7 @@ bool Level::loadFromFile(std::string filename)
 
 
 	// Если есть слои объектов
-	if (map->FirstChildElement("objectgroup") != NULL)
+	if (map->FirstChildElement("objectgroup") != nullptr)
 	{
 		// Работа с объектами
 		TiXmlElement *objectGroupElement = map->FirstChildElement("objectgroup");
@@ -193,64 +193,66 @@ bool Level::loadFromFile(std::string filename)
 			{
 				// Получаем все данные - тип, имя, позиция, и тд
 				std::string objectType;
-				if (objectElement->Attribute("type") != NULL)
+				if (objectElement->Attribute("type") != nullptr)
 				{
 					objectType = objectElement->Attribute("type");
 				}
 				std::string objectName;
-				if (objectElement->Attribute("name") != NULL)
+				if (objectElement->Attribute("name") != nullptr)
 				{
 					objectName = objectElement->Attribute("name");
 				}
-				int x = atoi(objectElement->Attribute("x"));
-				int y = atoi(objectElement->Attribute("y"));
+				const int x = atoi(objectElement->Attribute("x"));
+				const int y = atoi(objectElement->Attribute("y"));
 
 				int width, height;
 
 				sf::Sprite sprite;
-				sprite.setTexture(mTtilesetImage);
+				sprite.setTexture(_tilesetImage);
 				sprite.setTextureRect(sf::Rect<int>(0, 0, 0, 0));
 				sprite.setPosition(static_cast<float>(x), static_cast<float>(y));
 
-				if (objectElement->Attribute("width") != NULL)
+				if (objectElement->Attribute("width") != nullptr)
 				{
-					width = atoi(objectElement->Attribute("width"));
-					height = atoi(objectElement->Attribute("height"));
+					width	= atoi(objectElement->Attribute("width"));
+					height	= atoi(objectElement->Attribute("height"));
 				}
 				else
 				{
-					width = subRects[atoi(objectElement->Attribute("gid")) - mFirstTileID].width;
-					height = subRects[atoi(objectElement->Attribute("gid")) - mFirstTileID].height;
-					sprite.setTextureRect(subRects[atoi(objectElement->Attribute("gid")) -
-										  mFirstTileID]);
+					width	= subRects.at(atoi(objectElement->Attribute("gid")) 
+										  - _firstTileID).width;
+					height	= subRects.at(atoi(objectElement->Attribute("gid")) 
+										  - _firstTileID).height;
+					sprite.setTextureRect(subRects.at(atoi(objectElement->Attribute("gid")) 
+										  - _firstTileID));
 				}
 
-				// Экземпляр объекта
+				// Экземпляр объекта [
 				Object object;
-				object.mName = objectName;
-				object.mType = objectType;
-				object.mSprite = sprite;
+				object.mName	= objectName;
+				object.mType	= objectType;
+				object.mSprite	= sprite;
 
-				sf::Rect <float> objectRect;
-				objectRect.top = static_cast<float>(y);
-				objectRect.left = static_cast<float>(x);
-				objectRect.height = static_cast<float>(height);
-				objectRect.width = static_cast<float>(width);
-				object.mRect = objectRect;
+				sf::FloatRect objectRect;
+				objectRect.top		= static_cast<float>(y);
+				objectRect.left		= static_cast<float>(x);
+				objectRect.height	= static_cast<float>(height);
+				objectRect.width	= static_cast<float>(width);
+				object.mRect		= objectRect;
 
-				// "Переменные" объекта
+				// "Переменные" объекта [
 				TiXmlElement *properties = objectElement->FirstChildElement("properties");
-				if (properties != NULL)
+				if (properties != nullptr)
 				{
 					TiXmlElement *prop = properties->FirstChildElement("property");
-					if (prop != NULL)
+					if (prop != nullptr)
 					{
 						while (prop)
 						{
-							std::string propertyName = prop->Attribute("name");
-							std::string propertyValue = prop->Attribute("value");
+							const std::string propertyName		= prop->Attribute("name");
+							const std::string propertyValue		= prop->Attribute("value");
 
-							object.mProperties[propertyName] = propertyValue;
+							object.mProperties.at(propertyName) = propertyValue;
 
 							prop = prop->NextSiblingElement("property");
 						}
@@ -258,7 +260,7 @@ bool Level::loadFromFile(std::string filename)
 				}
 
 
-				mObjects.push_back(object);
+				mObjects.push_back(std::move(object));
 
 				objectElement = objectElement->NextSiblingElement("object");
 			}
@@ -267,42 +269,42 @@ bool Level::loadFromFile(std::string filename)
 	}
 	else
 	{
-		std::cout << "No object layers found..." << std::endl;
+		std::cout << "No object layers found...\n";
 	}
 
 	return true;
 }
 
-Object Level::getObject(std::string name)
+Object Level::getObject(const std::string_view name) const
 {
-	Object *result = new Object();
+	Object result;
 	// Только первый объект с заданным именем
-	for (size_t i = 0; i < mObjects.size(); i++)
+	for (const auto& object : mObjects)
 	{
-		if (mObjects[i].mName == name)
+		if (object.mName == name)
 		{
-			*result = mObjects[i];
-			return *result;	// objects[i]
+			result = object;
+			return result;
 		}
 	}
 
-	std::cout << "Error! Couldn't find object with this name!" << std::endl;
-	return *result;
+	std::cout << "Error! Couldn't find object with this name!\n";
+	return result;
 }
 
-std::vector<Object> Level::getObjects(std::string name)
+std::vector<Object> Level::getObjects(const std::string_view name) const
 {
 	// Все объекты с заданным именем
-	std::vector<Object> vec;
-	for (size_t i = 0; i < mObjects.size(); i++)
+	std::vector<Object> result;
+	for (const auto& object : mObjects)
 	{
-		if (mObjects[i].mName == name)
+		if (object.mName == name)
 		{
-			vec.push_back(mObjects[i]);
+			result.push_back(object);
 		}
 	}
 
-	return vec;
+	return result;
 }
 
 
@@ -314,36 +316,36 @@ std::vector<Object> Level::getAllObjects() const
 
 sf::Vector2i Level::getTileSize() const
 {
-	return sf::Vector2i(mTileWidth, mTileHeight);
+	return sf::Vector2i(_tileWidth, _tileHeight);
 }
 
-void Level::drawAll(sf::RenderWindow& window)
+void Level::drawAll(sf::RenderWindow& window) const
 {
 	// Рисуем все тайлы (объекты не рисуем!)
-	for (size_t layer = 0; layer < mLayers.size(); layer++)
+	for (std::size_t layer = 0u; layer < _layers.size(); ++layer)
 	{
-		for (size_t tile = 0; tile < mLayers[layer].mTiles.size(); tile++)
+		for (std::size_t tile = 0u; tile < _layers.at(layer).mTiles.size(); ++tile)
 		{
-			window.draw(mLayers[layer].mTiles[tile]);
+			window.draw(_layers.at(layer).mTiles.at(tile));
 		}
 	}
 }
 
 void Level::draw(sf::RenderWindow& window)
 {
-	sf::Vector2f center = window.getView().getCenter();
-	sf::Vector2f size = window.getView().getSize();
+	const auto center = window.getView().getCenter();
+	const auto size = window.getView().getSize();
 
-	mDrawingBounds = sf::FloatRect(center.x - (size.x / 2.f) - 25.f,
+	_drawingBounds = sf::FloatRect(center.x - (size.x / 2.f) - 25.f,
 								   center.y - (size.y / 2.f) - 25.f, size.x + 25.f, size.y + 25.f);
 
-	for (size_t layer = 0; layer < mLayers.size(); layer++)
+	for (std::size_t layer = 0u; layer < _layers.size(); ++layer)
 	{
-		for (size_t tile = 0; tile < mLayers[layer].mTiles.size(); tile++)
+		for (std::size_t tile = 0u; tile < _layers.at(layer).mTiles.size(); ++tile)
 		{
-			if (mDrawingBounds.contains(mLayers[layer].mTiles[tile].getPosition()))
+			if (_drawingBounds.contains(_layers.at(layer).mTiles.at(tile).getPosition()))
 			{
-				window.draw(mLayers[layer].mTiles[tile]);
+				window.draw(_layers.at(layer).mTiles.at(tile));
 			}
 		}
 	}

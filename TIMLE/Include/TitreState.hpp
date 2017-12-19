@@ -10,11 +10,11 @@
 class TitreState final : public State
 {
 	private:
-		sf::Sprite	mBackgroundSprite;
-		sf::Text	mText;
+		sf::Sprite	_backgroundSprite;
+		sf::Text	_text;
 	
-		sf::Time	mTextEffectTime;
-		sf::Time	mTextAppearenceTime;
+		sf::Time	_textEffectTime;
+		sf::Time	_textAppearenceTime;
 
 	private:
 		void		setText();
@@ -23,7 +23,7 @@ class TitreState final : public State
 					TitreState(StateStack& stack, Context context);
 
 		void		draw() override;
-		bool		update(sf::Time dt) override;
+		bool		update(const sf::Time dt) override;
 		bool		handleEvent(const sf::Event& event) override;
 };
 

@@ -1,16 +1,15 @@
 #ifndef SETTINGSSTATE_HPP
 #define SETTINGSSTATE_HPP
 
+#include <array>
+
+#include <SFML/Graphics/Sprite.hpp>
+
 #include "State.hpp"
 #include "Player.hpp"
 #include "Container.hpp"
 #include "Button.hpp"
 #include "Label.hpp"
-
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
-
-#include <array>
 
 
 class SettingsState final : public State
@@ -23,37 +22,38 @@ class SettingsState final : public State
 			MusicVolume,
 			FontType,
 			Language,
+			DebugMode,
 			SettingCount
 		};
 
 
 	private:
-		sf::Sprite												mBackgroundSprite;
-		GUI::Container											mGUIContainer;
-		std::array<GUI::Button::Ptr, PlayerInfo::ActionCount>	mBindingButtons;
-		std::array<GUI::Label::Ptr, PlayerInfo::ActionCount> 	mBindingLabels;
-		std::array<GUI::Button::Ptr, SettingCount>				mSettingButtons;
-		std::array<GUI::Label::Ptr, SettingCount> 				mSettingLabels;
-		sf::Sound												mSound;
-		sf::RenderWindow&										mWindow;
-		std::vector<sf::VideoMode>								mVideoModes;
-		std::vector<sf::String>									mLabelsNames;
-		CurrentSettings*										mCurrentSettings;
+		sf::Sprite														_backgroundSprite;
+		GUI::Container													_guiContainer;
+		std::array<GUI::Button::shPtr, PlayerInfo::Action::ActionCount>	_bindingButtons;
+		std::array<GUI::Label::shPtr, PlayerInfo::Action::ActionCount>	_bindingLabels;
+		std::array<GUI::Button::shPtr, Setting::SettingCount>			_settingButtons;
+		std::array<GUI::Label::shPtr, Setting::SettingCount> 				_settingLabels;
+		sf::Sound														_sound;
+		sf::RenderWindow&												_window;
+		std::vector<sf::VideoMode>										_videoModes;
+		std::vector<sf::String>											_labelsNames;
+		CurrentSettings*												_currentSettings;
 	
 	
 	private:
 		void					updateLabels();
-		void					addButtonLabel(PlayerInfo::Action action, float y, 
-											   const sf::String& text, Context context);
-		void					addButtonLabel(Setting setting, float y, 
-											   const sf::String& text, Context context);
+		void					addButtonLabel(const PlayerInfo::Action action, const float y,
+											   const sf::String& text, const Context context);
+		void					addButtonLabel(const Setting setting, const float y,
+											   const sf::String& text, const Context context);
 
 
 	public:
 								SettingsState(StateStack& stack, Context context);
 
 		void					draw() override;
-		bool					update(sf::Time dt) override;
+		bool					update(const sf::Time dt) override;
 		bool					handleEvent(const sf::Event& event) override;
 };
 

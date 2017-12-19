@@ -1,41 +1,41 @@
 #ifndef DIALOGSTATE_HPP
 #define DIALOGSTATE_HPP
 
-#include "State.hpp"
-#include "Container.hpp"
-
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Audio/Sound.hpp>
+
+#include "State.hpp"
+#include "Container.hpp"
 
 
 class DialogState final : public State
 {
 	private:
-		int						mTextNumber;
+		std::size_t				_textNumber;
 
-		bool					mChoosing;
+		bool					_choosing;
 
-		sf::Texture				mTexture;
-		sf::Sprite				mSprite;
-		sf::Text				mText;
-		sf::Text				mTalking;
-		GUI::Container 			mGUIContainer;
-		sf::Sound				mSound;
+		sf::Texture				_texture;
+		sf::Sprite				_sprite;
+		sf::Text				_text;
+		sf::Text				_talking;
+		GUI::Container 			_guiContainer;
+		sf::Sound				_sound;
 
-		std::vector<sf::String>	mDialogText;
-		std::vector<sf::String>	mDialogTalking;
+		std::vector<sf::String>	_dialogText;
+		std::vector<sf::String>	_dialogTalking;
 
-		PlayerInfo*				mPlayerInfo;
+		PlayerInfo&				_playerInfo;
 
 
 	public:
 								DialogState(StateStack& stack, Context context);
 
-		void					addText(sf::String text, sf::String talking);
-		void					setText(size_t number);
+		void					addText(const sf::String text, const sf::String talking);
+		void					setText(const std::size_t number);
 		void					draw() override;
-		bool					update(sf::Time dt) override;
+		bool					update(const sf::Time dt) override;
 		bool					handleEvent(const sf::Event& event) override;
 };
 

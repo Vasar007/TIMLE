@@ -1,30 +1,31 @@
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
+
 #include "../Include/MenuState.hpp"
 #include "../Include/Button.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
-
 
 MenuState::MenuState(StateStack& stack, Context context)
 : State(stack, context)
-, mBackgroundSprite()
-, mGUIContainer()
-, mSound()
+, _backgroundSprite()
+, _guiContainer()
+, _sound()
 {
 	// Define some variables for convenience.
-	sf::Vector2f windowSize(context.mWindow->getView().getSize());
-	sf::Vector2f windowCenter(context.mWindow->getView().getCenter());
+	const auto windowSize(context.mWindow->getView().getSize());
+	const auto windowCenter(context.mWindow->getView().getCenter());
 
 	if (mAudioManager.isPlaying())
 	{
 		mAudioManager.stopAllMusics();
 	}
-	mAudioManager.setMusic(AudioManager::MainMenuTheme);
+	mAudioManager.setMusic(AudioManager::MusicType::MainMenuTheme);
+	
+	_backgroundSprite.setTexture(context.mTextures->get(Textures::ID::TitleScreen));
 
-	mBackgroundSprite.setTexture(context.mTextures->get(Textures::TitleScreen));
-	mSound.setBuffer(context.mSounds->get(Sounds::ButtonCLick));
+	_sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
 
 	// Create the buttons for main menu.
 	auto playButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
@@ -39,7 +40,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 			mAudioManager.stopAllMusics();
 		}
 		requestStackPop();
-		requestStackPush(States::Loading);
+		requestStackPush(States::ID::Loading);
 	});
 
 	auto settingsButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
@@ -49,7 +50,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	settingsButton->setText(L"Настройки");
 	settingsButton->setCallback([this] ()
 	{
-		requestStackPush(States::Settings);
+		requestStackPush(States::ID::Settings);
 	});
 
 	auto titreButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
@@ -60,7 +61,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	titreButton->setCallback([this]()
 	{
 		requestStackPop();
-		requestStackPush(States::Titre);
+		requestStackPush(States::ID::Titre);
 	});
 
 	auto exitButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures, 
@@ -73,23 +74,23 @@ MenuState::MenuState(StateStack& stack, Context context)
 		requestStackPop();
 	});
 
-	mGUIContainer.pack(playButton);
-	mGUIContainer.pack(settingsButton);
-	mGUIContainer.pack(titreButton);
-	mGUIContainer.pack(exitButton);
+	_guiContainer.pack(playButton);
+	_guiContainer.pack(settingsButton);
+	_guiContainer.pack(titreButton);
+	_guiContainer.pack(exitButton);
 }
 
 void MenuState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
+	auto& window = *getContext().mWindow;
 
 	window.setView(window.getDefaultView());
 
-	window.draw(mBackgroundSprite);
-	window.draw(mGUIContainer);
+	window.draw(_backgroundSprite);
+	window.draw(_guiContainer);
 }
 
-bool MenuState::update(sf::Time)
+bool MenuState::update(const sf::Time)
 {
 	return true;
 }
@@ -98,9 +99,9 @@ bool MenuState::handleEvent(const sf::Event& event)
 {
 	if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
 	{
-		mSound.play();
+		_sound.play();
 	}
 	
-	mGUIContainer.handleEvent(event);
+	_guiContainer.handleEvent(event);
 	return false;
 }

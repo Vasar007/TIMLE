@@ -1,28 +1,28 @@
 #include "../Include/Gate.hpp"
 
 
-Gate::Gate(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, 
-		   float X, float Y, int width, std::string type)
-: Entity(Id, X, Y, width, stoi(type) * 16, 50.f, 100, 0, type)
-, mSize(stoi(type))
+Gate::Gate(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level& lvl,
+		   const float X, const float Y, const int width, const std::string& type)
+: Entity(id, X, Y, width, std::stoi(type) * 16, 50.f, 100, 0, type)
+, mSize(std::stoi(type))
 , mWaySizeDown(Y + mSize * 16.f)
 , mWaySizeUp(Y)
 {
 	mLevelObjects = lvl.getObjects("solid");
 
-	switch(stoi(type))
+	switch(std::stoi(type))
 	{
 		case 3:
-			mTexture = textures.get(Textures::GateDirt);
+			mTexture = textures.get(Textures::ID::GateDirt);
 			break;
 		case 4:
-			mTexture = textures.get(Textures::GateDirt);
+			mTexture = textures.get(Textures::ID::GateDirt);
 			break;
 		case 5:
-			mTexture = textures.get(Textures::GateWood);
+			mTexture = textures.get(Textures::ID::GateWood);
 			break;
 		default:
-			mTexture = textures.get(Textures::GateWood);
+			mTexture = textures.get(Textures::ID::GateWood);
 			break;
 	}
 
@@ -37,9 +37,9 @@ void Gate::close()
 	mIsAttacked = true;
 }
 
-void Gate::checkCollisionWithMap(float Dx, float Dy)
+void Gate::checkCollisionWithMap(const float, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (std::size_t i = 0; i < mLevelObjects.size(); ++i)
 	{
 		// Проверяем пересечение с объектом
 		if (getRect().intersects(mLevelObjects[i].mRect))
@@ -62,7 +62,7 @@ void Gate::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Gate::update(float dt)
+void Gate::update(const float dt)
 {
 	switch (mTypeID)
 	{
@@ -78,7 +78,8 @@ void Gate::update(float dt)
 					mIsEnd = true;
 				}
 
-				mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));
+				mSprite.setPosition(x + (static_cast<float>(mWidth) / 2.f),
+									y + (static_cast<float>(mHeight) / 2.f));
 			}
 			break;
 
@@ -94,7 +95,8 @@ void Gate::update(float dt)
 					mIsEnd = true;
 				}
 
-				mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));
+				mSprite.setPosition(x + (static_cast<float>(mWidth) / 2.f), 
+									y + (static_cast<float>(mHeight) / 2.f));
 			}
 			break;
 
@@ -105,15 +107,15 @@ void Gate::update(float dt)
 			if ((y >= mWaySizeDown && !mIsEnd) || (y <= mWaySizeUp && mIsEnd))
 			{
 				mIsEnd = dy > 0.f ? true : false;
-
 				dy = -dy;
 			}
 
-			mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));
+			mSprite.setPosition(x + (static_cast<float>(mWidth) / 2.f),
+								y + (static_cast<float>(mHeight) / 2.f));
 			break;
 
 		default:
-			std::cout << "Invalid object type!" << std::endl;
+			std::cout << "Invalid object type!\n";
 			break;
 	}
 }

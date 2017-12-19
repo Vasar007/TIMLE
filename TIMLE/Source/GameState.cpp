@@ -5,66 +5,66 @@
 
 AudioManager State::mAudioManager;
 
-GameState::GameState(StateStack& stack, Context context)
+GameState::GameState(StateStack& stack, const Context context)
 : State(stack, context)
-, mWorld(*context.mWindow, *context.mTextures, *context.mFonts, *context.mSounds, 
-		 context.mPlayerInfo, mAudioManager)
-, mPlayerInfo(*context.mPlayerInfo)
+, _world(*context.mWindow, *context.mTextures, *context.mFonts, *context.mSounds, 
+		 context.mPlayerInfo, mAudioManager, context.mCurrentSettings->mDebugMode)
+, _playerInfo(*context.mPlayerInfo)
 {
-	mPlayerInfo.setGameStatus(PlayerInfo::GameRunning);
+	_playerInfo.setGameStatus(PlayerInfo::GameStatus::GameRunning);
 }
 
 void GameState::draw()
 {
-	mWorld.draw();
+	_world.draw();
 }
 
-bool GameState::update(sf::Time dt)
+bool GameState::update(const sf::Time dt)
 {
-	mWorld.update(dt);
+	_world.update(dt);
 
-	if(!mWorld.hasAlivePlayer())
+	if(!_world.hasAlivePlayer())
 	{
 		if (mAudioManager.isPlaying())
 		{
 			mAudioManager.stopAllMusics();
 		}
 
-		if (mPlayerInfo.mLivesCount == 0)
+		if (_playerInfo.mLivesCount == 0)
 		{
-			mPlayerInfo.setGameStatus(PlayerInfo::GameOver);
-			mPlayerInfo.resetData();
-			requestStackPush(States::GameOver);
+			_playerInfo.setGameStatus(PlayerInfo::GameOver);
+			_playerInfo.resetData();
+			requestStackPush(States::ID::GameOver);
 		}
 		else
 		{
-			mPlayerInfo.ressurectPlayer();
+			_playerInfo.ressurectPlayer();
 		}
 		
 	}
-	else if(mWorld.hasPlayerReachedEnd())
+	else if(_world.hasPlayerReachedEnd())
 	{
 		if (mAudioManager.isPlaying())
 		{
 			mAudioManager.stopAllMusics();
 		}
 
-		mPlayerInfo.setGameStatus(PlayerInfo::LevelComplete);
+		_playerInfo.setGameStatus(PlayerInfo::LevelComplete);
 		// TODO: make the transfer progress to the next levels.
-		mPlayerInfo.resetData();	
-		requestStackPush(States::GameOver);
+		_playerInfo.resetData();	
+		requestStackPush(States::ID::GameOver);
 	}
 
-	mWorld.handleEvent();
+	_world.handleEvent();
 
-	if (mPlayerInfo.mDialogNumber != 0)
+	if (_playerInfo.mDialogNumber != 0)
 	{
-		requestStackPush(States::Dialog);
+		requestStackPush(States::ID::Dialog);
 	}
 
-	if (mPlayerInfo.getLevelNumber() != mWorld.getLevelNumber())
+	if (_playerInfo.getLevelNumber() != _world.getLevelNumber())
 	{
-		mPlayerInfo.setLevelNumber(mWorld.getLevelNumber());
+		_playerInfo.setLevelNumber(_world.getLevelNumber());
 	}
 
 	return true;
@@ -73,12 +73,12 @@ bool GameState::update(sf::Time dt)
 bool GameState::handleEvent(const sf::Event& event)
 {
 	// Game input handling.
-	mWorld.handleEvent();
+	_world.handleEvent();
 
 	// Escape pressed, trigger the pause screen.
 	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 	{
-		requestStackPush(States::Pause);
+		requestStackPush(States::ID::Pause);
 	}
 
 	return true;

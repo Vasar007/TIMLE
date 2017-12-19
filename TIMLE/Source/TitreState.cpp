@@ -1,51 +1,51 @@
+ï»¿#include <SFML/Graphics/RenderWindow.hpp>
+
 #include "../Include/TitreState.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-
 
 TitreState::TitreState(StateStack& stack, Context context)
 : State(stack, context)
-, mText()
-, mTextEffectTime(sf::Time::Zero)
-, mTextAppearenceTime(sf::Time::Zero)
+, _text()
+, _textEffectTime(sf::Time::Zero)
+, _textAppearenceTime(sf::Time::Zero)
 {
-	mBackgroundSprite.setTexture(context.mTextures->get(Textures::TitleScreen));
+	_backgroundSprite.setTexture(context.mTextures->get(Textures::ID::TitleScreen));
 
-	mText.setFont(context.mFonts->get(Fonts::Main));
-	mText.setString(L"SoftForAll                                                      Ñîçäàòåëè:                                                     Âàñèëüåâ Âàñèëèé                                               Çûêîâ Àðò¸ì                                                    Ãóñåâ Äàíèëà                                                   Íàæìèòå ëþáóþ êíîïêó äëÿ ïðîäîëæåíèÿ");
+	_text.setFont(context.mFonts->get(Fonts::ID::Main));
+	_text.setString(L"\t\t\t\t\t\t\t\t\tSoftForAll\nÐÐ²Ñ‚Ð¾Ñ€Ñ‹:\nÐ’Ð°ÑÐ¸Ð»ÑŒÐµÐ² Ð’Ð°ÑÐ¸Ð»Ð¸Ð¹\nÐ—Ñ‹ÐºÐ¾Ð² ÐÑ€Ñ‚Ñ‘Ð¼\nÐ“ÑƒÑÐµÐ² Ð”Ð°Ð½Ð¸Ð»Ð°\n\n\n\n\n\n\nÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð»ÑŽÐ±ÑƒÑŽ ÐºÐ½Ð¾Ð¿ÐºÑƒ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð´Ð¾Ð»Ð¶ÐµÐ½Ð¸Ñ");
 	setText();
-	centerOrigin(mText);
-	mText.setPosition(sf::Vector2f(context.mWindow->getSize().x / 2.f, 
+	centerOrigin(_text);
+	_text.setPosition(sf::Vector2f(context.mWindow->getSize().x / 2.f, 
 								   context.mWindow->getSize().y / 2.f + 350.f));
-	mText.setOutlineColor(sf::Color::Black);
+	_text.setOutlineColor(sf::Color::Black);
 }
 
 void TitreState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
-	window.draw(mBackgroundSprite);
+	auto& window = *getContext().mWindow;
+	window.draw(_backgroundSprite);
 
-	window.draw(mText);
+	window.draw(_text);
 }
 
-bool TitreState::update(sf::Time dt)
+bool TitreState::update(const sf::Time dt)
 {
-	mTextEffectTime += dt;
-	mTextAppearenceTime += dt;
+	_textEffectTime += dt;
+	_textAppearenceTime += dt;
 
-	if (mTextEffectTime >= sf::seconds(0.01f))
+	if (_textEffectTime >= sf::seconds(0.01f))
 	{
-		mText.setPosition(mText.getPosition().x, mText.getPosition().y - 
-						  static_cast<float>(mTextEffectTime.asSeconds()) * 100.f);
-		mTextEffectTime = sf::Time::Zero;
+		_text.setPosition(_text.getPosition().x, _text.getPosition().y - 
+						  static_cast<float>(_textEffectTime.asSeconds()) * 100.f);
+		_textEffectTime = sf::Time::Zero;
 	}
 
-	if (mTextAppearenceTime > sf::seconds(10.f))
+	if (_textAppearenceTime > sf::seconds(10.f))
 	{
 		requestStackPop();
-		requestStackPush(States::Menu);
+		requestStackPush(States::ID::Menu);
 	}
 
 	return true;
@@ -57,7 +57,7 @@ bool TitreState::handleEvent(const sf::Event& event)
 	if (event.type == sf::Event::KeyReleased)
 	{
 		requestStackPop();
-		requestStackPush(States::Menu);
+		requestStackPush(States::ID::Menu);
 	}
 
 	return true;
@@ -65,14 +65,14 @@ bool TitreState::handleEvent(const sf::Event& event)
 
 void TitreState::setText()
 {
-	sf::String text = mText.getString();
-	for (size_t i = 0; i < text.getSize(); i++)
+	sf::String text = _text.getString();
+	for (std::size_t i = 0; i < text.getSize(); ++i)
 	{
-		if (i % static_cast<int>(mBackgroundSprite.getGlobalBounds().width /
-			(mText.getCharacterSize() - 5.f)) == 0 && i > 0)
+		if (i % static_cast<int>(_backgroundSprite.getGlobalBounds().width /
+			(_text.getCharacterSize() - 5.f)) == 0 && i > 0)
 		{
-			text.insert(i, "\n");
+			//text.insert(i, "\n");
 		}
 	}
-	mText.setString(text);
+	_text.setString(text);
 }

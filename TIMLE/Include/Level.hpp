@@ -1,10 +1,10 @@
 #ifndef LEVEL_HPP
 #define LEVEL_HPP
 
-#include <string>
+#include <iostream>
 #include <vector>
 #include <map>
-#include <iostream>
+#include <string_view>
 
 #include <SFML/Graphics.hpp>
 #include "../TinyXML/tinyxml.h"
@@ -46,21 +46,21 @@ struct Object
 	 * \param name	Name of the property.
 	 * \return		Integer value of the property in the array. 
 	 */
-	int									getPropertyInt(std::string name);
+	int									getPropertyInt(const std::string& name);
 
 	/**
 	 * \brief		Gets the needed value of the property.
 	 * \param name	Name of the property.
 	 * \return		Floating point value of the property in the array. 
 	 */
-	float								getPropertyFloat(std::string name);
+	float								getPropertyFloat(const std::string& name);
 
 	/**
 	 * \brief		Gets the needed value of the property.
 	 * \param name	Name of the property.
 	 * \return		String value of the property in the array. 
 	 */
-	std::string							getPropertyString(std::string name);
+	std::string							getPropertyString(const std::string& name);
 };
 
 
@@ -90,50 +90,50 @@ class Level
 		/**
 		 * \brief Width of the map.
 		 */
-		int					mWidth;
+		int					_width;
 
 		/**
 		 * \brief Height of the map.
 		 */
-		int					mHeight;
+		int					_height;
 
 		/**
 		 * \brief Current width of the tile in the map.
 		 */
-		int					mTileWidth;
+		int					_tileWidth;
 
 		/**
 		 * \brief Current height of the tile in the map.
 		 */
-		int					mTileHeight;
+		int					_tileHeight;
 
 		/**
 		 * \brief Identifier of the first tile in the map.
 		 */
-		int					mFirstTileID;
+		int					_firstTileID;
 
 
 		/**
 		 * \brief The size of the bounds, which we draw.
 		 */
-		sf::Rect<float>		mDrawingBounds;
+		sf::FloatRect		_drawingBounds;
 
 		/**
 		 * \brief Current tileset of this map.
 		 */
-		sf::Texture			mTtilesetImage;
+		sf::Texture			_tilesetImage;
 
 		/**
 		 * \brief Vector with all current map layers.
 		 */
-		std::vector<Layer>	mLayers;
+		std::vector<Layer>	_layers;
 
 	
 	public:
 		/**
 		 * \brief Number of the loaded level.
 		 */
-		int					mLevelNumber;
+		std::size_t			mLevelNumber;
 
 		/**
 		 * \brief Vector with all objects, which exist on the map.
@@ -152,21 +152,21 @@ class Level
 		 * \param filename	Name of the map.
 		 * \return			Boolean type: if loading was successful – true, if wasn't – false.
 		 */
-		bool				loadFromFile(std::string filename);
+		bool				loadFromFile(const std::string& filename);
 
 		/**
 		 * \brief		Gets first object with this name from map.
 		 * \param name	Name of the object.
 		 * \return		Found object or nullptr if object wasn't found.
 		 */
-		Object				getObject(std::string name);
+		Object				getObject(const std::string_view name) const;
 
 		/**
 		 * \brief		Gets all object with the same name from map.
 		 * \param name	Name of the object.
 		 * \return		All found object or nullptr if objects weren't found.
 		 */
-		std::vector<Object> getObjects(std::string name);
+		std::vector<Object> getObjects(const std::string_view name) const;
 
 		/**
 		 * \brief	Gets absolutely all objects on the map.
@@ -178,7 +178,7 @@ class Level
 		 * \brief			Draws all map.
 		 * \param window	Active window to drawing.
 		 */
-		void				drawAll(sf::RenderWindow& window);
+		void				drawAll(sf::RenderWindow& window) const;
 
 		/**
 		 * \brief			Draws only player's area of this map.

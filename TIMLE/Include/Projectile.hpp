@@ -4,7 +4,7 @@
 #include "Entity.hpp"
 
 
-class Projectile : public Entity
+class Projectile : public Entity, sf::Transformable
 {
 	private:
 		enum Category
@@ -13,17 +13,21 @@ class Projectile : public Entity
 			AlliedProjectile
 		};
 
-		sf::Vector2f			mTargetDirection;
-		bool					mGuided;
+
+	private:
+		sf::Vector2f			_targetDirection;
+		bool					_guided;
 
 
 	public:
-								Projectile(Type::ID Id, const TextureHolder& textures, 
-										   const FontHolder& fonts, Level &lvl, float X, float Y, 
-										   int width, int height);
+								Projectile(const Type::ID id, const TextureHolder& textures,
+										   const FontHolder& fonts, const Level& lvl, const float X,
+										   const float Y, const int width, const int height);
 
-		void					guideTowards(sf::Vector2f position);
+		void					guideTowards(const sf::Vector2f position);
 		bool					isGuided() const;
+
+		void					updateDirection(float dt);
 
 		virtual unsigned int	getCategory() const;
 		virtual sf::FloatRect	getBoundingRect() const;

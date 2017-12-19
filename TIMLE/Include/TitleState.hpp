@@ -10,18 +10,18 @@
 class TitleState final : public State
 {
 	private:
-		sf::Sprite	mBackgroundSprite;
-		sf::Text	mText;
+		sf::Sprite	_backgroundSprite;
+		sf::Text	_text;
 	
-		bool		mShowText;
-		sf::Time	mTextEffectTime;
+		bool		_showText;
+		sf::Time	_textEffectTime;
 
 
 	public:
 					TitleState(StateStack& stack, Context context);
 
 		void		draw() override;
-		bool		update(sf::Time dt) override;
+		bool		update(const sf::Time dt) override;
 		bool		handleEvent(const sf::Event& event) override;
 };
 

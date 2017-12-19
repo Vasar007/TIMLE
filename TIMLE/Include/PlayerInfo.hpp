@@ -1,12 +1,11 @@
 #ifndef PLAYERINFO_HPP
 #define PLAYERINFO_HPP
 
-#include "DataTables.hpp"
-#include "Foreach.hpp"
+#include <map>
 
 #include <SFML/Window/Event.hpp>
 
-#include <map>
+#include "DataTables.hpp"
 
 
 /**
@@ -45,7 +44,7 @@ class PlayerInfo final
 		 */
 		struct SavePoint
 		{
-			SavePoint(float x, float y)
+			SavePoint(const float x, const float y)
 				: x(x)
 				, y(y)
 			{
@@ -60,49 +59,59 @@ class PlayerInfo final
 		/**
 		 * \brief Associative array of the key buttons for each player's action.
 		 */
-		std::map<sf::Keyboard::Key, Action>	mKeyBinding;
+		std::map<sf::Keyboard::Key, Action>	_keyBinding;
 
 		//std::map<Action, Command>			mActionBinding;	// Not using now.
 
 		/**
 		 * \brief Current game status, using for interactiving with world.
 		 */
-		GameStatus 							mCurrentGameStatus;
+		GameStatus 							_currentGameStatus;
 
 		/**
 		 * \brief Current level number.
 		 */
-		size_t								mCurrentLevelNumber;
+		std::size_t							_currentLevelNumber;
 
 		/**
 		 * \brief Current player's class for interacting.
 		 */
-		Player*								mPlayer;
+		Player*								_player;
 
 
 	public:
 		/**
 		 * \brief Current dialog number, which we need to show.
 		 */
-		size_t								mDialogNumber;
+		std::size_t							mDialogNumber;
 
 		/**
 		 * \brief Array of all showed dialogs, which we have shown yet.
 		 */
-		std::vector<size_t>					mShowedDialogs;
+		std::vector<std::size_t>			mShowedDialogs;
 
 		/**
 		 * \brief Variable for choosing number in the choosing state of dialog.
 		 */
-		size_t								mChoosingNumber;
+		std::size_t							mChoosingNumber;
 
 		/**
-		 * \brief All choices, which player has done yet.
+		 * \brief   All choices, which player has done yet.
+		 * \details	List of the made choices:
+		 * \details	0 - loot knight's and dwarven bodies;
+		 * \details	1 - choosing option to interactive with GolemDark.
 		 */
-		std::vector<size_t>					mChosenSolution;
+		std::vector<std::size_t>			mChosenSolution;
+		
 
 		/**
-		 * \brief Array of the quests, which player can carry out.
+		 * \brief   Array of the quests, which player can carry out.
+		 * \details Set of the quests:
+		 * \details 0 – talking with Oswald;
+		 * \details 1 – killing DwarvenCommanderM and getting key;
+		 * \details 2 – talking with Heinrich;
+		 * \details 3 – killing first boss Shadow;
+		 * \details 4 – killing first mini-boss GolemDark.
 		 */
 		std::vector<bool>					mQuests;
 
@@ -114,7 +123,7 @@ class PlayerInfo final
 		/**
 		 * \brief Lives counter of the player's hero.
 		 */
-		size_t								mLivesCount;
+		std::size_t							mLivesCount;
 
 		/**
 		 * \brief Last save point of the current game.
@@ -138,7 +147,7 @@ class PlayerInfo final
 		 * \param action	Action for checking.
 		 * \return			True if action is realtime or false otherwise.
 		 */
-		static bool			isRealtimeAction(Action action);
+		static bool			isRealtimeAction(const Action action);
 
 
 	public:
@@ -151,27 +160,27 @@ class PlayerInfo final
 		 * \brief			Sends a notification to dialog state to show a certain dialog.
 		 * \param number	Number of the necessary dialog.
 		 */
-		void				showDialog(size_t number);
+		void				showDialog(const std::size_t number);
 
 		/**
 		 * \brief			Bind action with key.
 		 * \param action	Action for binding.
 		 * \param key		Key for binding.
 		 */
-		void				assignKey(Action action, sf::Keyboard::Key key);
+		void				assignKey(const Action action, const sf::Keyboard::Key key);
 
 		/**
 		 * \brief			Get key that assigned with current action.
 		 * \param action	Action for searching assigned key.
 		 * \return			Found key or Key::Unknown.
 		 */
-		sf::Keyboard::Key	getAssignedKey(Action action) const;
+		sf::Keyboard::Key	getAssignedKey(const Action action) const;
 	
 		/**
 		 * \brief			Change current game status of the app.
 		 * \param status	New game status.
 		 */
-		void 				setGameStatus(GameStatus status);
+		void 				setGameStatus(const GameStatus status);
 
 
 		/**
@@ -184,13 +193,13 @@ class PlayerInfo final
 		 * \brief			Change current level number.
 		 * \param number	New level number.
 		 */
-		void 				setLevelNumber(size_t number);
+		void 				setLevelNumber(const std::size_t number);
 
 		/**
 		 * \brief	Get current level number.
 		 * \return	Current level number.
 		 */
-		size_t 				getLevelNumber() const;
+		std::size_t 		getLevelNumber() const;
 
 		/**
 		 * \brief			Change current player's class.

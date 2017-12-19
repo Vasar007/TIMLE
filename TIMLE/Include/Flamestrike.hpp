@@ -4,13 +4,14 @@
 #include "Projectile.hpp"
 
 
-class Flamestrike : public Projectile
+class Flamestrike final : public Projectile
 {
 	public:
-				Flamestrike(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts,
-							   Level &lvl, float X, float Y, int width, int height);
+				Flamestrike(const Type::ID id, const TextureHolder& textures, 
+							const FontHolder& fonts, const Level& lvl, const float X, const float Y,
+							const int width, const int height);
 	
-		void	update(float dt) override;
+		void	update(const float dt) override;
 };
 
 #endif // FIREBALL_HPP

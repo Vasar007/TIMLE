@@ -1,3 +1,7 @@
+#include <limits>
+
+#include <SFML/Graphics/RenderWindow.hpp>
+
 #include "../Include/World.hpp"
 #include "../Include/Projectile.hpp"
 #include "../Include/Utility.hpp"
@@ -16,94 +20,97 @@
 #include "../Include/Tentacle.hpp"
 #include "../Include/DeadMan.hpp"
 #include "../Include/Flamestrike.hpp"
-
-#include <SFML/Graphics/RenderWindow.hpp>
-
-#include <algorithm>
-#include <cmath>
-#include <limits>
+#include "../Include/DarkArcher.hpp"
+#include "../Include/MAgicArrow.hpp"
+#include "../Include/Bloodsplat.hpp"
 
 
 World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-			 SoundBufferHolder& sounds, PlayerInfo* playerInfo, AudioManager& audioManager)
-: mWindow(window)
-, mWorldView(window.getDefaultView())
-, mTextures(textures)
-, mFonts(fonts)
-, mSounds(sounds)
-, mAudioManager(audioManager)
-, mLevel(nullptr)
-, mWorldBounds(0.f, 0.f, 13072.f, 3200.f)
-, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
-, mLevelNumber(4)
-, mPosition()
-, mScrollSpeed(0.f)
-, mPlayerHero(nullptr)
-, mPlayerInfo(playerInfo)
-, mLifeBar(nullptr)
-, mShadowBoss()
-, mGolemBoss()
-, mEnemySpawnPoints()
-, mEnemies()
-, mObjects()
-, mSound()
-, mDebug(true)
+			 SoundBufferHolder& sounds, PlayerInfo* playerInfo, AudioManager& audioManager, 
+			 const State::DebugMode debugMode)
+: _window(window)
+, _worldView(window.getDefaultView())
+, _textures(textures)
+, _fonts(fonts)
+, _sounds(sounds)
+, _audioManager(audioManager)
+, _level(nullptr)
+, _worldBounds(0.f, 0.f, 13072.f, 3200.f)
+, _spawnPosition(_worldView.getSize().x / 2.f, _worldBounds.height - _worldView.getSize().y / 2.f)
+, _currentLevelNumber(1u)
+, _position()
+, _scrollSpeed(0.f)
+, _playerHero(nullptr)
+, _playerInfo(playerInfo)
+, _lifeBar(nullptr)
+, _shadowBoss()
+, _golemBoss()
+, _entities()
+, _effects()
+, _enemySpawnPoints()
+, _guidedProjectiles()
+, _objects()
+, _debugRectsToDraw()
+, _sound()
+, _debug(false)
 {
-	srand(static_cast<unsigned int>(time(nullptr))); // Need to replace with RandomEndigne.
+	_debug = debugMode == State::DebugOn ? true : false;
 
-	mSound.setBuffer(mSounds.get(Sounds::Bullet));
+	_sound.setBuffer(sounds.get(Sounds::ID::Bullet));
 
-	mAudioManager.setMusic(AudioManager::FirstMainMusic);
+	audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
 
 	buildScene();
-	mWorldView.reset(sf::FloatRect(0, 0, 1280, 720));
-	mWorldView.zoom(0.5f);
+	_worldView.reset(sf::FloatRect(0, 0, 1280, 720));
+	_worldView.zoom(0.5f);
 }
 
-void World::loadLevel(size_t levelNumber)
+void World::loadLevel(const std::size_t levelNumber)
 {
-	mLevelNumber = levelNumber;
+	_currentLevelNumber = levelNumber;
 
-	switch (mLevelNumber)
+	switch (levelNumber)
 	{
-		case 1:
-			mLevel->loadFromFile("Level1.tmx"); // Need to reload into Levels/
+		case 1u:
+			_level->loadFromFile("Level1.tmx");
 			break;
 		
-		case 2:
-			mLevel->loadFromFile("Level2.tmx");
+		case 2u:
+			_level->loadFromFile("Level2.tmx");
 			break;
 		
-		case 3:
-			mLevel->loadFromFile("Level3.tmx");
+		case 3u:
+			_level->loadFromFile("Level3.tmx");
 			break;
 		
-		case 4:
-			mLevel->loadFromFile("test_map.tmx");	// Test level for Vasilyev.
+		case 4u:
+			_level->loadFromFile("test_map.tmx");	// Test level for Vasilyev.
 			break;
 		
-		case 5:
-			mLevel->loadFromFile("supertest_map.tmx");	// Test level for Gusev.
+		case 5u:
+			_level->loadFromFile("supertest_map.tmx");	// Test level for Gusev.
 			break;
 		
 		default:
-			std::cout << "Error! Out of range level." << std::endl;
-			mLevelNumber = 1;
+			std::cout << "Error! Out of range level.\n";
+			_currentLevelNumber = 1u;
 			break;
 	}
 }
 
-size_t World::getLevelNumber() const
+std::size_t World::getLevelNumber() const
 {
-	return mLevelNumber;
+	return _currentLevelNumber;
 }
 
 void World::update(sf::Time dt)
 {
 	// Pass the coordinates of the player in the camera control feature.
-	setPlayerCoordinateForView(mPlayerHero->x, mPlayerHero->y, mLevelNumber);
+	setPlayerCoordinateForView(_playerHero->x, _playerHero->y, _currentLevelNumber);
 
-	for (std::list<Entity*>::iterator it = mEntities.begin(); it != mEntities.end();)
+	guideMissiles();
+	
+	for (std::list<Entity*>::iterator it = _entities.begin(); it != _entities.end();)
 	{
 		// Call the update function for objects.
 		(*it)->update(static_cast<float>(dt.asMilliseconds()));
@@ -114,312 +121,331 @@ void World::update(sf::Time dt)
 		// If the object is "dead".
 		else
 		{
-			it = mEntities.erase(it);
-			//delete (*it);
+			it = _entities.erase(it);
 		}
 	}
 
-	if (mPlayerHero->mIsShoot && !mPlayerHero->mShooted)
+	for (std::list<Effect*>::iterator it = _effects.begin(); it != _effects.end();)
 	{
-		mPlayerHero->mIsShoot = false;
-		mPlayerHero->mShooted = true;
+		(*it)->update(static_cast<float>(dt.asMilliseconds()));
+		if ((*it)->mLife)
+		{
+			++it;
+		}
+		else
+		{
+			it = _effects.erase(it);
+		}
 	}
-	else if (mPlayerHero->mIsShooting)
+
+	if (_playerHero->mIsShoot && !_playerHero->mShooted)
 	{
-		mPlayerHero->mIsShooting = false;
+		_playerHero->mIsShoot = false;
+		_playerHero->mShooted = true;
+	}
+	else if (_playerHero->mIsShooting)
+	{
+		_playerHero->mIsShooting = false;
 		// If shot, it appears the bullet, pass the enum as an int.
-		mEntities.push_back(new Bullet(Type::AlliedBullet, mTextures, mFonts, *mLevel, 
-									   mPlayerHero->x + (mPlayerHero->mWidth / 2.f), 
-									   mPlayerHero->y + 6.f, 7, 7, mPlayerHero->mState));
+		_entities.push_back(new Bullet(Type::ID::AlliedBullet, _textures, _fonts, *_level, 
+									   _playerHero->x + (_playerHero->mWidth / 2.f), 
+									   _playerHero->y + 6.f, 7, 7, _playerHero->mState));
 		// Play bullet's sound.
-		mSound.play();
+		_sound.play();
 	}
 
 	// Updates ShadowBoss actions.
-	if (mShadowBoss.mIsActive)
+	if (_shadowBoss.mIsActive)
 	{
-		for (std::list<Tentacle*>::iterator it = mShadowBoss.mTentaclesStatic.begin(); 
-			 it != mShadowBoss.mTentaclesStatic.end();)
+		for (std::list<Tentacle>::iterator it = _shadowBoss.mTentaclesStatic.begin(); 
+			 it != _shadowBoss.mTentaclesStatic.end();)
 		{
-			(*it)->update(static_cast<float>(dt.asMilliseconds()));
-			if ((*it)->mLife)
+			(*it).update(static_cast<float>(dt.asMilliseconds()));
+			if ((*it).mLife)
 			{
 				++it;
 			}
 			else
 			{
-				it = mShadowBoss.mTentaclesStatic.erase(it);
-				//delete (*it);
+				it = _shadowBoss.mTentaclesStatic.erase(it);
 			}
 		}
 
-		for (std::list<Tentacle*>::iterator it = mShadowBoss.mTentacles.begin(); 
-			 it != mShadowBoss.mTentacles.end();)
+		for (std::list<Tentacle>::iterator it = _shadowBoss.mTentacles.begin(); 
+			 it != _shadowBoss.mTentacles.end();)
 		{
-			(*it)->update(static_cast<float>(dt.asMilliseconds()));
-			if ((*it)->mLife)
+			(*it).update(static_cast<float>(dt.asMilliseconds()));
+			if ((*it).mLife)
 			{
 				++it;
 			}
 			else
 			{
-				it = mShadowBoss.mTentacles.erase(it);
-				//delete (*it);
+				it = _shadowBoss.mTentacles.erase(it);
 			}
 		}
 
-		mShadowBoss.mShadowLifeBar->update(mShadowBoss.mShadow->mHitpoints);
-		mShadowBoss.mShadow->update(static_cast<float>(dt.asMilliseconds()));
+		_shadowBoss.mShadowLifeBar->update(_shadowBoss.mShadow->mHitpoints);
+		_shadowBoss.mShadow->update(static_cast<float>(dt.asMilliseconds()));
 	}
 
 	// Updates GolemDark actions.
-	if (mGolemBoss.mIsActive)
+	if (_golemBoss.mIsActive)
 	{
-		mGolemBoss.mGolemLifeBar->update(mGolemBoss.mGolem->mHitpoints);
-		mGolemBoss.mGolem->update(static_cast<float>(dt.asMilliseconds()));
+		_golemBoss.mGolemLifeBar->update(_golemBoss.mGolem->mHitpoints);
+		_golemBoss.mGolem->update(static_cast<float>(dt.asMilliseconds()));
 	}
 
 	// Updates player's lifebar.
-	mLifeBar->update(mPlayerHero->mHitpoints);
+	_lifeBar->update(_playerHero->mHitpoints);
 
-	mPlayerHero->update(static_cast<float>(dt.asMilliseconds()));
+	_playerHero->update(static_cast<float>(dt.asMilliseconds()));
 
 	// Checks collision between different objects.
 	handleCollisions(static_cast<float>(dt.asMilliseconds()));
 
-	mPlayerInfo->mDialogNumber = 0;
-	if (mPlayerHero->mDialogNumber == 0)
+	_playerInfo->mDialogNumber = 0u;
+	if (_playerHero->mDialogNumber == 0u)
 	{
-		mPlayerInfo->mDialogNumber = 0;
+		_playerInfo->mDialogNumber = 0u;
 	}
 	else
 	{
-		mPlayerInfo->showDialog(mPlayerHero->mDialogNumber);
+		_playerInfo->showDialog(_playerHero->mDialogNumber);
 	}
 }
 
 void World::draw()
 {
-	mWindow.setView(mWorldView);
+	_window.setView(_worldView);
 
 	// Draw a level.
-	mLevel->draw(mWindow);
+	_level->draw(_window);
 
-	sf::Vector2f center = mWindow.getView().getCenter();
-	sf::Vector2f size = mWindow.getView().getSize();
+	const auto center = _window.getView().getCenter();
+	const auto size = _window.getView().getSize();
 
-	sf::FloatRect viewRect = sf::FloatRect(center.x - (size.x / 2.f) - 50.f, 
-										   center.y - (size.y / 2.f) - 50.f, 
-										   size.x + 50.f, size.y + 50.f);
+	auto viewRect = sf::FloatRect(center.x - (size.x / 2.f) - 100.f,
+								  center.y - (size.y / 2.f) - 100.f, 
+								  size.x + 100.f, size.y + 100.f);
 
-	for (const auto& entity : mEntities)
+	for (const auto& entity : _entities)
 	{
-		if (mDebug)
+		if (_debug)
 		{
 			switch (entity->mTypeID)
 			{
-				case Type::Ghost:
-				case Type::Golem:
-				case Type::DarkSoldier:
-				case Type::Goblin:
-				case Type::MinotaurMage:
-				case Type::Dwarf:
-				case Type::DwarfArcher:
-				case Type::DwarvenCommander:
-				case Type::Tentacle:
+				case Type::ID::Ghost:
+				case Type::ID::Golem:
+				case Type::ID::DarkSoldier:
+				case Type::ID::Goblin:
+				case Type::ID::MinotaurMage:
+				case Type::ID::Dwarf:
+				case Type::ID::DwarfArcher:
+				case Type::ID::DwarvenCommander:
+				case Type::ID::Tentacle:
+				case Type::ID::DarkArcher:
 				{
-					sf::RectangleShape shape = buildBorderLines(entity->getRect(),
-																sf::Color::Transparent,
-																sf::Color::Red, 1.f);
-					mWindow.draw(shape);
+					auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
+												  sf::Color::Red, 1.f);
+					_window.draw(shape);
+
+					auto bodyShape = buildBorderLines(entity->getBodyRect(), sf::Color::Transparent,
+													  sf::Color::Black, 1.f);
+					_window.draw(bodyShape);
 					break;
 				}
 
-				case Type::Rock:
-				case Type::OpeningGate:
-				case Type::ClosingGate:
-				case Type::OpenClosingGate:
+				case Type::ID::Rock:
+				case Type::ID::OpeningGate:
+				case Type::ID::ClosingGate:
+				case Type::ID::OpenClosingGate:
 				{
-					sf::RectangleShape shape = buildBorderLines(entity->getRect(),
-																sf::Color::Transparent,
-																sf::Color::Yellow, 1.f);
-					mWindow.draw(shape);
+					auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
+												  sf::Color::Yellow, 1.f);
+					_window.draw(shape);
 					break;
 				}
 
-				case Type::Oswald:
-				case Type::Heinrich:
-				case Type::MovingPlatform:
-				case Type::DeadJuggernaut:
-				case Type::DeadDwarf:
+				case Type::ID::Oswald:
+				case Type::ID::Heinrich:
+				case Type::ID::MovingPlatform:
+				case Type::ID::DeadJuggernaut:
+				case Type::ID::DeadDwarf:
 				{
-					sf::RectangleShape shape = buildBorderLines(entity->getRect(),
-																sf::Color::Transparent,
-																sf::Color::Magenta, 1.f);
-					mWindow.draw(shape);
+					auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
+												  sf::Color::Magenta, 1.f);
+					_window.draw(shape);
 					break;
 				}
 
-				case Type::AlliedBullet:
-				case Type::EnemyBullet:
-				case Type::Flamestrike:
+				case Type::ID::AlliedBullet:
+				case Type::ID::EnemyBullet:
+				case Type::ID::Flamestrike:
 				{
-					sf::RectangleShape shape = buildBorderLines(entity->getRect(),
-																sf::Color::Transparent,
-																sf::Color::Red, 1.f);
-					mWindow.draw(shape);
+					auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
+												  sf::Color::Red, 1.f);
+					_window.draw(shape);
 					break;
 				}
 
 				default:
 				{
-					sf::RectangleShape shape = buildBorderLines(entity->getRect(),
-																sf::Color::Transparent,
-																sf::Color::White, 1.f);
-					mWindow.draw(shape);
+					auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
+												  sf::Color::White, 1.f);
+					_window.draw(shape);
 					break;
 				}
 			}
 		}
 		
 		if (viewRect.contains(entity->x, entity->y))
-			entity->draw(mWindow);
+		{
+			entity->draw(_window);
+		}
 	}
 
-	if (mShadowBoss.mIsActive)
+	for (const auto& effect : _effects)
 	{
-		for (const auto& tentacle : mShadowBoss.mTentaclesStatic)
+		if (viewRect.contains(effect->x, effect->y))
 		{
-			if (mDebug)
+			effect->draw(_window);
+		}
+	}
+
+	if (_shadowBoss.mIsActive)
+	{
+		for (const auto& tentacle : _shadowBoss.mTentaclesStatic)
+		{
+			if (_debug)
 			{
-				sf::RectangleShape shape = buildBorderLines(tentacle->getRect(),
-															sf::Color::Transparent,
-															sf::Color::Red, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(tentacle.getRect(), sf::Color::Transparent,
+											  sf::Color::Red, 1.f);
+				_window.draw(shape);
 			}
 			
-			tentacle->draw(mWindow);
+			tentacle.draw(_window);
 		}
 
-		for (const auto& tentacle : mShadowBoss.mTentacles)
+		for (const auto& tentacle : _shadowBoss.mTentacles)
 		{
-			if (mDebug)
+			if (_debug)
 			{
-				sf::RectangleShape shape = buildBorderLines(tentacle->getRect(),
-															sf::Color::Transparent,
-															sf::Color::Red, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(tentacle.getRect(), sf::Color::Transparent,
+											  sf::Color::Red, 1.f);
+				_window.draw(shape);
 			}
 			
-			tentacle->draw(mWindow);
+			tentacle.draw(_window);
 		}
 		
-		if (mDebug)
+		if (_debug)
 		{
-			sf::RectangleShape shape = buildBorderLines(mShadowBoss.mShadow->getRect(),
-														sf::Color::Transparent,
-														sf::Color::Red, 1.f);
-			mWindow.draw(shape);
+			auto shape = buildBorderLines(_shadowBoss.mShadow->getRect(), sf::Color::Transparent,
+										  sf::Color::Red, 1.f);
+			_window.draw(shape);
 		}
 
-		mShadowBoss.mShadowLifeBar->draw(mWindow);
+		_shadowBoss.mShadowLifeBar->draw(_window);
 
-		mShadowBoss.mShadow->draw(mWindow);
+		_shadowBoss.mShadow->draw(_window);
 	}
 
-	if (mGolemBoss.mIsActive)
+	if (_golemBoss.mIsActive)
 	{
-		if (mDebug)
+		if (_debug)
 		{
-			sf::RectangleShape shape = buildBorderLines(mGolemBoss.mGolem->getRect(),
-														sf::Color::Transparent,
-														sf::Color::Red, 1.f);
-			mWindow.draw(shape);
+			auto shape = buildBorderLines(_golemBoss.mGolem->getRect(), sf::Color::Transparent,
+										  sf::Color::Red, 1.f);
+			_window.draw(shape);
 		}
 
-		mGolemBoss.mGolemLifeBar->draw(mWindow);
+		_golemBoss.mGolemLifeBar->draw(_window);
 
-		mGolemBoss.mGolem->draw(mWindow);
+		_golemBoss.mGolem->draw(_window);
 	}
 	
-	if (mDebug)
+	if (_debug)
 	{
-		for (size_t i = 0; i < mObjects.size(); i++)
+		for (const auto& object : _objects)
 		{
-			if (mObjects[i].mName == "solid")
+			if (object.mName == "solid")
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect, 
-															sf::Color::Transparent, 
-															sf::Color::Black, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::Black, 1.f);
+				_window.draw(shape);
 			}
-			else if (mObjects[i].mName == "enemyBorder")
+			else if (object.mName == "enemyBorder")
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect,
-															sf::Color::Transparent,
-															sf::Color::Red, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::Red, 1.f);
+				_window.draw(shape);
 			}
-			else if (mObjects[i].mName == "death")
+			else if (object.mName == "death")
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect,
-															sf::Color::Transparent,
-															sf::Color::Magenta, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::Magenta, 1.f);
+				_window.draw(shape);
 			}
-			else if (mObjects[i].mName == "end")
+			else if (object.mName == "end")
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect,
-															sf::Color::Transparent,
-															sf::Color::White, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::White, 1.f);
+				_window.draw(shape);
 			}
-			else if (mObjects[i].mName == "boss")
+			else if (object.mName == "boss")
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect,
-															sf::Color::Transparent,
-															sf::Color::Red, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::Red, 1.f);
+				_window.draw(shape);
 			}
-			else if (mObjects[i].mName == "dialogMessage")
+			else if (object.mName == "dialogMessage")
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect,
-															sf::Color::Transparent,
-															sf::Color::Blue, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::Blue, 1.f);
+				_window.draw(shape);
 			}
 			else
 			{
-				sf::RectangleShape shape = buildBorderLines(mObjects[i].mRect,
-															sf::Color::Transparent,
-															sf::Color::White, 1.f);
-				mWindow.draw(shape);
+				auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+											  sf::Color::White, 1.f);
+				_window.draw(shape);
 			}
 		}
 
-		sf::RectangleShape shape = buildBorderLines(mPlayerHero->getRect(), sf::Color::Transparent,
-													sf::Color::Green, 1.f);
-		mWindow.draw(shape);
+		auto shape = buildBorderLines(_playerHero->getRect(), sf::Color::Transparent, 
+									  sf::Color::Green, 1.f);
+		_window.draw(shape);
 	}
-	
-	mLifeBar->draw(mWindow);
 
-	mPlayerHero->draw(mWindow);
+	for (const auto& rect : _debugRectsToDraw)
+	{
+		if (_debug)
+		{
+			_window.draw(rect);
+		}
+	}
+	_debugRectsToDraw.clear();
+	
+	_lifeBar->draw(_window);
+
+	_playerHero->draw(_window);
 }
 
 bool World::hasAlivePlayer() const
 {
-	return mPlayerHero->mLife;
+	return _playerHero->mLife;
 }
 
 bool World::hasPlayerReachedEnd() const
 {
-	return mPlayerHero->mIsRichedEnd;
+	return _playerHero->mIsRichedEnd;
 }
 
-void World::setPlayerCoordinateForView(float x, float y, size_t levelNumber)
+void World::setPlayerCoordinateForView(const float x, const float y, const std::size_t levelNumber)
 {
-	float tempX = x, tempY = y;
+	float tempX = x;
+	float tempY = y;
 
 	switch (levelNumber)
 	{
@@ -496,45 +522,45 @@ void World::setPlayerCoordinateForView(float x, float y, size_t levelNumber)
 			break;
 		
 		default:
-			std::cout << "Error! Out of range level." << std::endl;
+			std::cout << "Error! Out of range level.\n";
 			break;
 	}
 
-	mWorldView.setCenter(tempX, tempY);
+	_worldView.setCenter(tempX, tempY);
 
-	if (mGolemBoss.mIsActive && mGolemBoss.mIsShaked)
+	if (_golemBoss.mIsActive && _golemBoss.mIsShaked)
 	{
-		mGolemBoss.mCameraCounter++;
-		switch (mGolemBoss.mCameraCounter)
+		++_golemBoss.mCameraCounter;
+		switch (_golemBoss.mCameraCounter)
 		{
 			case 1:
-				mWorldView.move(10, 10);
+				_worldView.move(10, 10);
 				break;
 			
 			case 2:
-				mWorldView.move(-20, 0);
+				_worldView.move(-20, 0);
 				break;
 			
 			case 3:
-				mWorldView.move(0, -20);
+				_worldView.move(0, -20);
 				break;
 			
 			case 4:
-				mWorldView.move(0, 20);
+				_worldView.move(0, 20);
 				break;
 			
 			default:
 			{
-				mWorldView.move(10, -10);
-				mGolemBoss.mCameraCounter = 0;
-				mGolemBoss.mIsShaked = false;
+				_worldView.move(10, -10);
+				_golemBoss.mCameraCounter = 0;
+				_golemBoss.mIsShaked = false;
 
-				int mRandom = rand() % 8;
-				Entity* rock = new Rock(Type::Rock, mTextures, mFonts, *mLevel, 
-										mGolemBoss.mRocks[mRandom]->x,
-										mGolemBoss.mRocks[mRandom]->y, 16, "3");
+				const int randomNum = randomInt(8);
+				Entity* rock = new Rock(Type::ID::Rock, _textures, _fonts, *_level,
+										_golemBoss.mRocks[randomNum].x,
+										_golemBoss.mRocks[randomNum].y, 16, "3");
 				rock->mIsAttacked = true;
-				mEntities.push_back(rock);
+				_entities.push_back(std::move(rock));
 
 				break;
 			}
@@ -545,60 +571,56 @@ void World::setPlayerCoordinateForView(float x, float y, size_t levelNumber)
 void World::buildScene()
 {
 	// Initialization of level.
-	mLevel = new Level();
-	loadLevel(mLevelNumber);
+	_level = std::make_unique<Level>();
+	loadLevel(_currentLevelNumber);
 
 	// Add player.
-	Object playerObj = mLevel->getObject("player");
-	mPlayerHero = new Player(Type::Archer, mTextures, mFonts, *mLevel, 
-							 playerObj.mRect.left, playerObj.mRect.top, 20, 30, mPlayerInfo);
-	mPlayerInfo->setPlayer(mPlayerHero);
-	mLifeBar = new LifeBar(Type::HealthBar, mTextures, mFonts, mPlayerHero->mHitpoints);
+	const auto playerObj = _level->getObject("player");
+	_playerHero = std::make_unique<Player>(Type::ID::Archer, _textures, _fonts, *_level,
+							 playerObj.mRect.left, playerObj.mRect.top, 20, 30, _playerInfo);
+	_playerInfo->setPlayer(_playerHero.get());
+	_lifeBar = std::make_unique<LifeBar>(Type::ID::HealthBar, _textures, _fonts, _playerHero->mHitpoints);
 
-	mPlayerInfo->mLastSavePoint.x = mPlayerHero->x;
-	mPlayerInfo->mLastSavePoint.y = mPlayerHero->y;
+	_playerInfo->mLastSavePoint.x = _playerHero->x;
+	_playerInfo->mLastSavePoint.y = _playerHero->y;
 
 	// Create and initialize first boss Shadow.
-	Object shadowObj = mLevel->getObject("bossShadow");
-	mShadowBoss.mShadow = new Shadow(Type::Shadow, mTextures, mFonts, *mLevel,
-									 shadowObj.mRect.left, shadowObj.mRect.top, 
-									 40, 35, shadowObj.mType);
-	mShadowBoss.mShadowLifeBar = new LifeBar(Type::ShadowBossBar, mTextures, mFonts,
-											 mShadowBoss.mShadow->mHitpoints);
-	for (size_t i = 0; i < mShadowBoss.mNumberOfTentacles; i++)
+	const auto shadowObj = _level->getObject("bossShadow");
+	_shadowBoss.mShadow = std::make_unique<Shadow>(Type::ID::Shadow, _textures, _fonts, *_level,
+												  shadowObj.mRect.left, shadowObj.mRect.top, 
+												  40, 35, shadowObj.mType);
+	_shadowBoss.mShadowLifeBar = std::make_unique<LifeBar>(Type::ID::ShadowBossBar, _textures, _fonts,
+														  _shadowBoss.mShadow->mHitpoints);
+	for (std::size_t i = 0; i < _shadowBoss.mNumberOfTentacles; ++i)
 	{
-		mShadowBoss.mTentaclesStatic.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts,
-															*mLevel, 12013.f + 13.f * i, 994.f,
-															13, 45, "0"));
-		mShadowBoss.mTentaclesStatic.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts, 
-															*mLevel, 12061.f + 13.f * i, 1073.f, 
-															13, 45, "0"));
-		mShadowBoss.mTentaclesStatic.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts, 
-															*mLevel, 12285.f + 13.f * i, 1073.f, 
-															13, 45, "0"));
-		mShadowBoss.mTentaclesStatic.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts, 
-															*mLevel, 12333.f + 13.f * i, 994.f, 
-															13, 45, "0"));
-		mShadowBoss.mTentaclesStatic.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts, 
-															*mLevel, 12173.f + 13.f * i, 946.f, 
-															13, 45, "0"));
+		_shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
+												  *_level, 12013.f + 13.f * i, 994.f, 13, 45, "0");
+		_shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
+												  *_level, 12061.f + 13.f * i, 1073.f, 13, 45, "0");
+		_shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
+												  *_level, 12285.f + 13.f * i, 1073.f, 13, 45, "0");
+		_shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
+												  *_level, 12333.f + 13.f * i, 994.f, 13, 45, "0");
+		_shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
+												  *_level, 12173.f + 13.f * i, 946.f, 13, 45, "0");
 	}
 
 	// Create and initialize first mini-boss GolemDark.
-	Object golemObj = mLevel->getObject("bossGolemDark");
-	mGolemBoss.mGolem = new GolemDark(Type::GolemDark, mTextures, mFonts, *mLevel, 
-									  golemObj.mRect.left, golemObj.mRect.top, 70, 60, 
-									  golemObj.mType);
-	mGolemBoss.mGolemLifeBar = new LifeBar(Type::GolemDarkBossBar, mTextures, mFonts, 
-										   mGolemBoss.mGolem->mHitpoints);
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8192, 2272));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8272, 2240));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8336, 2192));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8384, 2160));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8464, 2160));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8560, 2144));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8656, 2144));
-	mGolemBoss.mRocks.push_back(new SpawnPoint(Type::Rock, 8736, 2160));
+	const auto golemObj = _level->getObject("bossGolemDark");
+	_golemBoss.mGolem = std::make_unique<GolemDark>(Type::ID::GolemDark, _textures, _fonts, *_level,
+												   golemObj.mRect.left, golemObj.mRect.top, 70, 60, 
+												   golemObj.mType);
+	_golemBoss.mGolemLifeBar = std::make_unique<LifeBar>(Type::ID::GolemDarkBossBar, _textures, _fonts,
+														_golemBoss.mGolem->mHitpoints);
+
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8192.f, 2272.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8272.f, 2240.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8336.f, 2192.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8384.f, 2160.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8464.f, 2160.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8560.f, 2144.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8656.f, 2144.f);
+	_golemBoss.mRocks.emplace_back(Type::ID::Rock, 8736.f, 2160.f);
 
 	// Add objects and enemies.
 	addObjects();
@@ -607,218 +629,227 @@ void World::buildScene()
 void World::addObjects()
 {
 	// All objects, which contains tmx-file, program read into temporary vector.
-	std::vector<Object> objects = mLevel->getObjects("enemyGhost");
+	auto objects = _level->getObjects("enemyGhost");
 
 	// Add all objects with current name to list of objects.
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Ghost(Type::Ghost, mTextures, mFonts, *mLevel,
+		_entities.push_back(new Ghost(Type::ID::Ghost, _textures, _fonts, *_level,
 									  object.mRect.left, object.mRect.top, 
 									  static_cast<int>(object.mRect.width), 
 									  static_cast<int>(object.mRect.height), object.mType));
 	}
 
-	objects = mLevel->getObjects("enemyGolem");
+	objects = _level->getObjects("enemyGolem");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Golem(Type::Golem, mTextures, mFonts, *mLevel,
+		_entities.push_back(new Golem(Type::ID::Golem, _textures, _fonts, *_level,
 									  object.mRect.left, object.mRect.top, 
 									  static_cast<int>(object.mRect.width),
 									  static_cast<int>(object.mRect.height), object.mType));
 	}
 
-	objects = mLevel->getObjects("enemySoldier");
+	objects = _level->getObjects("enemyDarkSoldier");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new DarkSoldier(Type::DarkSoldier,  mTextures, mFonts, *mLevel, 
+		_entities.push_back(new DarkSoldier(Type::ID::DarkSoldier,  _textures, _fonts, *_level,
 											object.mRect.left, object.mRect.top, 
 											static_cast<int>(object.mRect.width),
 											static_cast<int>(object.mRect.height), object.mType));
 	}
 
-	objects = mLevel->getObjects("enemyGoblin");
+	objects = _level->getObjects("enemyGoblin");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Goblin(Type::Goblin,  mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Goblin(Type::ID::Goblin,  _textures, _fonts, *_level,
 									   object.mRect.left, object.mRect.top, 
 									   static_cast<int>(object.mRect.width),
 									   static_cast<int>(object.mRect.height), object.mType));
 	}
 
-	objects = mLevel->getObjects("enemyMinotaurMage");
+	objects = _level->getObjects("enemyMinotaurMage");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new MinotaurMage(Type::MinotaurMage, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new MinotaurMage(Type::ID::MinotaurMage, _textures, _fonts, *_level,
 											 object.mRect.left, object.mRect.top, 
 											 static_cast<int>(object.mRect.width),
 											 static_cast<int>(object.mRect.height),
 											 object.mType));
 	}
 
-	objects = mLevel->getObjects("enemyDwarf");
+	objects = _level->getObjects("enemyDwarf");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Dwarf(Type::Dwarf, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
 									  object.mRect.left, object.mRect.top, 
 									  static_cast<int>(object.mRect.width),
 									  static_cast<int>(object.mRect.height), object.mType, 0));
 	}
 
-	objects = mLevel->getObjects("enemyDwarvenArcher");
+	objects = _level->getObjects("enemyDwarvenArcher");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Dwarf(Type::DwarfArcher, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
 									  object.mRect.left, object.mRect.top, 
 									  static_cast<int>(object.mRect.width),
 									  static_cast<int>(object.mRect.height), object.mType, 1));
 	}
 
-	objects = mLevel->getObjects("enemyDwarvenCommander");
+	objects = _level->getObjects("enemyDwarvenCommander");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Dwarf(Type::DwarvenCommander, mTextures, mFonts, *mLevel,
+		_entities.push_back(new Dwarf(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
 									  object.mRect.left, object.mRect.top, 
 									  static_cast<int>(object.mRect.width),
 									  static_cast<int>(object.mRect.height), object.mType, 2));
 	}
 
-	objects = mLevel->getObjects("enemyDwarfA");
+	objects = _level->getObjects("enemyDwarfA");
 	for (const auto& object : objects)
 	{
-		Entity* dwarf = new Dwarf(Type::Dwarf, mTextures, mFonts, *mLevel, 
+		Entity* dwarf = new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
 								  object.mRect.left, object.mRect.top, 
 								  static_cast<int>(object.mRect.width),
 								  static_cast<int>(object.mRect.height), object.mType, 0);
 		dwarf->mIsStarted = true;
-		mEntities.push_back(dwarf);
+		_entities.push_back(dwarf);
 	}
 
-	objects = mLevel->getObjects("enemyDwarvenArcherA");
+	objects = _level->getObjects("enemyDwarvenArcherA");
 	for (const auto& object : objects)
 	{
-		Entity* dwarf = new Dwarf(Type::DwarfArcher, mTextures, mFonts, *mLevel, 
+		Entity* dwarf = new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
 								  object.mRect.left, object.mRect.top, 
 								  static_cast<int>(object.mRect.width),
 								  static_cast<int>(object.mRect.height), object.mType, 1);
 		dwarf->mIsStarted = true;
-		mEntities.push_back(dwarf);
+		_entities.push_back(dwarf);
 	}
 
-	objects = mLevel->getObjects("enemyDwarvenCommanderA");
+	objects = _level->getObjects("enemyDwarvenCommanderA");
 	for (const auto& object : objects)
 	{
-		Entity* dwarf = new Dwarf(Type::DwarvenCommander, mTextures, mFonts, *mLevel, 
+		Entity* dwarf = new Dwarf(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
 								  object.mRect.left, object.mRect.top, 
 								  static_cast<int>(object.mRect.width),
 								  static_cast<int>(object.mRect.height), object.mType, 2);
 		dwarf->mIsStarted = true;
-		mEntities.push_back(dwarf);
+		_entities.push_back(dwarf);
 	}
 
-	objects = mLevel->getObjects("enemyDwarvenCommanderM");
+	objects = _level->getObjects("enemyDwarvenCommanderM");
 	for (const auto& object : objects)
 	{
-		Entity* dwarf = new Dwarf(Type::DwarvenCommander, mTextures, mFonts, *mLevel, 
+		Entity* dwarf = new Dwarf(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
 								  object.mRect.left, object.mRect.top, 
 								  static_cast<int>(object.mRect.width),
 								  static_cast<int>(object.mRect.height), object.mType, 2);
 		dwarf->mIsEnabling = true;
-		mEntities.push_back(dwarf);
+		_entities.push_back(dwarf);
 	}
 
-	objects = mLevel->getObjects("enemyTentacle");
+	objects = _level->getObjects("enemyTentacle");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Tentacle(Type::ID::Tentacle, _textures, _fonts, *_level,
 										 object.mRect.left, object.mRect.top, 
 										 static_cast<int>(object.mRect.width),
 										 static_cast<int>(object.mRect.height), object.mType));
 	}
 
-	// Add falling rocks, not enemy.
-	objects = mLevel->getObjects("rock");
+	objects = _level->getObjects("enemyDarkArcher");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Rock(Type::Rock, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new DarkArcher(Type::ID::DarkArcher, _textures, _fonts, *_level,
+										   object.mRect.left, object.mRect.top,
+										   static_cast<int>(object.mRect.width),
+										   static_cast<int>(object.mRect.height), object.mType));
+	}
+
+	// Add falling rocks, not enemy.
+	objects = _level->getObjects("rock");
+	for (const auto& object : objects)
+	{
+		_entities.push_back(new Rock(Type::ID::Rock, _textures, _fonts, *_level,
 									 object.mRect.left, object.mRect.top, 16, object.mType));
 	}
 
 	// Add opening gates, not enemy.
-	objects = mLevel->getObjects("gateO");
+	objects = _level->getObjects("gateO");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Gate(Type::OpeningGate, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Gate(Type::ID::OpeningGate, _textures, _fonts, *_level,
 									 object.mRect.left, object.mRect.top, 16, object.mType));
 	}
 
 	// Add closing gates, not enemy.
-	objects = mLevel->getObjects("gateC");
+	objects = _level->getObjects("gateC");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Gate(Type::ClosingGate, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Gate(Type::ID::ClosingGate, _textures, _fonts, *_level,
 									 object.mRect.left, object.mRect.top, 16, object.mType));
 	}
 
 	// Add open-closing gates, not enemy.
-	objects = mLevel->getObjects("gateOC");
+	objects = _level->getObjects("gateOC");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new Gate(Type::OpenClosingGate, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new Gate(Type::ID::OpenClosingGate, _textures, _fonts, *_level,
 									 object.mRect.left, object.mRect.top, 16, object.mType));
 	}
 
 	// Add dialog persons, not enemy.
-	objects = mLevel->getObjects("dialogPerson");
+	objects = _level->getObjects("dialogPerson");
 	for (const auto& object : objects)
 	{
-		switch(stoi(object.mType))
+		switch(std::stoi(object.mType))
 		{
 			case 1:
-				mEntities.push_back(new DialogPerson(Type::Oswald, mTextures, mFonts, *mLevel, 
+				_entities.push_back(new DialogPerson(Type::ID::Oswald, _textures, _fonts, *_level,
 													 object.mRect.left, object.mRect.top, 
 													 static_cast<int>(object.mRect.width),
 													 static_cast<int>(object.mRect.height), "2"));
 				break;
 			
 			case 2:
-				mEntities.push_back(new DialogPerson(Type::Heinrich, mTextures, mFonts, *mLevel, 
+				_entities.push_back(new DialogPerson(Type::ID::Heinrich, _textures, _fonts, *_level,
 													 object.mRect.left, object.mRect.top, 
 													 static_cast<int>(object.mRect.width),
 													 static_cast<int>(object.mRect.height), "6"));
 				break;
 			
 			default:
-				std::cout << "Invalid type dialog person" << std::endl;
+				std::cout << "Invalid type dialog person\n";
 				break;
 		}
 	}
 
 	// Add moving platforms, not enemy.
-	objects = mLevel->getObjects("movingPlatform");
+	objects = _level->getObjects("movingPlatform");
 	for (const auto& object : objects)
 	{
-		mEntities.push_back(new MovingPlatform(Type::MovingPlatform, mTextures, mFonts, *mLevel, 
+		_entities.push_back(new MovingPlatform(Type::ID::MovingPlatform, _textures, _fonts, *_level,
 											   object.mRect.left, object.mRect.top, 
 											   static_cast<int>(object.mRect.width),
 											   static_cast<int>(object.mRect.height)));
 	}
 
 	// Add dead men, not enemy.
-	objects = mLevel->getObjects("deadMan");
+	objects = _level->getObjects("deadMan");
 	for (const auto& object : objects)
 	{
-		switch (stoi(object.mType))
+		switch (std::stoi(object.mType))
 		{
 			case 1:
-				mEntities.push_back(new DeadMan(Type::DeadJuggernaut, mTextures, mFonts, *mLevel, 
-												object.mRect.left, object.mRect.top, 
+				_entities.push_back(new DeadMan(Type::ID::DeadJuggernaut, _textures, _fonts, 
+												*_level, object.mRect.left, object.mRect.top, 
 											    static_cast<int>(object.mRect.width),
 											    static_cast<int>(object.mRect.height),
 												object.mType));
 				break;
 			
 			case 2:
-				mEntities.push_back(new DeadMan(Type::DeadDwarf, mTextures, mFonts, *mLevel, 
+				_entities.push_back(new DeadMan(Type::ID::DeadDwarf, _textures, _fonts, *_level,
 												object.mRect.left, object.mRect.top, 
 											    static_cast<int>(object.mRect.width),
 											    static_cast<int>(object.mRect.height),
@@ -826,53 +857,50 @@ void World::addObjects()
 				break;
 			
 			default:
-				std::cout << "Invalid type dead person" << std::endl;
+				std::cout << "Invalid type dead person\n";
 				break;
 		}
 	}
 
 	// Add interaction objects, not enemy.
-	objects = mLevel->getObjects("solid");
-	for (const auto& object : objects)
-	{
-		mObjects.push_back(object);
-	}
-	objects = mLevel->getObjects("enemyBorder");
-	for (const auto& object : objects)
-	{
-		mObjects.push_back(object);
-	}
-	objects = mLevel->getObjects("death");
-	for (const auto& object : objects)
-	{
-		mObjects.push_back(object);
-	}
-	objects = mLevel->getObjects("end");
-	for (const auto& object : objects)
-	{
-		mObjects.push_back(object);
-	}
-	objects = mLevel->getObjects("boss");
-	for (const auto& object : objects)
-	{
-		mObjects.push_back(object);
-	}
-	objects = mLevel->getObjects("dialogMessage");
-	for (const auto& object : objects)
-	{
-		mObjects.push_back(object);
-	}
+	loadObjects(objects, "solid");
+
+	loadObjects(objects, "enemyBorder");
+	
+	loadObjects(objects, "death");
+
+	loadObjects(objects, "end");
+
+	loadObjects(objects, "boss");
+
+	loadObjects(objects, "dialogMessage");
 }
 
-void World::addEnemy(Type::ID type, float relX, float relY)
+bool World::loadObjects(std::vector<Object>& objects, const std::string_view objectName)
 {
-	SpawnPoint spawn(type, relX, relY);
-	mEnemySpawnPoints.push_back(spawn);
+	objects = _level->getObjects(objectName);
+	if (objects.begin() != objects.end())
+	{
+		_objects.insert(_objects.end(), std::make_move_iterator(objects.begin()),
+						std::make_move_iterator(objects.end()));
+
+		return true;
+	}
+
+	return false;
+}
+
+void World::addEnemy(const Type::ID type, const float relX, const float relY)
+{
+	_enemySpawnPoints.emplace_back(type, relX, relY);
 }
 
 void World::guideMissiles()
 {
-	
+	for (const auto& missile : _guidedProjectiles)
+	{
+		missile->guideTowards(sf::Vector2f(_playerHero->getCenter().x, _playerHero->getCenter().y));
+	}
 }
 
 
@@ -888,271 +916,271 @@ void World::destroyEntitiesOutsideView()
 
 sf::FloatRect World::getViewBounds() const
 {
-	return sf::FloatRect(mWorldView.getCenter() - mWorldView.getSize() / 2.f, 
-						 mWorldView.getSize());
+	return sf::FloatRect(_worldView.getCenter() - _worldView.getSize() / 2.f, _worldView.getSize());
 }
 
 sf::FloatRect World::getBattlefieldBounds() const
 {
-	// Return view bounds + some area at top, where enemies spawn.
-	sf::FloatRect bounds = getViewBounds();
-	bounds.top -= 100.f;
-	bounds.height += 100.f;
+	// Return view bounds + some area at top and left, where enemies can be.
+	auto bounds = getViewBounds();
+	bounds.top -= 150.f;
+	bounds.height += 300.f;
+	bounds.left -= 150.f;
+	bounds.width += 300.f;
 
 	return bounds;
 }
 
-void World::handleCollisions(float dt)
+void World::handleCollisions(const float dt)
 {
-	mPlayerHero->mOnPlatform = 0.f;
+	_playerHero->mOnPlatform = 0.f;
 
-	sf::FloatRect playersRect = mPlayerHero->getRect();
+	auto playerRect = _playerHero->getRect();
+
+	auto battleRect = getBattlefieldBounds();
 
 	/// If we activated first boss Shadow...
-	if (mPlayerHero->mHasStartedFirstBoss && !mShadowBoss.mIsFinished)
+	if (_playerHero->mHasStartedFirstMainBoss && !_shadowBoss.mIsFinished)
 	{
-		mShadowBoss.mIsActive = true;
+		_shadowBoss.mIsActive = true;
 
-		if (mShadowBoss.mShadow->mTypeID == Type::Shadow)
+		if (_shadowBoss.mShadow->mTypeID == Type::ID::Shadow)
 		{
 			// If Shadow was activated first time...
-			if (!mShadowBoss.mShadow->mIsStarted)
+			if (!_shadowBoss.mShadow->mIsStarted)
 			{
-				mShadowBoss.mShadow->mIsStarted = true;
-				mAudioManager.setMusic(AudioManager::FirstBossMusic);
+				_shadowBoss.mShadow->mIsStarted = true;
+				_audioManager.setMusic(AudioManager::MusicType::FirstBossMusic);
 			}
-			else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+			else if (_playerHero->mHitpoints > 0)
 			{
-				if (!mShadowBoss.mShadow->mIsBack &&
-					((mPlayerHero->x - mShadowBoss.mShadow->x > 0.f &&
-						mShadowBoss.mShadow->dx < 0.f) ||
-						(mPlayerHero->x - mShadowBoss.mShadow->x < 0.f &&
-							mShadowBoss.mShadow->dx > 0.f)))
+				if (!_shadowBoss.mShadow->mIsBack &&
+					((_playerHero->x - _shadowBoss.mShadow->x > 0.f &&
+						_shadowBoss.mShadow->dx < 0.f) ||
+						(_playerHero->x - _shadowBoss.mShadow->x < 0.f &&
+							_shadowBoss.mShadow->dx > 0.f)))
 				{
-					mShadowBoss.mShadow->mIsBack = true;
-					mShadowBoss.mShadow->dx = -mShadowBoss.mShadow->dx;
-					mShadowBoss.mShadow->mSprite.scale(-1.f, 1.f);
+					_shadowBoss.mShadow->mIsBack = true;
+					_shadowBoss.mShadow->dx = -_shadowBoss.mShadow->dx;
+					_shadowBoss.mShadow->mSprite.scale(-1.f, 1.f);
 				}
 				else
 				{
-					mShadowBoss.mShadow->mIsBack = false;
+					_shadowBoss.mShadow->mIsBack = false;
 				}
-				mShadowBoss.mShadow->mIsAttacked = true;
-				if (mShadowBoss.mShadow->mIsHitted && !mShadowBoss.mShadow->mIsStay)
+				_shadowBoss.mShadow->mIsAttacked = true;
+				if (_shadowBoss.mShadow->mIsHitted && !_shadowBoss.mShadow->mIsStay)
 				{
-					mPlayerHero->mHitpoints -= mShadowBoss.mShadow->mDamage;
-					mShadowBoss.mTentacles.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts,
-																  *mLevel, mPlayerHero->x - 50.f, 
-																  mShadowBoss.mShadow->y - 10.f,
-																  13, 45, "1"));
-					mShadowBoss.mTentacles.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts,
-																  *mLevel, mPlayerHero->x - 25.f, 
-																  mShadowBoss.mShadow->y - 10.f,
-																  13, 45, "1"));
-					mShadowBoss.mTentacles.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts,
-																  *mLevel, mPlayerHero->x, 
-																  mShadowBoss.mShadow->y - 10.f, 
-																  13, 45, "1"));
-					mShadowBoss.mTentacles.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts,
-																  *mLevel, mPlayerHero->x + 25.f, 
-																  mShadowBoss.mShadow->y - 10.f, 
-																  13, 45, "1"));
-					mShadowBoss.mTentacles.push_back(new Tentacle(Type::Tentacle, mTextures, mFonts,
-																  *mLevel, mPlayerHero->x + 50.f, 
-																  mShadowBoss.mShadow->y - 10.f,
-																  13, 45, "1"));
-					mShadowBoss.mShadow->mIsHitted = false;
+					_playerHero->mHitpoints -= _shadowBoss.mShadow->mDamage;
+					_shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
+														_fonts, *_level, _playerHero->x - 50.f, 
+														_shadowBoss.mShadow->y - 10.f, 13, 45, "1");
+					_shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
+														_fonts, *_level, _playerHero->x - 25.f, 
+														_shadowBoss.mShadow->y - 10.f, 13, 45, "1");
+					_shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
+														_fonts, *_level, _playerHero->x, 
+														_shadowBoss.mShadow->y - 10.f, 13, 45, "1");
+					_shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
+														_fonts, *_level, _playerHero->x + 25.f, 
+														_shadowBoss.mShadow->y - 10.f, 13, 45, "1");
+					_shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
+														_fonts, *_level, _playerHero->x + 50.f, 
+														_shadowBoss.mShadow->y - 10.f, 13, 45, "1");
+					_shadowBoss.mShadow->mIsHitted = false;
 					std::cout << "Shadow ATTACK\n";
 				}
 			}
 		}
 
-		if (mShadowBoss.mShadow->getRect().intersects(playersRect) &&
-			mShadowBoss.mShadow->mIsDelay)
+		if (_shadowBoss.mShadow->getRect().intersects(playerRect) &&
+			_shadowBoss.mShadow->mIsDelay)
 		{
-			mPlayerHero->mHitpoints = 0;
+			_playerHero->mHitpoints = 0;
 		}
 
-		for (auto& tentacle : mShadowBoss.mTentaclesStatic)
+		for (auto& tentacle : _shadowBoss.mTentaclesStatic)
 		{
-			if (mShadowBoss.mShadow->mIsCalling)
+			if (_shadowBoss.mShadow->mIsCalling)
 			{
-				if (!tentacle->mIsStarted)
+				if (!tentacle.mIsStarted)
 				{
-					tentacle->mIsStarted = true;
+					tentacle.mIsStarted = true;
 				}
 				else
 				{
-					tentacle->mIsEnabled = true;
+					tentacle.mIsEnabled = true;
 				}
-				tentacle->mIsEnabling = true;
+				tentacle.mIsEnabling = true;
 			}
-			else if (mShadowBoss.mShadow->mIsWithdrawing)
+			else if (_shadowBoss.mShadow->mIsWithdrawing)
 			{
-				tentacle->mIsDisabled = true;
-				tentacle->mIsEnabling = false;
-			}
-
-			if (mShadowBoss.mIsFinished)
-			{
-				tentacle->mHitpoints = 0;
+				tentacle.mIsDisabled = true;
+				tentacle.mIsEnabling = false;
 			}
 
-			if (tentacle->getRect().intersects(playersRect) && mPlayerHero->mLife &&
-				(mPlayerHero->mHitpoints > 0))
+			if (_shadowBoss.mIsFinished)
 			{
-				tentacle->mIsAttacked = true;
-				if (tentacle->mIsHitted)
+				tentacle.mHitpoints = 0;
+			}
+
+			if (tentacle.getRect().intersects(playerRect) && _playerHero->mHitpoints > 0)
+			{
+				tentacle.mIsAttacked = true;
+				if (tentacle.mIsHitted)
 				{
-					mPlayerHero->mHitpoints -= tentacle->mDamage;
-					tentacle->mIsHitted = false;
+					_playerHero->mHitpoints -= tentacle.mDamage;
+					tentacle.mIsHitted = false;
 					std::cout << "Hit\n";
 				}
 			}
 		}
 
-		for (auto& tentacle : mShadowBoss.mTentacles)
+		for (auto& tentacle : _shadowBoss.mTentacles)
 		{
-			if (mShadowBoss.mShadow->mIsWithdrawing)
+			if (_shadowBoss.mShadow->mIsWithdrawing)
 			{
-				tentacle->mHitpoints = 0;
+				tentacle.mHitpoints = 0;
 			}
 			else
 			{
-				tentacle->mIsStarted = true;
-				tentacle->mIsEnabling = true;
+				tentacle.mIsStarted = true;
+				tentacle.mIsEnabling = true;
 
-				if (tentacle->getRect().intersects(playersRect) && mPlayerHero->mLife &&
-					(mPlayerHero->mHitpoints > 0))
+				if (tentacle.getRect().intersects(playerRect) && _playerHero->mHitpoints > 0)
 				{
-					tentacle->mIsAttacked = true;
-					if (tentacle->mIsHitted)
+					tentacle.mIsAttacked = true;
+					if (tentacle.mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= tentacle->mDamage;
-						tentacle->mIsHitted = false;
+						_playerHero->mHitpoints -= tentacle.mDamage;
+						tentacle.mIsHitted = false;
 						std::cout << "Hit\n";
 					}
 				}
 			}
 		}
 	}
-	else if (mShadowBoss.mIsFinished && !mShadowBoss.mShadow->mLife)
+	else if (_shadowBoss.mIsFinished && !_shadowBoss.mShadow->mLife)
 	{
-		mShadowBoss.mIsActive = false;
-		mPlayerInfo->mQuests[3] = true;
-		mAudioManager.setMusic(AudioManager::FirstMainMusic);
+		_shadowBoss.mIsActive = false;
+		_playerInfo->mQuests.at(3) = true;
+		_audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
 	}
 
 
 	/// If we activated firs mini-boss GolemDark...
-	if (mPlayerHero->mHasStartedSecondBoss && !mGolemBoss.mIsFinished)
+	if (_playerHero->mHasStartedFirstMiniBoss && !_golemBoss.mIsFinished)
 	{
-		mGolemBoss.mIsActive = true;
+		_golemBoss.mIsActive = true;
 
-		if (mGolemBoss.mGolem->mTypeID == Type::GolemDark)
+		if (_golemBoss.mGolem->mTypeID == Type::ID::GolemDark)
 		{
-			if (!mGolemBoss.mIsWeakened && (mPlayerInfo->mChosenSolution[1] == 1))
+			if (!_golemBoss.mIsWeakened && (_playerInfo->mChosenSolution[1] == 1))
 			{
-				mGolemBoss.mGolem->mHitpoints -= 100;
-				mGolemBoss.mIsWeakened = true;
+				_golemBoss.mGolem->mHitpoints -= 100;
+				_golemBoss.mIsWeakened = true;
 			}
 
 			// If GolemDark was activated first time.
-			if (!mGolemBoss.mGolem->mIsStarted)
+			if (!_golemBoss.mGolem->mIsStarted)
 			{
-				mGolemBoss.mGolem->mIsStarted = true;
-				mGolemBoss.mGolem->mCurrentDeath = 5.f;
-				mAudioManager.setMusic(AudioManager::FirstBossMusic);
+				_golemBoss.mGolem->mIsStarted = true;
+				_golemBoss.mGolem->mCurrentDeath = 5.f;
+				_audioManager.setMusic(AudioManager::MusicType::FirstBossMusic);
 			}
-			else if (mGolemBoss.mGolem->getRect().intersects(playersRect))
+			else if (_golemBoss.mGolem->getRect().intersects(playerRect))
 			{
-				if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				if (_playerHero->mHitpoints > 0)
 				{
-					if (!mGolemBoss.mGolem->mIsBack &&
-						(((mPlayerHero->x - mGolemBoss.mGolem->x > 0.f) &&
-						(mGolemBoss.mGolem->dx < 0.f)) ||
-						((mPlayerHero->x - mGolemBoss.mGolem->x) < 0.f &&
-							(mGolemBoss.mGolem->dx > 0.f))))
+					if (!_golemBoss.mGolem->mIsBack &&
+						(_playerHero->x - _golemBoss.mGolem->x > 0.f &&
+						(_golemBoss.mGolem->dx < 0.f) ||
+							(_playerHero->x - _golemBoss.mGolem->x) < 0.f &&
+							_golemBoss.mGolem->dx > 0.f))
 					{
-						mGolemBoss.mGolem->mIsBack = true;
-						mGolemBoss.mGolem->dx = -mGolemBoss.mGolem->dx;
+						_golemBoss.mGolem->mIsBack = true;
+						_golemBoss.mGolem->dx = -_golemBoss.mGolem->dx;
 					}
-					mGolemBoss.mGolem->mIsAttacked = true;
-					mGolemBoss.mGolem->mCurrentFrame = 0.f;
-					if (mGolemBoss.mGolem->mIsHitted)
+					_golemBoss.mGolem->mIsAttacked = true;
+					_golemBoss.mGolem->mCurrentFrame = 0.f;
+					if (_golemBoss.mGolem->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= mGolemBoss.mGolem->mDamage;
-						mGolemBoss.mGolem->mIsHitted = false;
-						mGolemBoss.mIsShaked = true;
+						_playerHero->mHitpoints -= _golemBoss.mGolem->mDamage;
+						_golemBoss.mGolem->mIsHitted = false;
+						_golemBoss.mIsShaked = true;
 						std::cout << "GolemDark ATTACK\n";
 					}
 				}
 			}
 
-			if (mGolemBoss.mGolem->mIsHitted)
+			if (_golemBoss.mGolem->mIsHitted)
 			{
-				mGolemBoss.mIsShaked = true;
+				_golemBoss.mIsShaked = true;
 			}
 		}
 	}
-	else if (mGolemBoss.mIsFinished && !mGolemBoss.mGolem->mLife)
+	else if (_golemBoss.mIsFinished && !_golemBoss.mGolem->mLife)
 	{
-		mGolemBoss.mIsActive = false;
-		mPlayerInfo->mQuests[4] = true;
+		_golemBoss.mIsActive = false;
+		_playerInfo->mQuests.at(4) = true;
 
 		// Temporary object.
-		Object*	tempObject = new Object();
+		Object tempObject;
 		
-		tempObject->mName = "dialogMessage";
-		tempObject->mType = "9";
+		tempObject.mName = "dialogMessage";
+		tempObject.mType = "9";
 
-		sf::Rect <float> objectRect;
-		objectRect.top = 2388;
-		objectRect.left = 8352;
-		objectRect.height = 60;
-		objectRect.width = 80;
-		tempObject->mRect = objectRect;
-		mLevel->mObjects.push_back(*tempObject);
-		mPlayerHero->mLevelObjects.push_back(*tempObject);
+		sf::FloatRect objectRect;
+		objectRect.top		= 2388;
+		objectRect.left		= 8352;
+		objectRect.height	= 60;
+		objectRect.width	= 80;
+		tempObject.mRect	= std::move(objectRect);
+		_level->mObjects.push_back(tempObject);
+		_playerHero->mLevelObjects.push_back(std::move(tempObject));
 
-		delete tempObject;
-
-		mAudioManager.setMusic(AudioManager::FirstMainMusic);
+		_audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
 	}
 
-	for (std::list<Entity*>::iterator it = mEntities.begin(); it != mEntities.end(); ++it)
+	for (std::list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); ++it)
 	{
+		if (!battleRect.intersects((*it)->getRect()))
+		{
+			continue;
+		}
+
 		/// If player collided with MovingPlatform...
-		if (((*it)->mTypeID == Type::MovingPlatform) &&
-			((*it)->getRect().intersects(playersRect)))
+		if ((*it)->mTypeID == Type::ID::MovingPlatform && (*it)->getRect().intersects(playerRect))
 		{
 			// If the player is in a state after the jump, i.e. falls down...
-			if ((mPlayerHero->dy > 0.f) || !mPlayerHero->mOnGround)
+			if (_playerHero->dy > 0.f || !_playerHero->mOnGround)
+			{
 				// If the player is above the platform, i.e. it's his feet at least 
 				// (since we already checked that he was confronted with platform)...
-				if (mPlayerHero->y + mPlayerHero->mHeight < (*it)->y + (*it)->mHeight)
+				if (_playerHero->y + _playerHero->mHeight < (*it)->y + (*it)->mHeight)
 				{
-					mPlayerHero->y = (*it)->y - mPlayerHero->mHeight + 3.f;
-					mPlayerHero->x += (*it)->dx * dt;
-					mPlayerHero->dy = 0;
-					mPlayerHero->mOnPlatform = (*it)->dx;
+					_playerHero->y = (*it)->y - _playerHero->mHeight + 3.f;
+					_playerHero->x += (*it)->dx * dt;
+					_playerHero->dy = 0;
+					_playerHero->mOnPlatform = (*it)->dx;
 					// It pushes the player so that he was standing on the platform.
-					mPlayerHero->mOnGround = true;
+					_playerHero->mOnGround = true;
 				}
+			}
 		}
 
 		/// Special attacks enemies.
 		/// Special attack of MinotaurMage.
-		if (((*it)->mTypeID == Type::MinotaurMage) && ((*it)->mHitpoints > 0))
+		if ((*it)->mTypeID == Type::ID::MinotaurMage && (*it)->mHitpoints > 0)
 		{
-			//isFired = false;
 			sf::FloatRect findPlayer((*it)->x, (*it)->y, static_cast<float>((*it)->mWidth), 
 									 static_cast<float>((*it)->mHeight));
-			size_t distance = 0;
-			//(*it)->isAttacked = false;
-			while (distance < 10)
+			std::size_t distance = 0;
+			bool isNeedFind = true;
+
+			while (distance < 10 && isNeedFind)
 			{
-				if (findPlayer.intersects(playersRect) && mPlayerHero->mLife)
+				if (findPlayer.intersects(playerRect) && _playerHero->mLife)
 				{
 					(*it)->mIsAttacked = true;
 					break;
@@ -1166,8 +1194,23 @@ void World::handleCollisions(float dt)
 				{
 					findPlayer.left -= 30.f;
 				}
-				distance++;
+
+				// TODO: redo this loop.
+				std::for_each(_objects.begin(), _objects.end(),
+					[&findPlayer, &isNeedFind](Object& object)
+				{
+					if (findPlayer.intersects(object.mRect) && object.mName == "solid")
+					{
+						isNeedFind = false;
+					}
+				});
+
+				++distance;
 			}
+
+			_debugRectsToDraw.emplace_back(buildBorderLines(findPlayer, sf::Color::Transparent,
+														 sf::Color::Black, 1.f));
+
 			if ((*it)->mIsAttacked)
 			{
 				(*it)->mCurrentFrame = 0.f;
@@ -1175,14 +1218,14 @@ void World::handleCollisions(float dt)
 				if ((*it)->mIsHitted)
 				{
 					// Нанесение урона
-					//mPlayerHero->mHitpoints -= 5;
-					
-					mEntities.push_back(new Flamestrike(Type::Flamestrike, mTextures, mFonts, *mLevel,
-														mPlayerHero->x + (mPlayerHero->mWidth / 4),
-														mPlayerHero->y - (mPlayerHero->mHeight / 2),
-														13, 45));
+					Entity* flamestrike = new Flamestrike(Type::ID::Flamestrike, _textures, _fonts,
+														  *_level,
+														  _playerHero->x + _playerHero->mWidth / 4,
+														  _playerHero->y - _playerHero->mHeight / 2,
+														  13, 45);
+					flamestrike->mIsStarted = true;
+					_entities.push_back(std::move(flamestrike));
 
-					//(*it)->isBack = false;
 					(*it)->mIsHitted = false;
 					std::cout << "Hit\n";
 				}
@@ -1190,13 +1233,16 @@ void World::handleCollisions(float dt)
 		}
 
 		/// Special attack of DwarfArcher.
-		if (((*it)->mTypeID == Type::DwarfArcher) && ((*it)->mHitpoints > 0))
+		if ((*it)->mTypeID == Type::ID::DwarfArcher && (*it)->mHitpoints > 0)
 		{
-			sf::FloatRect findPlayer((*it)->x, (*it)->y, static_cast<float>((*it)->mWidth), 
+			sf::FloatRect findPlayer((*it)->x, (*it)->y - 5.f, static_cast<float>((*it)->mWidth), 
 									 static_cast<float>((*it)->mHeight));
-			size_t distance = 0;
-			while (distance < 10) {
-				if (findPlayer.intersects(playersRect) && mPlayerHero->mLife)
+			std::size_t distance = 0u;
+			bool isNeedFind = true;
+
+			while (distance < 10u && isNeedFind) 
+			{
+				if (findPlayer.intersects(playerRect) && _playerHero->mLife)
 				{
 					(*it)->mIsAttacked = true;
 					break;
@@ -1210,18 +1256,102 @@ void World::handleCollisions(float dt)
 				{
 					findPlayer.left -= 30.f;
 				}
-				distance++;
+
+				// TODO: redo this loop.
+				std::for_each(_objects.begin(), _objects.end(),
+					[&findPlayer, &isNeedFind](Object& object)
+				{
+					if (findPlayer.intersects(object.mRect) && object.mName == "solid")
+					{
+						isNeedFind = false;
+					}
+				});
+
+				++distance;
 			}
+			
+			_debugRectsToDraw.emplace_back(buildBorderLines(findPlayer, sf::Color::Transparent,
+															sf::Color::Black, 1.f));
+
 			if ((*it)->mIsAttacked)
 			{
 				(*it)->mCurrentFrame = 0.f;
 				if ((*it)->mIsHitted)
 				{
-					mEntities.push_back(new Bullet(Type::EnemyBullet, mTextures, mFonts, 
-												   *mLevel, (*it)->x + ((*it)->mWidth / 2.f), 
+					_entities.push_back(new Bullet(Type::ID::EnemyBullet, _textures, _fonts,
+												   *_level, (*it)->x + ((*it)->mWidth / 2.f), 
 												   (*it)->y + ((*it)->mHeight / 2.f) - 3.f, 7, 7, 
 												   (*it)->dx > 0.f ? 1 : 0));
-					mSound.play();	// Играем звук пули
+					_sound.play();
+					(*it)->mIsHitted = false;
+					std::cout << "Shoot\n";
+				}
+			}
+		}
+
+		/// Special attack of DarkArcher.
+		if ((*it)->mTypeID == Type::ID::DarkArcher && (*it)->mHitpoints > 0)
+		{
+			sf::FloatRect findPlayer((*it)->x, (*it)->y, static_cast<float>((*it)->mWidth),
+									 static_cast<float>((*it)->mHeight));
+
+			std::size_t distance = 0u;
+			bool isNeedFind = true;
+
+			while (distance < 15u && isNeedFind)
+			{
+				if (findPlayer.intersects(playerRect) && _playerHero->mLife)
+				{
+					if (!(*it)->mIsEnd)
+					{
+						(*it)->mIsStarted = true;
+					}
+					else
+					{
+						(*it)->mIsAttacked = true;
+					}
+					break;
+				}
+
+				if ((*it)->dx > 0.f)
+				{
+					findPlayer.left += 30.f;
+				}
+				else
+				{
+					findPlayer.left -= 30.f;
+				}
+
+				// TODO: redo this loop.
+				//std::for_each(_objects.begin(), _objects.end(),
+				//	[&findPlayer, &isNeedFind](Object& object)
+				//{
+				//	if (findPlayer.intersects(object.mRect) && object.mName == "solid")
+				//	{
+				//		isNeedFind = false;
+				//	}
+				//});
+
+				++distance;
+			}
+
+			_debugRectsToDraw.emplace_back(buildBorderLines(findPlayer, sf::Color::Transparent,
+															sf::Color::Black, 1.f));
+
+			if ((*it)->mIsAttacked)
+			{
+				(*it)->mCurrentFrame = 0.f;
+				if ((*it)->mIsHitted)
+				{
+					Projectile* bullet = new MagicArrow(Type::ID::MagicArrow, _textures, _fonts,
+														*_level,  (*it)->x + (*it)->mWidth / 2.f,
+														(*it)->y + (*it)->mHeight / 2.f - 12.f, 
+														13, 9,
+														_playerHero->getCenter().x,
+														_playerHero->getCenter().y);
+					_entities.push_back(bullet);
+					_guidedProjectiles.push_back(std::move(bullet));
+					_sound.play();
 					(*it)->mIsHitted = false;
 					std::cout << "Shoot\n";
 				}
@@ -1229,104 +1359,122 @@ void World::handleCollisions(float dt)
 		}
 
 		/// The fall of the stones.
-		if (((*it)->mTypeID == Type::Rock) && (!(*it)->mIsAttacked))
+		if ((*it)->mTypeID == Type::ID::Rock && !(*it)->mIsAttacked)
 		{
 			sf::FloatRect findPlayer((*it)->x, (*it)->y, static_cast<float>((*it)->mWidth), 
-									 static_cast<float>((*it)->mHeight));
-			size_t distance = 0;
-			while (distance < 20) {
-				if (findPlayer.intersects(playersRect) && mPlayerHero->mLife)
+									 static_cast<float>((*it)->mHeight) + _playerHero->y);
+
+			_debugRectsToDraw.emplace_back(buildBorderLines(findPlayer, sf::Color::Transparent,
+															sf::Color::Black, 1.f));
+
+			std::size_t distance = 0u;
+
+			while (distance < 10u)
+			{
+				if (findPlayer.intersects(playerRect) && _playerHero->mLife)
 				{
 					(*it)->mIsAttacked = true;
 					break;
 				}
-				
+
 				findPlayer.top += 30.f;
-				distance++;
+
+				++distance;
 			}
 		}
 
 		/// Closing the gates.
-		if (((*it)->mTypeID == Type::ClosingGate) && (!(*it)->mIsAttacked))
+		if ((*it)->mTypeID == Type::ID::ClosingGate && !(*it)->mIsAttacked)
 		{
 			sf::FloatRect findPlayer((*it)->x, (*it)->y, static_cast<float>((*it)->mWidth), 
 									 static_cast<float>((*it)->mHeight));
-			size_t distance = 0;
-			while (distance < 10) {
-				if (findPlayer.intersects(playersRect) && mPlayerHero->mLife)
+			
+			size_t distance = 0u;
+			while (distance < 10u) 
+			{
+				if (findPlayer.intersects(playerRect) && _playerHero->mLife)
 				{
 					(*it)->mIsAttacked = true;
 					break;
 				}
 
 				findPlayer.top += 30.f;
-				distance++;
+
+				++distance;
 			}
 		}
 
 		/// Opening of the gates.
-		if (((*it)->mTypeID == Type::OpeningGate) && (!(*it)->mIsStarted))
+		if ((*it)->mTypeID == Type::ID::OpeningGate && !(*it)->mIsStarted)
 		{
-			if (((*it)->mType == "3") && mPlayerInfo->mQuests[0])
+			if ((*it)->mType == "3" && _playerInfo->mQuests.at(0))
+			{
 				(*it)->mIsStarted = true;
+			}
 
-			if (((*it)->mType == "4") && mPlayerHero->mActivatedGate)
+			if ((*it)->mType == "4" && _playerHero->mActivatedGate)
+			{
 				(*it)->mIsStarted = true;
+			}
 
-			if (((*it)->mType == "5") && mPlayerInfo->mQuests[3])
+			if ((*it)->mType == "5" && _playerInfo->mQuests.at(3))
+			{
 				(*it)->mIsStarted = true;
+			}
 		}
 
 		///	Damage on the first boss Shadow.
-		if (mShadowBoss.mShadow->getRect().intersects((*it)->getRect()) &&
-			((*it)->mTypeID == Type::AlliedBullet) && mShadowBoss.mShadow->mLife &&
-			(mShadowBoss.mShadow->mHitpoints > 0) && mShadowBoss.mIsActive &&
-			mShadowBoss.mShadow->mIsStay)
+		if (_shadowBoss.mShadow->getRect().intersects((*it)->getRect()) &&
+			(*it)->mTypeID == Type::ID::AlliedBullet && _shadowBoss.mShadow->mLife &&
+			_shadowBoss.mShadow->mHitpoints > 0 && _shadowBoss.mIsActive &&
+			_shadowBoss.mShadow->mIsStay)
 		{
-			mShadowBoss.mShadow->mHitpoints -= (*it)->mDamage;
-			if (mShadowBoss.mShadow->mHitpoints <= 0)
+			_shadowBoss.mShadow->mHitpoints -= (*it)->mDamage;
+			if (_shadowBoss.mShadow->mHitpoints <= 0)
 			{
-				mShadowBoss.mIsFinished = true;
+				_shadowBoss.mIsFinished = true;
 			}
 			(*it)->mLife = false;
 		}
 
 		/// Damage on the first mini-boss GolemDark.
-		if (mGolemBoss.mGolem->getRect().intersects((*it)->getRect()) &&
-			((*it)->mTypeID == Type::AlliedBullet) && mGolemBoss.mGolem->mLife &&
-			(mGolemBoss.mGolem->mHitpoints > 0) && mGolemBoss.mIsActive)
+		if (_golemBoss.mGolem->getRect().intersects((*it)->getRect()) &&
+			(*it)->mTypeID == Type::ID::AlliedBullet && _golemBoss.mGolem->mLife &&
+			_golemBoss.mGolem->mHitpoints > 0 && _golemBoss.mIsActive)
 		{
-			mGolemBoss.mGolem->mHitpoints -= (*it)->mDamage;
-			if (mGolemBoss.mGolem->mHitpoints <= 0)
+			_golemBoss.mGolem->mHitpoints -= (*it)->mDamage;
+			if (_golemBoss.mGolem->mHitpoints <= 0)
 			{
-				mGolemBoss.mIsFinished = true;
+				_golemBoss.mIsFinished = true;
 			}
 			(*it)->mLife = false;
 		}
 
 		/// If the rectangle of the sprite of the object intersects with the player...
-		if ((*it)->getRect().intersects(playersRect))
+		if ((*it)->getRect().intersects(playerRect))
 		{
 			/// If faced with Ghost...
-			if ((*it)->mTypeID == Type::Ghost)
+			if ((*it)->mTypeID == Type::ID::Ghost)
 			{
-				if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 						(*it)->mSprite.scale(-1.f, 1.f);
 					}
+
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
 						// Наносит урон
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						// Игрок отскакивает от врага
-						mPlayerHero->dy = -0.1f;
+						_playerHero->dy = -0.1f;
 						//p.mSpeed = 0.5f * (*it)->dx;
 						//(*it)->isBack = false;
 						(*it)->mIsHitted = false;
@@ -1336,26 +1484,28 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with Golem...
-			if ((*it)->mTypeID == Type::Golem)
+			if ((*it)->mTypeID == Type::ID::Golem)
 			{
 				// Если голем активирован
 				if (!(*it)->mIsStarted)
 				{
 					(*it)->mIsStarted = true;
 				}
-				else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				else if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 					}
+					
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+			
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1363,26 +1513,28 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with DarkSoldier...
-			if ((*it)->mTypeID == Type::DarkSoldier)
+			if ((*it)->mTypeID == Type::ID::DarkSoldier)
 			{
-				if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 					}
+					
 					// Враг останавливается
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
 						// Солдат телепортирует игрока
-						mPlayerHero->x = ((*it)->dx > 0 ? 1.2f : 0.8f) * (*it)->x;
+						_playerHero->x = ((*it)->dx > 0 ? 1.2f : 0.8f) * (*it)->x;
 						// Игрок отскакивает от врага
-						mPlayerHero->y = 0.9f * (*it)->y;
-						mPlayerHero->dy = -0.25f;
+						_playerHero->y = 0.9f * (*it)->y;
+						_playerHero->dy = -0.25f;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1392,21 +1544,23 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with Goblin...
-			if ((*it)->mTypeID == Type::Goblin)
+			if ((*it)->mTypeID == Type::ID::Goblin)
 			{
-				if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 					}
+					
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1414,22 +1568,24 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with MinotaurMage...
-			if ((*it)->mTypeID == Type::MinotaurMage)
+			if ((*it)->mTypeID == Type::ID::MinotaurMage)
 			{
-				if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 						(*it)->mSprite.scale(-1.f, 1.f);
 					}
+					
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1437,27 +1593,29 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with Dwarf...
-			if ((*it)->mTypeID == Type::Dwarf)
+			if ((*it)->mTypeID == Type::ID::Dwarf)
 			{
-				// Если дварф активирован
+				// Если дварф не активирован
 				if (!(*it)->mIsStarted)
 				{
 					(*it)->mIsStarted = true;
 				}
-				else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				else if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 						(*it)->mSprite.scale(-1.f, 1.f);
 					}
+					
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1465,27 +1623,29 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with DwarfArcher...
-			if ((*it)->mTypeID == Type::DwarfArcher)
+			if ((*it)->mTypeID == Type::ID::DwarfArcher)
 			{
-				// Если дварф-лучник активирован
+				// Если дварф-лучник не активирован
 				if (!(*it)->mIsStarted)
 				{
 					(*it)->mIsStarted = true;
 				}
-				else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				else if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 						(*it)->mSprite.scale(-1.f, 1.f);
 					}
+					
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1493,7 +1653,7 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with DwarvenCommander...
-			if ((*it)->mTypeID == Type::DwarvenCommander)
+			if ((*it)->mTypeID == Type::ID::DwarvenCommander)
 			{
 				// Если дварф не активирован
 				if (!(*it)->mIsStarted)
@@ -1502,53 +1662,55 @@ void World::handleCollisions(float dt)
 					// Создаём рядом ещё двух гномов обычного типа, если сагрили командира гномов
 					if (!(*it)->mIsSpawn)
 					{
-						if (mPlayerHero->dx >= 0.f)
+						if (_playerHero->dx >= 0.f)
 						{
-							Entity* dwarf = new Dwarf(Type::Dwarf, mTextures, mFonts, *mLevel,
+							Entity* dwarf = new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
 													  (*it)->x - 30.f, (*it)->y, 40, 27, 
 													  (*it)->mType, 0);
 							dwarf->mIsStarted = true;
-							mEntities.push_back(dwarf);
-							dwarf = new Dwarf(Type::DwarfArcher, mTextures, mFonts, *mLevel, 
+							_entities.push_back(dwarf);
+							dwarf = new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
 											  (*it)->x + 30.f, (*it)->y, 40, 27, (*it)->mType, 1);
 							dwarf->mIsStarted = true;
 							dwarf->mIsEnabling = false;
 							dwarf->dx *= -1.f;
 							dwarf->mSprite.scale(-1.f, 1.f);
-							mEntities.push_back(dwarf);
+							_entities.push_back(std::move(dwarf));
 						}
 						else
 						{
-							Entity* dwarf = new Dwarf(Type::Dwarf, mTextures, mFonts, *mLevel, 
+							Entity* dwarf = new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
 													  (*it)->x - 30.f, (*it)->y, 40, 27, 
 													  (*it)->mType, 0);
 							dwarf->mIsStarted = true;
 							dwarf->dx *= -1.f;
 							dwarf->mSprite.scale(-1.f, 1.f);
-							mEntities.push_back(dwarf);
-							dwarf = new Dwarf(Type::DwarfArcher, mTextures, mFonts, *mLevel, 
+							_entities.push_back(std::move(dwarf));
+							dwarf = new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
 											  (*it)->x + 30.f, (*it)->y, 40, 27, (*it)->mType, 1);
 							dwarf->mIsStarted = true;
 							dwarf->mIsEnabling = false;
-							mEntities.push_back(dwarf);
+							_entities.push_back(std::move(dwarf));
 						}
 						(*it)->mIsSpawn = true;
 					}
 				}
-				else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				else if (_playerHero->mHitpoints > 0)
 				{
-					if (!(*it)->mIsBack && ((mPlayerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
-						(mPlayerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
 					{
 						(*it)->mIsBack = true;
 						(*it)->dx = -(*it)->dx;
 						(*it)->mSprite.scale(-1.f, 1.f);
 					}
+					
 					(*it)->mIsAttacked = true;
 					(*it)->mCurrentFrame = 0.f;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1556,19 +1718,58 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with Tentacle...
-			if ((*it)->mTypeID == Type::Tentacle)
+			if ((*it)->mTypeID == Type::ID::Tentacle)
 			{
-				// Если щупальце активировано
+				// Если щупальце не активировано
 				if (!(*it)->mIsStarted)
 				{
 					(*it)->mIsStarted = true;
 				}
-				else if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				else if (_playerHero->mHitpoints > 0)
 				{
 					(*it)->mIsAttacked = true;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
+						(*it)->mIsHitted = false;
+						std::cout << "Hit\n";
+					}
+				}
+			}
+
+			/// If faced with DarkArcher...
+			if ((*it)->mTypeID == Type::ID::DarkArcher)
+			{
+				// Если тёмный лучник не активирован
+				if (!(*it)->mIsEnd)
+				{
+					(*it)->mIsStarted = true;
+
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					{
+						(*it)->mIsBack = true;
+						(*it)->dx = -(*it)->dx;
+						(*it)->mSprite.scale(-1.f, 1.f);
+					}
+				}
+				else if (_playerHero->mHitpoints > 0)
+				{
+					if (!(*it)->mIsBack && ((_playerHero->x - (*it)->x > 0.f && (*it)->dx < 0.f) ||
+						(_playerHero->x - (*it)->x < 0.f && (*it)->dx > 0.f)))
+					{
+						(*it)->mIsBack = true;
+						(*it)->dx = -(*it)->dx;
+						(*it)->mSprite.scale(-1.f, 1.f);
+					}
+
+					(*it)->mIsAttacked = true;
+					(*it)->mCurrentFrame = 0.f;
+
+					if ((*it)->mIsHitted)
+					{
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1576,17 +1777,18 @@ void World::handleCollisions(float dt)
 			}
 
 			/// If faced with Flamestrike...
-			if ((*it)->mTypeID == Type::Flamestrike)
+			if ((*it)->mTypeID == Type::ID::Flamestrike)
 			{
-				if (mPlayerHero->mLife && (mPlayerHero->mHitpoints > 0))
+				if (_playerHero->mHitpoints > 0)
 				{
 					//mPlayerHero->mHitpoints -= (*it)->mDamage;
 					//std::cout << "Hit\n";
 
 					(*it)->mIsAttacked = true;
+					
 					if ((*it)->mIsHitted)
 					{
-						mPlayerHero->mHitpoints -= (*it)->mDamage;
+						_playerHero->mHitpoints -= (*it)->mDamage;
 						(*it)->mIsHitted = false;
 						std::cout << "Hit\n";
 					}
@@ -1595,128 +1797,143 @@ void World::handleCollisions(float dt)
 		}
 
 		/// If faced two objects: Player and EnemyBullet...
-		if (playersRect.intersects((*it)->getRect()) && 
-			((*it)->mTypeID == Type::EnemyBullet) && (mPlayerHero->mHitpoints > 0))
+		if (playerRect.intersects((*it)->getRect()) && 
+			(*it)->mTypeID == Type::ID::EnemyBullet && _playerHero->mHitpoints > 0)
 		{
-			mPlayerHero->mHitpoints -= (*it)->mDamage;
+			_playerHero->mHitpoints -= (*it)->mDamage;
+			(*it)->mLife = false;
+		}
+
+		/// If faced two objects: Player and MagicArrow...
+		if (playerRect.intersects((*it)->getRect()) &&
+			(*it)->mTypeID == Type::ID::MagicArrow && _playerHero->mHitpoints > 0)
+		{
+			_playerHero->mHitpoints -= (*it)->mDamage;
 			(*it)->mLife = false;
 		}
 
 		/// If faced two objects: Player and Rock...
-		if (playersRect.intersects((*it)->getRect()) && ((*it)->mTypeID == Type::Rock) &&
-			(*it)->mIsAttacked && !(*it)->mIsEnd && (mPlayerHero->mHitpoints > 0))
+		if (playerRect.intersects((*it)->getRect()) && (*it)->mTypeID == Type::ID::Rock &&
+			(*it)->mIsAttacked && !(*it)->mIsEnd && _playerHero->mHitpoints > 0)
 		{
-			mPlayerHero->mHitpoints = 0;
+			_playerHero->mHitpoints = 0;
 		}
 
 		/// If faced two objects: Player and Gate...
-		if (playersRect.intersects((*it)->getRect()) &&
-			((*it)->mTypeID == Type::OpeningGate || (*it)->mTypeID == Type::ClosingGate ||
-			(*it)->mTypeID == Type::OpenClosingGate)  && (mPlayerHero->mHitpoints > 0))
+		if (playerRect.intersects((*it)->getRect()) &&
+			((*it)->mTypeID == Type::ID::OpeningGate || (*it)->mTypeID == Type::ID::ClosingGate ||
+			(*it)->mTypeID == Type::ID::OpenClosingGate)  && _playerHero->mHitpoints > 0)
 		{
-			// TODO: if the player stands under the doors when they are closed, have to kill him.
-			/*if (((*it)->mTypeID == Type::ClosingGate ||
-			      (*it)->mTypeID == Type::OpenClosingGate) && (mPlayerHero->y >= (*it)->y) &&
-				  (mPlayerHero->x >= ((*it)->x + (static_cast<float>((*it)->mWidth) / 2.f))))
+			if (((*it)->mTypeID == Type::ClosingGate || (*it)->mTypeID == Type::OpenClosingGate) &&
+				(_playerHero->y <= (*it)->y + (*it)->mHeight) &&
+				(_playerHero->y + _playerHero->mWidth >= (*it)->y + (*it)->mHeight))
 			{
-				mPlayerHero->mHitpoints = 0;
-			}*/
-
-			if (mPlayerHero->dx > 0.f)
-			{
-				mPlayerHero->x = (*it)->x - mPlayerHero->mWidth;
+				_playerHero->mHitpoints = 0;
 			}
-			if (mPlayerHero->dx < 0.f)
+
+			if (_playerHero->dx > 0.f)
 			{
-				mPlayerHero->x = (*it)-> x + (*it)->mWidth;
+				_playerHero->x = (*it)->x - _playerHero->mWidth;
+				_playerHero->dx = 0.f;
+			}
+			if (_playerHero->dx < 0.f)
+			{
+				_playerHero->x = (*it)->x + (*it)->mWidth;
+				_playerHero->dx = 0.f;
+			}
+			else
+			{
+				_playerHero->x = (*it)->x + (_playerHero->mState == Player::State::Right ?
+											 -_playerHero->mWidth : (*it)->mWidth);
+				_playerHero->dx = 0.f;
 			}
 		}
 
 		/// If faced two objects: Player and DialogPerson...
-		if (playersRect.intersects((*it)->getRect()) && ((*it)->mTypeID == Type::Oswald ||
-			(*it)->mTypeID == Type::Heinrich) && !(*it)->mIsEnd &&
-			(mPlayerHero->mHitpoints > 0))
+		if (playerRect.intersects((*it)->getRect()) && ((*it)->mTypeID == Type::ID::Oswald ||
+			(*it)->mTypeID == Type::ID::Heinrich) && !(*it)->mIsEnd &&
+			_playerHero->mHitpoints > 0)
 		{
 			(*it)->mIsEnd = true;
-			mPlayerHero->mDialogNumber = std::stoi((*it)->mType);
+			_playerHero->mDialogNumber = std::stoi((*it)->mType);
 
 			switch ((*it)->mTypeID)
 			{
-				case Type::Oswald:
-					mPlayerInfo->mQuests[0] = true;
+				case Type::ID::Oswald:
+					_playerInfo->mQuests.at(0) = true;
 					break;
 				
-				case Type::Heinrich:
-					mPlayerInfo->mQuests[2] = true;
+				case Type::ID::Heinrich:
+					_playerInfo->mQuests.at(2) = true;
 					break;
 				
 				default:
-					std::cout << "Invalid dialog person type" << std::endl;
+					std::cout << "Invalid dialog person type\n";
 					break;
 			}
 		}
 
 		/// Add a fallen stone in solid objects to check collisions.
-		if (((*it)->mTypeID == Type::Rock) && (*it)->mIsEnd && !(*it)->mIsSpawn &&
-			(mPlayerHero->mHitpoints > 0) && !mGolemBoss.mIsActive)
+		if ((*it)->mTypeID == Type::ID::Rock && (*it)->mIsEnd && !(*it)->mIsSpawn &&
+			_playerHero->mHitpoints > 0 && !_golemBoss.mIsActive)
 		{
 			(*it)->mIsSpawn = true;
 
 			// Temporary object.
-			Object*	tempObject = new Object();
+			Object tempObject;
 
-			tempObject->mName = "solid";
-			tempObject->mType = (*it)->mType;
-			tempObject->mSprite = (*it)->mSprite;
+			tempObject.mName	= "solid";
+			tempObject.mType	= (*it)->mType;
+			tempObject.mSprite	= (*it)->mSprite;
 
-			sf::Rect <float> objectRect;
-			objectRect.top = (*it)->y;
-			objectRect.left = (*it)->x;
-			objectRect.height = static_cast<float>((*it)->mHeight);
-			objectRect.width = static_cast<float>((*it)->mWidth);
-			tempObject->mRect = objectRect;
-			mLevel->mObjects.push_back(*tempObject);
-			mPlayerHero->mLevelObjects.push_back(*tempObject);
-
-			delete tempObject;
+			sf::FloatRect objectRect;
+			objectRect.top		= (*it)->y;
+			objectRect.left		= (*it)->x;
+			objectRect.height	= static_cast<float>((*it)->mHeight);
+			objectRect.width	= static_cast<float>((*it)->mWidth);
+			tempObject.mRect	= std::move(objectRect);
+			_level->mObjects.push_back(tempObject);
+			_playerHero->mLevelObjects.push_back(std::move(tempObject));
 		}
 
 		/// Add the closed gate in the solid objects to check collisions.
-		if (((*it)->mTypeID == Type::ClosingGate) && (*it)->mIsEnd && !(*it)->mIsSpawn &&
-			(mPlayerHero->mHitpoints > 0))
+		if ((*it)->mTypeID == Type::ID::ClosingGate && (*it)->mIsEnd && !(*it)->mIsSpawn &&
+			_playerHero->mHitpoints > 0)
 		{
 			(*it)->mIsSpawn = true;
 
 			// Temporary object.
-			Object*	tempObject = new Object();
+			Object tempObject;
 
-			tempObject->mName = "solid";
-			tempObject->mType = (*it)->mType;
-			tempObject->mSprite = (*it)->mSprite;
+			tempObject.mName	= "solid";
+			tempObject.mType	= (*it)->mType;
+			tempObject.mSprite	= (*it)->mSprite;
 
-			sf::Rect <float> objectRect;
-			objectRect.top = (*it)->y;
-			objectRect.left = (*it)->x;
-			objectRect.height = static_cast<float>((*it)->mHeight);
-			objectRect.width = static_cast<float>((*it)->mWidth);
-			tempObject->mRect = objectRect;
-			mLevel->mObjects.push_back(*tempObject);
-			mPlayerHero->mLevelObjects.push_back(*tempObject);
-
-			delete tempObject;
+			sf::FloatRect objectRect;
+			objectRect.top		= (*it)->y;
+			objectRect.left		= (*it)->x;
+			objectRect.height	= static_cast<float>((*it)->mHeight);
+			objectRect.width	= static_cast<float>((*it)->mWidth);
+			tempObject.mRect	= std::move(objectRect);
+			_level->mObjects.push_back(tempObject);
+			_playerHero->mLevelObjects.push_back(std::move(tempObject));
 		}
 
 		/// Collision detection between objects.
-		for (std::list<Entity*>::iterator it2 = it; it2 != mEntities.end(); ++it2)
+		for (std::list<Entity*>::iterator it2 = it; it2 != _entities.end(); ++it2)
 		{
 			// This must be different objects.
-			if ((*it) != (*it2))
+			if (*it != *it2)
 			{
-				sf::FloatRect entitysRect = (*it)->getRect();
+				auto entityRect = (*it)->getRect();
+				auto objectRect = (*it2)->getRect();
+
+				auto entityBodyRect = (*it)->getBodyRect();
+
 				/// If faced two objects: Enemy and Rock...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID != Type::Rock) && ((*it2)->mTypeID == Type::Rock) &&
-					(*it2)->mIsAttacked && !(*it2)->mIsEnd && ((*it)->mHitpoints > 0))
+				if (entityRect.intersects(objectRect) &&
+					(*it)->mTypeID != Type::ID::Rock && (*it2)->mTypeID == Type::ID::Rock &&
+					(*it2)->mIsAttacked && !(*it2)->mIsEnd && (*it)->mHitpoints > 0)
 				{
 					(*it)->mHitpoints = 0;
 					(*it)->mIsStarted = true;
@@ -1725,115 +1942,160 @@ void World::handleCollisions(float dt)
 				}
 
 				/// If faced two objects: Bullet and Gate...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it2)->mTypeID == Type::AlliedBullet ||
-					(*it2)->mTypeID == Type::EnemyBullet) &&
-						((*it)->mTypeID == Type::OpeningGate ||
-					(*it)->mTypeID == Type::ClosingGate ||
-							(*it)->mTypeID == Type::OpenClosingGate))
+				if (entityRect.intersects(objectRect) &&
+					((*it2)->mTypeID == Type::ID::AlliedBullet ||
+					(*it2)->mTypeID == Type::ID::EnemyBullet) &&
+						((*it)->mTypeID == Type::ID::OpeningGate ||
+					(*it)->mTypeID == Type::ID::ClosingGate ||
+							(*it)->mTypeID == Type::ID::OpenClosingGate))
 				{
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Bullet and Rock...
-				if (entitysRect.intersects((*it2)->getRect()) && 
-					((*it2)->mTypeID == Type::AlliedBullet ||
-					(*it2)->mTypeID == Type::EnemyBullet) &&
-						((*it)->mTypeID == Type::Rock) && !mGolemBoss.mIsActive)
+				if (entityRect.intersects(objectRect) &&
+					((*it2)->mTypeID == Type::ID::AlliedBullet ||
+					(*it2)->mTypeID == Type::ID::EnemyBullet) &&
+						(*it)->mTypeID == Type::ID::Rock && !_golemBoss.mIsActive)
 				{
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Ghost and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::Ghost) &&
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0))
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::Ghost &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Golem and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::Golem) &&
-					((*it2)->mTypeID == Type::AlliedBullet) &&
-					((*it)->mHitpoints > 0) && (*it)->mIsEnd)
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::Golem &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet &&
+					(*it)->mHitpoints > 0 && (*it)->mIsEnd)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Golem and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::DarkSoldier) &&
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0))
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::DarkSoldier &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Shadow and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::Shadow) &&
-					((*it2)->mTypeID == Type::AlliedBullet) &&
-					((*it)->mHitpoints > 0) && (*it)->mIsEnd)
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::Shadow &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet &&
+					(*it)->mHitpoints > 0 && (*it)->mIsEnd)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Goblin and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::Goblin) &&
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0))
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::Goblin &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
+					if ((*it)->mHitpoints <= 0)
+					{
+						_effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
+														  (*it)->x, (*it)->y, 48, 24));
+					}
+
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: MinotaurMage and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::MinotaurMage) &&
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0))
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::MinotaurMage &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
+					if ((*it)->mHitpoints <= 0)
+					{
+						_effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
+														  (*it)->x + 7.f, (*it)->y + 7.f, 48, 24));
+					}
+
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: Dwarf and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::Dwarf) &&
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0) &&
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::Dwarf &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0 &&
 					(*it)->mIsEnd)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
+					if ((*it)->mHitpoints <= 0)
+					{
+						_effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
+														  (*it)->x + 7.f, (*it)->y, 48, 24));
+					}
+					
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: DwarfArcher and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) && 
-					((*it)->mTypeID == Type::DwarfArcher) && 
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0) &&
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::DwarfArcher &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0 &&
 					(*it)->mIsEnd)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
+					if ((*it)->mHitpoints <= 0)
+					{
+						_effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
+														  (*it)->x, (*it)->y, 48, 24));
+					}
+
 					(*it2)->mLife = false;
 				}
 
 				/// If faced two objects: DwarvenCommander and Bullet...
-				if (entitysRect.intersects((*it2)->getRect()) &&
-					((*it)->mTypeID == Type::DwarvenCommander) &&
-					((*it2)->mTypeID == Type::AlliedBullet) && ((*it)->mHitpoints > 0) &&
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::DwarvenCommander &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0 &&
 					(*it)->mIsEnd)
 				{
 					(*it)->mHitpoints -= (*it2)->mDamage;
+					if ((*it)->mHitpoints <= 0)
+					{
+						_effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
+														  (*it)->x, (*it)->y, 48, 24));
+					}
+
 					(*it2)->mLife = false;
 
 					if ((*it)->mIsEnabling && (*it)->mHitpoints <= 0)
 					{
-						mPlayerInfo->mQuests[1] = true;
-						mPlayerHero->mDialogNumber = 4;
+						_playerInfo->mQuests.at(1) = true;
+						_playerHero->mDialogNumber = 4u;
 					}
+				}
+
+				/// If faced two objects: DarkArcher and Bullet...
+				if (entityBodyRect.intersects(objectRect) &&
+					(*it)->mTypeID == Type::ID::DarkArcher &&
+					(*it2)->mTypeID == Type::ID::AlliedBullet && (*it)->mHitpoints > 0)
+				{
+					(*it)->mHitpoints -= (*it2)->mDamage;
+					if ((*it)->mHitpoints <= 0)
+					{
+						_effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
+														  (*it)->x + 11.f, (*it)->y + 22.f, 48, 24));
+					}
+
+					(*it2)->mLife = false;
 				}
 			}
 		}

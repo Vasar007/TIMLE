@@ -1,18 +1,16 @@
 #ifndef BUTTON_HPP
 #define BUTTON_HPP
 
-#include "Component.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "ResourceHolder.hpp"
+#include <memory>
+#include <functional>
+#include <SFML/Audio/Sound.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-#include <vector>
-#include <string>
-#include <memory>
-#include <functional>
-#include <SFML/Audio/Sound.hpp>
+#include "Component.hpp"
+#include "ResourceIdentifiers.hpp"
+#include "ResourceHolder.hpp"
 
 
 /**
@@ -30,7 +28,7 @@ class Button final : public Component
 		/**
 		 * \brief Syntactic sugar. ( std::shared_ptr<Button> ).
 		 */
-		typedef std::shared_ptr<Button>	Ptr;
+		typedef std::shared_ptr<Button>	shPtr;
 
 		/**
 		 * \brief Syntactic sugar. ( std::function<void()> ).
@@ -42,48 +40,48 @@ class Button final : public Component
 		/**
 		 * \brief Action that will be executed when button is pressed.
 		 */
-		Callback				mCallback;
+		Callback				_callback;
 
 		/**
 		 * \brief Textrure for button when it is not pressed or selected.
 		 */
-		const sf::Texture&		mNormalTexture;
+		const sf::Texture&		_normalTexture;
 
 		/**
 		 * \brief Textrure for button when it is selected but not pressed.
 		 */
-		const sf::Texture&		mSelectedTexture;
+		const sf::Texture&		_selectedTexture;
 
 		/**
 		 * \brief Textrure for button when it is pressed.
 		 */
-		const sf::Texture&		mPressedTexture;
+		const sf::Texture&		_pressedTexture;
 
 		/**
 		 * \brief Sound buffer for keeping button sounds.
 		 */
-		const sf::SoundBuffer&	mSoundBuffer;
+		const sf::SoundBuffer&	_soundBuffer;
 
 
 		/**
 		 * \brief Sound of the button (playing when button is pressed or selected).
 		 */
-		sf::Sound				mSound;
+		sf::Sound				_sound;
 
 		/**
 		 * \brief Sprite of the button for drawing.
 		 */
-		sf::Sprite				mSprite;
+		sf::Sprite				_sprite;
 
 		/**
 		 * \brief Text of the button.
 		 */
-		sf::Text				mText;
+		sf::Text				_text;
 
 		/**
 		 * \brief Boolean flag of toggling.
 		 */
-		bool					mIsToggle;
+		bool					_isToggle;
 	
 	
 	private:
@@ -121,7 +119,7 @@ class Button final : public Component
 		 * \brief		Change toggle flag of this button.
 		 * \param flag	New value for toggle flag.
 		 */
-		void				setToggle(bool flag);
+		void				setToggle(const bool flag);
 
 		/**
 		 * \brief 	Check if button can be selectable.
