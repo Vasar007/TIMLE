@@ -1,11 +1,12 @@
 #include "../Include/MovingPlatform.hpp"
 
 
-MovingPlatform::MovingPlatform(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts,
-							   Level &lvl, float X, float Y, int width, int height)
-: Entity(Id, X, Y, width, height, 50.f, 100, 0)
+MovingPlatform::MovingPlatform(Type::ID id, const TextureHolder& textures, const FontHolder&,
+							   const Level&, const float X, const float Y, const int width, 
+							   const int height)
+: Entity(id, X, Y, width, height, 50.f, 100, 0)
 {
-	mTexture = textures.get(Textures::MovingPlatform);
+	mTexture = textures.get(Textures::ID::MovingPlatform);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
 	mSprite.setScale(0.5f, 0.5f);
@@ -13,7 +14,7 @@ MovingPlatform::MovingPlatform(Type::ID Id, const TextureHolder& textures, const
 	dx = 0.08f;
 }
 
-void MovingPlatform::update(float dt)
+void MovingPlatform::update(const float dt)
 {
 	// Движение по горизонтали
 	x += dx * dt;

@@ -1,13 +1,14 @@
 #include "../Include/Ghost.hpp"
 
 
-Ghost::Ghost(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
-			 float X, float Y, int width, int height, std::string Type)
-: Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
+Ghost::Ghost(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+			 const Level& lvl, const float X, const float Y, const int width,
+			 const int height, const std::string& type)
+: Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 
 {
-	mTexture = textures.get(Textures::Ghost);
-	mTextureDeath = textures.get(Textures::GhostDeath);
+	mTexture = textures.get(Textures::ID::Ghost);
+	mTextureDeath = textures.get(Textures::ID::GhostDeath);
 	mSprite.setTexture(mTexture);
 	mSprite.setScale(0.5f, 0.5f);
 	mSprite.setTextureRect(sf::IntRect(0, 0, mWidth, mHeight));
@@ -15,40 +16,40 @@ Ghost::Ghost(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts
 	dx = 0.1f;
 }
 
-void Ghost::checkCollisionWithMap(float Dx, float Dy)
+void Ghost::checkCollisionWithMap(const float Dx, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
-			if (mLevelObjects[i].mName == "enemyBorder")
+			if (object.mName == "enemyBorder")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
+					x = object.mRect.left - mWidth;
 					mIsTurned = true;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
-					mIsTurned = true;
+					x = object.mRect.left + object.mRect.width;
+					mIsTurned = true;;
 				}
 			}
 
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -56,7 +57,7 @@ void Ghost::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Ghost::update(float dt)
+void Ghost::update(const float dt)
 {
 	// Притяжение к земле
 	dy += 0.0015f * dt;

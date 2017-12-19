@@ -4,15 +4,19 @@
 #include "Entity.hpp"
 
 
-class DialogPerson : public Entity
+class DialogPerson final : public Entity
 {
 	public:
 		int		mDialogNumber;
 
 
 	public:
-				DialogPerson(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, float X, float Y, int width, int height, std::string type);
-		void	update(float time) override;
+				DialogPerson(const Type::ID id, const TextureHolder& textures, 
+							 const FontHolder& fonts, const Level& lvl, const float X, 
+							 const float Y, const int width, const int height, 
+							 const std::string& type);
+
+		void	update(const float dt) override;
 };
 
 #endif // DIALOGPERSON_HPP

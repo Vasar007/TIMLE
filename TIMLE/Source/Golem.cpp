@@ -1,54 +1,55 @@
 #include "../Include/Golem.hpp"
 
 
-Golem::Golem(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl,
-			 float X, float Y, int width, int height, std::string Type)
-: Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
+Golem::Golem(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+			 const Level& lvl, const float X, const float Y, const int width,
+			 const int height, const std::string& type)
+: Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 {
-	mTexture = textures.get(Textures::Golem);
-	mTextureAttack = textures.get(Textures::GolemAttack);
-	mTextureDeath = textures.get(Textures::GolemDeath);
+	mTexture = textures.get(Textures::ID::Golem);
+	mTextureAttack = textures.get(Textures::ID::GolemAttack);
+	mTextureDeath = textures.get(Textures::ID::GolemDeath);
 	mSprite.setTexture(mTexture);
-	mSprite.setTextureRect(sf::IntRect(0, 192, 64, 64));
+	mSprite.setTextureRect(sf::IntRect(0, 192, mWidth, mHeight));
 	mSprite.setScale(0.6f, 0.6f);
 	dx = 0.05f;
 	mIsEnd = false;
 }
 
-void Golem::checkCollisionWithMap(float Dx, float Dy)
+void Golem::checkCollisionWithMap(const float Dx, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
-			if (mLevelObjects[i].mName == "enemyBorder")
+			if (object.mName == "enemyBorder")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
+					x = object.mRect.left - mWidth;
 					mIsTurned = true;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
+					x = object.mRect.left + object.mRect.width;
 					mIsTurned = true;;
 				}
 			}
 
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -56,7 +57,7 @@ void Golem::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Golem::update(float dt)
+void Golem::update(const float dt)
 {
 	// Притяжение к земле
 	dy += 0.0015f * dt;
@@ -66,7 +67,7 @@ void Golem::update(float dt)
 	if (!mIsStarted)
 	{
 		mSprite.setTexture(mTextureDeath);
-		mSprite.setPosition(x + (mWidth / 2.f) - 8.f, y + (mHeight / 2.f) - 4.f);
+		mSprite.setPosition(x + (mWidth / 2.f) - 6.f, y + (mHeight / 2.f) - 4.f);
 		mSprite.setTextureRect(sf::IntRect(64 * 5, 64, 64, 64));
 		mCurrentDeath = 5.f;
 		return;
@@ -80,25 +81,20 @@ void Golem::update(float dt)
 			mIsEnd = true;
 		}
 		mSprite.setTexture(mTextureDeath);
-		mSprite.setPosition(x + (mWidth / 2.f) - 8.f, y + (mHeight / 2.f) - 4.f);
+		mSprite.setPosition(x + (mWidth / 2.f) - 6.f, y + (mHeight / 2.f) - 4.f);
 		mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentDeath), 64, 64, 64));
 		return;
 	}
 
-	mMoveTimer += dt;
+	if (mIsTurned)
+	{
+		mMoveTimer += dt;
+	}
 	if (mMoveTimer > 2000.f && mIsTurned)
 	{
 		dx = -dx;
 		mMoveTimer = 0.f;
 		mIsTurned = false;
-	}
-	else if (mMoveTimer > 1000.f && !mIsTurned)
-	{
-		mMoveTimer = 0.f;
-		if (mHitpoints <= 0)
-		{
-			mCounter++;
-		}
 	}
 
 	if (mLife && (mHitpoints > 0))
@@ -109,7 +105,7 @@ void Golem::update(float dt)
 		}
 		checkCollisionWithMap(dx, 0.f);
 
-		mSprite.setPosition(x + (mWidth / 2.f) - 0.f, y + (mHeight / 2.f) - 7.f);
+		mSprite.setPosition(x + (mWidth / 2.f) + 2.f, y + (mHeight / 2.f) - 7.f);
 
 		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 7.f)
@@ -136,7 +132,7 @@ void Golem::update(float dt)
 				mIsHitted = false;
 			}
 			mSprite.setTexture(mTextureAttack);
-			mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 1.f : -12.f), y + (mHeight / 2.f) - 12.f);
+			mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 3.f : -10.f), y + (mHeight / 2.f) - 12.f);
 			if (dx > 0.f)
 			{
 				mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentAttack), 311, 64, 72));
@@ -168,6 +164,12 @@ void Golem::update(float dt)
 
 	if (mHitpoints <= 0)
 	{
+		mMoveTimer += dt;
+		if (mMoveTimer > 1000.f)
+		{
+			mMoveTimer = 0.f;
+			++mCounter;
+		}
 		mCurrentDeath += 0.0035f * dt;
 		dx = 0.f;
 		dy = 0.f;
@@ -180,7 +182,7 @@ void Golem::update(float dt)
 			}
 		}
 		mSprite.setTexture(mTextureDeath);
-		mSprite.setPosition(x + (mWidth / 2.f) - 6.f, y + (mHeight / 2.f) - 3.f);
+		mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 3.f);
 		mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentDeath), 0, 64, 64));
 	}
 }

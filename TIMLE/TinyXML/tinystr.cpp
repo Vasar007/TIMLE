@@ -2,7 +2,7 @@
 www.sourceforge.net/projects/tinyxml
 
 This software is provided 'as-is', without any express or implied
-warranty. In no event will the authors be held liable for any
+warranty. In no event will the authors be held liable for anysize_t
 damages arising from the use of this software.
 
 Permission is granted to anyone to use this software for any

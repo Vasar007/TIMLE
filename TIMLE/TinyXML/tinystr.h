@@ -56,7 +56,7 @@ class TiXmlString
 {
   public :
 	// The size type used
-  	typedef size_t size_type;
+	typedef size_t size_type;
 
 	// Error value for find primitive
 	static const size_type npos; // = -1;
@@ -255,7 +255,7 @@ class TiXmlString
 inline bool operator == (const TiXmlString & a, const TiXmlString & b)
 {
 	return    ( a.length() == b.length() )				// optimization on some platforms
-	       && ( strcmp(a.c_str(), b.c_str()) == 0 );	// actual compare
+		   && ( strcmp(a.c_str(), b.c_str()) == 0 );	// actual compare
 }
 inline bool operator < (const TiXmlString & a, const TiXmlString & b)
 {

@@ -1,16 +1,15 @@
 #ifndef STATE_HPP
 #define STATE_HPP
 
-#include "StateIdentifiers.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "PlayerInfo.hpp"
-#include "AudioManager.hpp"
+#include <memory>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include <memory>
-#include <SFML/Window/WindowStyle.hpp>
+#include "StateIdentifiers.hpp"
+#include "ResourceIdentifiers.hpp"
+#include "PlayerInfo.hpp"
+#include "AudioManager.hpp"
 
 
 namespace sf
@@ -24,7 +23,7 @@ class Player;
 class State
 {
 	public:
-		typedef std::unique_ptr<State> Ptr;
+		typedef std::unique_ptr<State> unPtr;
 
 		/**
 		 * \brief Enumeration of the window styles.
@@ -46,17 +45,27 @@ class State
 			Russian
 		};
 
+		enum DebugMode
+		{
+			DebugOff,
+			DebugOn
+		};
+
 		struct CurrentSettings
 		{
-							CurrentSettings(sf::Vector2u windowSize, WindowStyle windowStyle, 
-											float musicVolume, Fonts::ID fontType, 
-											ActualLanguage language);
+							CurrentSettings(const sf::Vector2u windowSize, 
+											const WindowStyle windowStyle, const float musicVolume,
+											const Fonts::ID fontType, 
+											const ActualLanguage language, 
+											const DebugMode debugMode);
 			sf::Vector2u	mWindowSize;
 			WindowStyle		mWindowStyle;
 			float			mMusicVolume;
 			Fonts::ID		mFontType;
 			ActualLanguage	mLanguage;
-			size_t			mPressedButton;
+			DebugMode		mDebugMode;
+
+			std::size_t		mPressedButton;
 			bool			mHasAnyChanges;
 		};
 
@@ -77,8 +86,8 @@ class State
 
 
 	private:
-		StateStack*				mStack;
-		Context					mContext;
+		StateStack*				_stack;
+		Context					_context;
 
 
 	public:
@@ -86,18 +95,18 @@ class State
 
 
 	public:
-								State(StateStack& stack, Context context);
+								State(StateStack& stack, const Context context);
 		virtual					~State();
 
 		virtual void			draw() = 0;
-		virtual bool			update(sf::Time dt) = 0;
+		virtual bool			update(const sf::Time dt) = 0;
 		virtual bool			handleEvent(const sf::Event& event) = 0;
 
 
 	protected:
-		void					requestStackPush(States::ID stateID);
-		void					requestStackPop();
-		void					requestStateClear();
+		void					requestStackPush(const States::ID stateID) const;
+		void					requestStackPop() const;
+		void					requestStateClear() const;
 
 		Context					getContext() const;
 };

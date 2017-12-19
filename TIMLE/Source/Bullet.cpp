@@ -1,43 +1,47 @@
 #include "../Include/Bullet.hpp"
 
 
-Bullet::Bullet(Type::ID Id,const TextureHolder& textures, const FontHolder& fonts, Level &lvl,
-			   float X, float Y, int width, int height, float tX, float tY)
-: Projectile(Id, textures, fonts, lvl, X, Y, width, height)	// При клике мышкой
+Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
+			   const Level& lvl, const float X, const float Y, const int width, const int height,
+			   const float tX, const float tY)
+: Projectile(id, textures, fonts, lvl, X, Y, width, height)	// При клике мышкой
 , mTargetX(tX)
 , mTargetY(tY)
 , mVx((mTargetX - x) / 100.f)
 , mVy((mTargetY - y) / 100.f)	// 100 - дистанция
-, mDistance(sqrt((mTargetX - x) - (mTargetY - y)))
+, mDistance(sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
 , mIsMouse(true)
 {
 	mLevelObjects = lvl.getObjects("solid");
 	mSpeed = 0.2f;
-	mTexture = textures.get(Textures::Bullet);
+	mTexture = textures.get(Textures::ID::Bullet);
+
 	mSprite.setTexture(mTexture);
-	mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
+	mSprite.setTextureRect(sf::IntRect(0, 0, 13, 13));
 	mSprite.setScale(0.5f, 0.5f);
 }
 
-Bullet::Bullet(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl,
-			   float X, float Y, int width, int height, int dir)
-: Projectile(Id, textures, fonts, lvl, X, Y, width, height)	// При нажатии space
+Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
+			   const Level& lvl, const float X, const float Y, const int width, const int height, 
+			   const int dir)
+: Projectile(id, textures, fonts, lvl, X, Y, width, height)	// При нажатии space
 , mTargetX(X + 150.f * ((dir - 1 == 0) || (dir - 1 == 4) ? 1.f : -1.f))
 , mTargetY(Y)
 , mVx((mTargetX - x) / 100.f)
 , mVy((mTargetY - y) / 100.f)	// 100 - дистанция
-, mDistance(sqrt((mTargetX - x) - (mTargetY - y)))
+, mDistance(sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
 , mIsMouse(false)
 {
 	mLevelObjects = lvl.getObjects("solid");
 	mSpeed = 0.2f;
-	mTexture = textures.get(Textures::Bullet);
+	mTexture = textures.get(Textures::ID::Bullet);
+
 	mSprite.setTexture(mTexture);
-	mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
+	mSprite.setTextureRect(sf::IntRect(0, 0, 13, 13));
 	mSprite.setScale(0.5f, 0.5f);
 }
 
-void Bullet::update(float dt)
+void Bullet::update(const float dt)
 {
 
 	//x += mSpeed*time*(targetX - x) /20;	// Само движение пули по х
@@ -56,16 +60,15 @@ void Bullet::update(float dt)
 	{
 		y = -mSprite.getLocalBounds().height;
 	}
-	x += dx * dt;	// Само движение пули по х
-	y += dy * dt;	// По у
-	for (size_t i = 0; i < mLevelObjects.size(); i++)	// Проход по объектам solid
+
+	for (const auto& object : mLevelObjects)	// Проход по объектам solid
 	{
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
 			mLife = false;
 		}
 	}
-	if (mMoveTimer > 3000)
+	if (mMoveTimer > 3000.f)
 	{
 		mLife = false;
 	}
@@ -75,9 +78,9 @@ void Bullet::update(float dt)
 	mMoveTimer += dt;
 
 	mCurrentFrame += 0.005f * dt;
-	if (mCurrentFrame > 5)
+	if (mCurrentFrame > 5.f)
 	{
-		mCurrentFrame -= 5;
+		mCurrentFrame -= 5.f;
 	}
 	mSprite.setTextureRect(sf::IntRect(13 * static_cast<int>(mCurrentFrame), 0, 13, 13));
 }

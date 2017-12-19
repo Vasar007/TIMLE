@@ -1,21 +1,23 @@
 #include "../Include/DeadMan.hpp"
 
 
-DeadMan::DeadMan(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, 
-				 float X, float Y, int width, int height, std::string type)
-: Entity(Id, X, Y, width, height, 50.f, 100, 0, type)
-, mDialogNumber(stoi(type))
+DeadMan::DeadMan(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level&,
+				 const float X, const float Y, const int width, const int height, 
+				 const std::string& type)
+: Entity(id, X, Y, width, height, 50.f, 100, 0, type)
+, mDialogNumber(std::stoi(type))
 {
-	if (Id == Type::DeadJuggernaut)
+	if (id == Type::DeadJuggernaut)
 	{
-		mTexture = textures.get(Textures::Swordsman);
+		mTexture = textures.get(Textures::ID::Swordsman);
 	}
-	else if (Id == Type::DeadDwarf)
+	else if (id == Type::DeadDwarf)
 	{
-		mTexture = textures.get(Textures::Dwarf);
+		mTexture = textures.get(Textures::ID::Dwarf);
 	}
 	mSprite.setTexture(mTexture);
-	switch(Id)
+
+	switch(id)
 	{
 		case Type::DeadJuggernaut:
 			mSprite.setTextureRect(sf::IntRect(1865, 915, 115, 45));
@@ -28,11 +30,11 @@ DeadMan::DeadMan(Type::ID Id, const TextureHolder& textures, const FontHolder& f
 			mSprite.setTextureRect(sf::IntRect(100 * 15, 0, 100, 80));
 			break;
 		default:
-			std::cout << "Invalid dead person type" << std::endl;
+			std::cout << "Invalid dead person type\n";
 			break;
 	}
 }
 
-void DeadMan::update(float dt)
+void DeadMan::update(const float)
 {
 }

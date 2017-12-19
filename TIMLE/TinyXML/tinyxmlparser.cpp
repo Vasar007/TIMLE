@@ -438,7 +438,7 @@ const char* TiXmlBase::ReadName( const char* p, TIXML_STRING * name, TiXmlEncodi
 const char* TiXmlBase::GetEntity( const char* p, char* value, int* length, TiXmlEncoding encoding )
 {
 	// Presume an entity, and pull it out.
-    TIXML_STRING ent;
+	TIXML_STRING ent;
 	int i;
 	*length = 0;
 
@@ -578,7 +578,7 @@ const char* TiXmlBase::ReadText(	const char* p,
 									bool caseInsensitive,
 									TiXmlEncoding encoding )
 {
-    *text = "";
+	*text = "";
 	if (    !trimWhiteSpace			// certain tags always keep whitespace
 		 || !condenseWhiteSpace )	// if true, whitespace is always kept
 	{
@@ -744,7 +744,7 @@ const char* TiXmlDocument::Parse( const char* p, TiXmlParsingData* prevData, TiX
 		}
 	}
 
-    p = SkipWhiteSpace( p, encoding );
+	p = SkipWhiteSpace( p, encoding );
 	if ( !p )
 	{
 		SetError( TIXML_ERROR_DOCUMENT_EMPTY, 0, 0, TIXML_ENCODING_UNKNOWN );
@@ -1068,14 +1068,14 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 	// Read the name.
 	const char* pErr = p;
 
-    p = ReadName( p, &value, encoding );
+	p = ReadName( p, &value, encoding );
 	if ( !p || !*p )
 	{
 		if ( document )	document->SetError( TIXML_ERROR_FAILED_TO_READ_ELEMENT_NAME, pErr, data, encoding );
 		return 0;
 	}
 
-    TIXML_STRING endTag ("</");
+	TIXML_STRING endTag ("</");
 	endTag += value;
 
 	// Check for and read attributes. Also look for an empty
@@ -1193,7 +1193,7 @@ const char* TiXmlElement::ReadValue( const char* p, TiXmlParsingData* data, TiXm
 
 			if ( !textNode )
 			{
-			    return 0;
+				return 0;
 			}
 
 			if ( TiXmlBase::IsWhiteSpaceCondensed() )
@@ -1288,7 +1288,7 @@ const char* TiXmlUnknown::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 		return 0;
 	}
 	++p;
-    value = "";
+	value = "";
 
 	while ( p && *p && *p != '>' )
 	{
@@ -1364,7 +1364,7 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 	// from the XML spec:
 	/*
 	 [Definition: Comments may appear anywhere in a document outside other markup; in addition, 
-	              they may appear within the document type declaration at places allowed by the grammar. 
+				  they may appear within the document type declaration at places allowed by the grammar. 
 				  They are not part of the document's character data; an XML processor MAY, but need not, 
 				  make it possible for an application to retrieve the text of comments. For compatibility, 
 				  the string "--" (double-hyphen) MUST NOT occur within comments.] Parameter entity 
@@ -1375,7 +1375,7 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 				  <!-- declarations for <head> & <body> -->
 	*/
 
-    value = "";
+	value = "";
 	// Keep all the white space.
 	while (	p && *p && !StringEqual( p, endTag, false, encoding ) )
 	{

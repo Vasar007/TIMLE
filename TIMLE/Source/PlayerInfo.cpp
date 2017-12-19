@@ -2,49 +2,26 @@
 
 
 PlayerInfo::PlayerInfo()
-: mCurrentGameStatus(GameRunning)
-, mCurrentLevelNumber(0)
-, mPlayer(nullptr)
+: _currentGameStatus(GameRunning)
+, _currentLevelNumber(0)
+, _player(nullptr)
 , mDialogNumber(0)
 , mShowedDialogs()
 , mChoosingNumber(0)
 , mChosenSolution(2)
 , mQuests(5)
 , mLoaded(false)
-, mLivesCount(3)
-, mLastSavePoint(0, 0)
+, mLivesCount(0u)
+, mLastSavePoint(0.f, 0.f)
 , mCanRessurect(false)
 {
-	/*
-	 *	Set of the quests:
-	 *	0 – talking with Oswald;
-	 *	1 – killing DwarvenCommanderM and getting key;
-	 *	2 – talking with Heinrich;
-	 *	3 – killing first boss Shadow;
-	 *	4 – killing first mini-boss GolemDark.
-	 */
-	for (size_t i = 0; i < mQuests.size(); i++)
-	{
-		mQuests[i] = false;
-	}
-
-	/*
-	 *	List of the made choices:
-	 *	0 - pillage knight's and dwarven bodies;
-	 *	1 - choosing option to interactive with GolemDark.
-	 */
-	for (size_t i = 0; i < mChosenSolution.size(); i++)
-	{
-		mChosenSolution[i] = 0;
-	}
-
 	// Set initial key bindings.
-	mKeyBinding[sf::Keyboard::Left] = MoveLeft;
-	mKeyBinding[sf::Keyboard::Right] = MoveRight;
-	mKeyBinding[sf::Keyboard::Up] = MoveUp;
-	mKeyBinding[sf::Keyboard::Down] = MoveDown;
-	mKeyBinding[sf::Keyboard::Space] = Fire;
-	mKeyBinding[sf::Keyboard::M] = LaunchMissile;
+	_keyBinding[sf::Keyboard::Left] = MoveLeft;
+	_keyBinding[sf::Keyboard::Right] = MoveRight;
+	_keyBinding[sf::Keyboard::Up] = MoveUp;
+	_keyBinding[sf::Keyboard::Down] = MoveDown;
+	_keyBinding[sf::Keyboard::Space] = Fire;
+	_keyBinding[sf::Keyboard::M] = LaunchMissile;
 
 	// Set initial action bindings.
 	initializeActions();
@@ -54,34 +31,36 @@ PlayerInfo::PlayerInfo()
 		//pair.second.category = Category::PlayerAircraft;
 }
 
-void PlayerInfo::showDialog(size_t number)
+void PlayerInfo::showDialog(const std::size_t number)
 {
 	mDialogNumber = number;
 
 	bool isFind = false;
-	for (size_t i = 0; i < mShowedDialogs.size(); i++)
+	for (const auto& dialog : mShowedDialogs)
 	{
-		if (mShowedDialogs[i] == mDialogNumber)
+		if (dialog == mDialogNumber)
 		{
-			mDialogNumber = 0;
+			mDialogNumber = 0u;
 			isFind = true;
 			break;
 		}
 	}
 
 	if (!isFind)
+	{
 		mShowedDialogs.push_back(mDialogNumber);
+	}
 }
 
 
-void PlayerInfo::assignKey(Action action, sf::Keyboard::Key key)
+void PlayerInfo::assignKey(const Action action, const sf::Keyboard::Key key)
 {
 	// Remove all keys that already map to action.
-	for (auto itr = mKeyBinding.begin(); itr != mKeyBinding.end(); )
+	for (auto itr = _keyBinding.begin(); itr != _keyBinding.end();)
 	{
 		if (itr->second == action)
 		{
-			mKeyBinding.erase(itr++);
+			_keyBinding.erase(itr++);
 		}
 		else
 		{
@@ -90,12 +69,12 @@ void PlayerInfo::assignKey(Action action, sf::Keyboard::Key key)
 	}
 
 	// Insert new binding.
-	mKeyBinding[key] = action;
+	_keyBinding[key] = action;
 }
 
-sf::Keyboard::Key PlayerInfo::getAssignedKey(Action action) const
+sf::Keyboard::Key PlayerInfo::getAssignedKey(const Action action) const
 {
-	FOREACH(auto pair, mKeyBinding)
+	for (const auto& pair : _keyBinding)
 	{
 		if (pair.second == action)
 		{
@@ -106,24 +85,24 @@ sf::Keyboard::Key PlayerInfo::getAssignedKey(Action action) const
 	return sf::Keyboard::Unknown;
 }
 
-void PlayerInfo::setGameStatus(GameStatus status)
+void PlayerInfo::setGameStatus(const GameStatus status)
 {
-	mCurrentGameStatus = status;
+	_currentGameStatus = status;
 }
 
 PlayerInfo::GameStatus PlayerInfo::getGameStatus() const
 {
-	return mCurrentGameStatus;
+	return _currentGameStatus;
 }
 
-void PlayerInfo::setLevelNumber(size_t number)
+void PlayerInfo::setLevelNumber(const std::size_t number)
 {
-	mCurrentLevelNumber = number;
+	_currentLevelNumber = number;
 }
 
-size_t PlayerInfo::getLevelNumber() const
+std::size_t PlayerInfo::getLevelNumber() const
 {
-	return mCurrentLevelNumber;
+	return _currentLevelNumber;
 }
 
 
@@ -139,15 +118,19 @@ void PlayerInfo::initializeActions()
 	//															 { a.launchMissile(); });
 }
 
-bool PlayerInfo::isRealtimeAction(Action action)
+bool PlayerInfo::isRealtimeAction(const Action action)
 {
 	switch (action)
 	{
-		case MoveLeft:
-		case MoveRight:
-		case MoveDown:
-		case MoveUp:
-		case Fire:
+		case PlayerInfo::Action::MoveLeft: 
+			[[fallthrough]];
+		case PlayerInfo::Action::MoveRight:
+			[[fallthrough]];
+		case PlayerInfo::Action::MoveDown:
+			[[fallthrough]];
+		case PlayerInfo::Action::MoveUp:
+			[[fallthrough]];
+		case PlayerInfo::Action::Fire:
 			return true;
 
 		default:
@@ -157,36 +140,30 @@ bool PlayerInfo::isRealtimeAction(Action action)
 
 void PlayerInfo::setPlayer(Player* player)
 {
-	mPlayer = player;
+	_player = player;
 }
 
 Player* PlayerInfo::getPlayer() const
 {
-	return mPlayer;
+	return _player;
 }
 
 
 void PlayerInfo::resetData()
 {
-	for (size_t i = 0; i < mQuests.size(); i++)
-	{
-		mQuests[i] = false;
-	}
+	std::fill(mQuests.begin(), mQuests.end(), false);
 
-	for (size_t i = 0; i < mChosenSolution.size(); i++)
-	{
-		mChosenSolution[i] = 0;
-	}
+	std::fill(mChosenSolution.begin(), mChosenSolution.end(), 0);
 
-	mLivesCount = 3;
+	mLivesCount = 3u;
 
-	mLastSavePoint.x = 0;
-	mLastSavePoint.y = 0;
+	mLastSavePoint.x = 0.f;
+	mLastSavePoint.y = 0.f;
 }
 
 void PlayerInfo::ressurectPlayer()
 {
-	if (mLivesCount == 0)
+	if (mLivesCount == 0u)
 	{
 		mCanRessurect = false;
 		return;
@@ -195,15 +172,15 @@ void PlayerInfo::ressurectPlayer()
 	mLivesCount--;
 	mCanRessurect = true;
 
-	if (mQuests[2])
+	if (mQuests.at(2))
 	{
-		mLastSavePoint.x = 5056;
-		mLastSavePoint.y = 1264;
+		mLastSavePoint.x = 5056.f;
+		mLastSavePoint.y = 1264.f;
 	}
-	if (mQuests[3])
+	if (mQuests.at(3))
 	{
-		mLastSavePoint.x = 8060;
-		mLastSavePoint.y = 1184;
+		mLastSavePoint.x = 8060.f;
+		mLastSavePoint.y = 1184.f;
 	}
 }
 

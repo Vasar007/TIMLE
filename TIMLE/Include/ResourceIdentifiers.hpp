@@ -19,7 +19,7 @@ namespace Textures
 	/**
 	 * \brief Enumeration of identificators of all app textures.
 	 */
-	enum ID
+	enum class ID
 	{
 		Archer,
 		Swordsman,
@@ -39,11 +39,15 @@ namespace Textures
 		Dwarf,
 		Shadow,
 		Tentacle,
+		DarkArcher,
 
 		Bullet,
 		Fire,
+		MagicArrow,
 		MovingPlatform,
 		Quest,
+
+		Bloodsplat,
 
 		RockDirt,
 		RockCristal,
@@ -80,7 +84,7 @@ namespace Fonts
 	/**
 	 * \brief Enumeration of identificators of all app fonts.
 	 */
-	enum ID
+	enum class ID
 	{
 		Main,
 	};
@@ -94,7 +98,7 @@ namespace Sounds
 	/**
 	* \brief Enumeration of identificators of all app sounds.
 	*/
-	enum ID
+	enum class ID
 	{
 		ButtonCLick,
 

@@ -2,17 +2,19 @@
 
 
 
-DialogPerson::DialogPerson(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-						   Level& lvl, float X, float Y, int width, int height, std::string type)
-: Entity(Id, X, Y, width, height, 50.f, 100, 0, type)
-, mDialogNumber(stoi(type))
+DialogPerson::DialogPerson(const Type::ID id, const TextureHolder& textures, const FontHolder&,
+						   const Level&, const float X, const float Y, const int width, 
+						   const int height, const std::string& type)
+: Entity(id, X, Y, width, height, 50.f, 100, 0, type)
+, mDialogNumber(std::stoi(type))
 {
-	if (Id == Type::Oswald || Id == Type::Heinrich)
+	if (id == Type::Oswald || id == Type::Heinrich)
 	{
-		mTexture = textures.get(Textures::Knight);
+		mTexture = textures.get(Textures::ID::Knight);
 	}
 	mSprite.setTexture(mTexture);
-	switch(Id)
+
+	switch(id)
 	{
 		case Type::Oswald:
 			mSprite.setTextureRect(sf::IntRect(68, 78, 26, 32));
@@ -25,11 +27,11 @@ DialogPerson::DialogPerson(Type::ID Id, const TextureHolder& textures, const Fon
 			mSprite.setScale(0.75f, 0.75f);
 			break;
 		default:
-			std::cout << "Invalid dialog person type" << std::endl;
+			std::cout << "Invalid dialog person type\n";
 			break;
 	}
 }
 
-void DialogPerson::update(float dt)
+void DialogPerson::update(const float)
 {
 }

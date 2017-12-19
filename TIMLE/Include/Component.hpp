@@ -30,7 +30,7 @@ class Component : public sf::Drawable, public sf::Transformable, private sf::Non
 		/**
 		 * \brief Syntactic sugar. ( std::shared_ptr<Component> ).
 		 */
-		typedef std::shared_ptr<Component> Ptr;
+		typedef std::shared_ptr<Component> shPtr;
 
 
 	private:

@@ -1,10 +1,10 @@
 #ifndef CONTAINER_HPP
 #define CONTAINER_HPP
 
-#include "Component.hpp"
-
 #include <vector>
 #include <memory>
+
+#include "Component.hpp"
 
 
 /**
@@ -29,12 +29,12 @@ class Container final : public Component
 		/**
 		 * \brief Array that contains all elements for manipulating them.
 		 */
-		std::vector<Component::Ptr>	mChildren;
+		std::vector<Component::shPtr>	_children;
 
 		/**
 		 * \brief Number of the selected child.
 		 */
-		int							mSelectedChild;
+		int								_selectedChild;
 	
 	
 	private:
@@ -55,7 +55,7 @@ class Container final : public Component
 		 * \brief		Change focus on the element with given parameter.
 		 * \param index	Number of the element that we select.
 		 */
-		void				select(size_t index);
+		void				select(const std::size_t index);
 
 		/**
 		 * \brief Change focus on the next element in the list.
@@ -78,7 +78,7 @@ class Container final : public Component
 		 * \brief			Pack new component in this container.
 		 * \param component Component that need to pack.
 		 */
-		void				pack(Component::Ptr component);
+		void				pack(const Component::shPtr component);
 
 		/**
 		 * \brief	Check if container can be selectable.

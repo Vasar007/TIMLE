@@ -4,7 +4,7 @@
 #include "Projectile.hpp"
 
 
-class Bullet : public Projectile
+class Bullet final : public Projectile
 {
 	public:
 		float	mTargetX;
@@ -17,13 +17,15 @@ class Bullet : public Projectile
 	
 	
 	public:
-				Bullet(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts,
-					   Level &lvl, float X, float Y, int width, int height, float tX, float tY);
+				Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+					   const Level& lvl, const float X, const float Y, const int width, 
+					   const int height, const float tX, const float tY);
 								    
-				Bullet(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-					   Level &lvl, float X, float Y, int width, int height, int dir);
+				Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+					   const Level& lvl, const float X, const float Y, const int width,
+					   const int height, const int dir);
 
-		void	update(float time) override;
+		void	update(const float dt) override;
 };
 
 #endif // BULLET_HPP

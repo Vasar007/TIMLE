@@ -1,19 +1,50 @@
 #include "../Include/Flamestrike.hpp"
 
 
-Flamestrike::Flamestrike(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-						 Level &lvl, float X, float Y, int width, int height)
-: Projectile(Id, textures, fonts, lvl, X, Y, width, height)
+Flamestrike::Flamestrike(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+						 const Level& lvl, const float X, const float Y, const int width, 
+						 const int height)
+: Projectile(id, textures, fonts, lvl, X, Y, width, height)
 {
-	mTexture = textures.get(Textures::Fire);
+	mTexture = textures.get(Textures::ID::Fire);
+
 	mSprite.setTexture(mTexture);
-	mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
+	mSprite.setTextureRect(sf::IntRect(0, 0, 128, 256));
 	mSprite.setScale(0.5f, 0.5f);
+	const auto color = sf::Color(mSprite.getColor().r, mSprite.getColor().g, mSprite.getColor().b, 0);
+	mSprite.setColor(color);
+
+	mIsStarted = true;
 	mIsEnd = false;
 }
 
-void Flamestrike::update(float dt)
+void Flamestrike::update(const float dt)
 {
+	if (mIsStarted)
+	{
+		mMoveTimer += 0.0085f * dt;
+
+		const auto color = mSprite.getColor();
+
+		if (mMoveTimer > 5.f)
+		{
+			mIsStarted = false;
+			mMoveTimer = -5.f;
+		}
+		else
+		{
+			if (color.a + static_cast<sf::Uint8>(mMoveTimer) * 5 > 255)
+			{
+				mSprite.setColor(sf::Color(color.r, color.g, color.b, 255));
+			}
+			else
+			{
+				mSprite.setColor(sf::Color(color.r, color.g, color.b,
+					color.a + static_cast<sf::Uint8>(mMoveTimer) * 5));
+			}
+		}
+	}
+
 	mCurrentFrame += 0.0075f * dt;
 	if (mCurrentFrame > 24.f)
 	{
@@ -30,7 +61,7 @@ void Flamestrike::update(float dt)
 			mIsAttacked = false;
 			mIsHittedOnce = false;
 		}
-		else if (static_cast<int>(mCurrentAttack) == 1 && !mIsHittedOnce)
+		else if (static_cast<int>(mCurrentAttack) == 1 && !mIsHittedOnce && !mIsStarted)
 		{
 			mIsHitted = true;
 			mIsHittedOnce = true;
@@ -55,7 +86,7 @@ void Flamestrike::update(float dt)
 	{
 		mCurrentDeath += 0.0075f * dt;
 		
-		auto color = mSprite.getColor();
+		const auto color = mSprite.getColor();
 
 		if (mCurrentDeath > 5.f)
 		{

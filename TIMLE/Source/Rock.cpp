@@ -1,14 +1,14 @@
 #include "../Include/Rock.hpp"
 
 
-Rock::Rock(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl, 
-		   float X, float Y, int height, std::string type)
-: Entity(Id, X, Y, stoi(type) * 16, height, 50.f, 100, 0, type)
-, mSize(stoi(type))
+Rock::Rock(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level& lvl,
+		   const float X, const float Y, const int height, const std::string& type)
+: Entity(id, X, Y, stoi(type) * 16, height, 50.f, 100, 0, type)
+, mSize(std::stoi(type))
 {
 	mLevelObjects = lvl.getObjects("solid");
 
-	mTexture = textures.get(Textures::RockDirt);
+	mTexture = textures.get(Textures::ID::RockDirt);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(0, 0, 16 * mSize, height));
 	mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));
@@ -19,9 +19,9 @@ void Rock::fall()
 	mIsAttacked = true;
 }
 
-void Rock::checkCollisionWithMap(float Dx, float Dy)
+void Rock::checkCollisionWithMap(const float, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (std::size_t i = 0; i < mLevelObjects.size(); ++i)
 
 	{
 		// Проверяем пересечение с объектом
@@ -45,7 +45,7 @@ void Rock::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Rock::update(float dt)
+void Rock::update(const float dt)
 {
 	if (mIsAttacked)
 	{

@@ -2,14 +2,16 @@
 #include "../Include/StateStack.hpp"
 
 
-State::CurrentSettings::CurrentSettings(sf::Vector2u windowSize, WindowStyle windowStyle, 
-										float musicVolume, Fonts::ID fontType, 
-										ActualLanguage language)
+State::CurrentSettings::CurrentSettings(const sf::Vector2u windowSize, 
+										const WindowStyle windowStyle, const float musicVolume, 
+										const Fonts::ID fontType, const ActualLanguage language,
+										const DebugMode debugMode)
 : mWindowSize(windowSize)
 , mWindowStyle(windowStyle)
 , mMusicVolume(musicVolume)
 , mFontType(fontType)
 , mLanguage(language)
+, mDebugMode(debugMode)
 , mPressedButton()
 , mHasAnyChanges(false)
 {
@@ -28,9 +30,9 @@ State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontH
 {
 }
 
-State::State(StateStack& stack, Context context)
-: mStack(&stack)
-, mContext(context)
+State::State(StateStack& stack, const Context context)
+: _stack(&stack)
+, _context(context)
 {
 }
 
@@ -38,22 +40,22 @@ State::~State()
 {
 }
 
-void State::requestStackPush(States::ID stateID)
+void State::requestStackPush(const States::ID stateID) const
 {
-	mStack->pushState(stateID);
+	_stack->pushState(stateID);
 }
 
-void State::requestStackPop()
+void State::requestStackPop() const
 {
-	mStack->popState();
+	_stack->popState();
 }
 
-void State::requestStateClear()
+void State::requestStateClear() const
 {
-	mStack->clearStates();
+	_stack->clearStates();
 }
 
 State::Context State::getContext() const
 {
-	return mContext;
+	return _context;
 }

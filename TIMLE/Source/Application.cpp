@@ -21,37 +21,37 @@ const std::vector<sf::Color> Application::mColorConstants = { sf::Color(85, 170,
 															  sf::Color(86, 97, 104) };
 
 Application::Application()
-: mWindow(sf::VideoMode(1280, 720), "TIMLE", sf::Style::Close)
-, mTextures()
-, mFonts()
-, mSounds()
-, mPlayerInfo()
-, mCurrentSettings(mWindow.getSize(), State::WindowStyle::Close, 100.f, 
-				   Fonts::Main, State::ActualLanguage::Russian)
-, mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mPlayerInfo, mCurrentSettings))
-, mStatisticsText()
-, mStatisticsUpdateTime()
-, mStatisticsNumFrames(0)
+: _window(sf::VideoMode(1280, 720), "TIMLE", sf::Style::Close)
+, _textures()
+, _fonts()
+, _sounds()
+, _playerInfo()
+, _currentSettings(_window.getSize(), State::WindowStyle::Close, 100.f, 
+				   Fonts::ID::Main, State::ActualLanguage::Russian, State::DebugMode::DebugOff)
+, _stateStack(State::Context(_window, _textures, _fonts, _sounds, _playerInfo, _currentSettings))
+, _statisticsText()
+, _statisticsUpdateTime()
+, _statisticsNumFrames(0)
 {
-	mWindow.setKeyRepeatEnabled(false);
-	mWindow.setVerticalSyncEnabled(true);
+	_window.setKeyRepeatEnabled(false);
+	_window.setVerticalSyncEnabled(true);
 
-	mFonts.load(Fonts::Main, 	"Media/Other/Noto Serif.ttf");
+	_fonts.load(Fonts::ID::Main, 	"Media/Other/Noto Serif.ttf");
 
-	mTextures.load(Textures::TitleScreen,		"Media/Textures/Menu/back.png");
-	mTextures.load(Textures::ButtonNormal,		"Media/Textures/Menu/ButtonNormal.png");
-	mTextures.load(Textures::ButtonSelected,	"Media/Textures/Menu/ButtonSelected.png");
-	mTextures.load(Textures::ButtonPressed,		"Media/Textures/Menu/ButtonPressed.png");
-	mTextures.load(Textures::DialogBox,			"Media/Textures/Interface/DialogBox.png");
+	_textures.load(Textures::ID::TitleScreen,		"Media/Textures/Menu/Back.png");
+	_textures.load(Textures::ID::ButtonNormal,		"Media/Textures/Menu/ButtonNormal.png");
+	_textures.load(Textures::ID::ButtonSelected,	"Media/Textures/Menu/ButtonSelected.png");
+	_textures.load(Textures::ID::ButtonPressed,		"Media/Textures/Menu/ButtonPressed.png");
+	_textures.load(Textures::ID::DialogBox,			"Media/Textures/Interface/DialogBox.png");
 
-	mSounds.load(Sounds::ButtonCLick, "Media/Sounds/MenuSelectionClick.wav");
+	_sounds.load(Sounds::ID::ButtonCLick, "Media/Sounds/MenuSelectionClick.wav");
 
-	mStatisticsText.setFont(mFonts.get(Fonts::Main));
-	mStatisticsText.setPosition(5.f, 5.f);
-	mStatisticsText.setCharacterSize(10u);
+	_statisticsText.setFont(_fonts.get(Fonts::ID::Main));
+	_statisticsText.setPosition(5.f, 5.f);
+	_statisticsText.setCharacterSize(10u);
 
 	registerStates();
-	mStateStack.pushState(States::Title);
+	_stateStack.pushState(States::ID::Title);
 }
 
 void Application::run()
@@ -59,7 +59,7 @@ void Application::run()
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-	while (mWindow.isOpen())
+	while (_window.isOpen())
 	{
 		sf::Time dt = clock.restart();
 		timeSinceLastUpdate += dt;
@@ -71,9 +71,9 @@ void Application::run()
 			update(TimePerFrame);
 
 			// Check inside this loop, because stack might be empty before update() call.
-			if (mStateStack.isEmpty())
+			if (_stateStack.isEmpty())
 			{
-				mWindow.close();
+				_window.close();
 			}
 		}
 
@@ -85,73 +85,73 @@ void Application::run()
 void Application::processInput()
 {
 	sf::Event event;
-	while (mWindow.pollEvent(event))
+	while (_window.pollEvent(event))
 	{
-		mStateStack.handleEvent(event);
+		_stateStack.handleEvent(event);
 
 		if (event.type == sf::Event::Closed)
 		{
-			mWindow.close();
+			_window.close();
 		}
 	}
 }
 
-void Application::update(sf::Time dt)
+void Application::update(const sf::Time dt)
 {
-	mStateStack.update(dt);
+	_stateStack.update(dt);
 }
 
 void Application::render()
 {
-	switch (mPlayerInfo.getLevelNumber())
+	switch (_playerInfo.getLevelNumber())
 	{
 		case 1:
-			mWindow.clear(mColorConstants[0]);
+			_window.clear(mColorConstants[0]);
 			break;
 		case 2:
-			mWindow.clear(mColorConstants[1]);
+			_window.clear(mColorConstants[1]);
 			break;
 		case 3:
-			mWindow.clear(mColorConstants[0]);
+			_window.clear(mColorConstants[0]);
 			break;
 		default:
-			mWindow.clear(mColorConstants[0]);
+			_window.clear(mColorConstants[0]);
 			break;
 	}
 	//mWindow.clear(sf::Color(85, 170, 255));
 
-	mStateStack.draw();
+	_stateStack.draw();
 
-	mWindow.setView(mWindow.getDefaultView());
-	mWindow.draw(mStatisticsText);
+	_window.setView(_window.getDefaultView());
+	_window.draw(_statisticsText);
 
-	mWindow.display();
+	_window.display();
 }
 
-void Application::updateStatistics(sf::Time dt)
+void Application::updateStatistics(const sf::Time dt)
 {
-	mStatisticsUpdateTime += dt;
-	mStatisticsNumFrames += 1;
-	if (mStatisticsUpdateTime >= sf::seconds(1.0f))
+	_statisticsUpdateTime += dt;
+	_statisticsNumFrames += 1;
+	if (_statisticsUpdateTime >= sf::seconds(1.0f))
 	{
-		mStatisticsText.setString("FPS: " + toString(mStatisticsNumFrames));
+		_statisticsText.setString("FPS: " + toString(_statisticsNumFrames));
 
-		mStatisticsUpdateTime -= sf::seconds(1.0f);
-		mStatisticsNumFrames = 0;
+		_statisticsUpdateTime -= sf::seconds(1.0f);
+		_statisticsNumFrames = 0;
 	}
 }
 
 void Application::registerStates()
 {
-	mStateStack.registerState<TitleState>(States::Title);
-	mStateStack.registerState<MenuState>(States::Menu);
-	mStateStack.registerState<GameState>(States::Game);
-	mStateStack.registerState<LoadingState>(States::Loading);
-	mStateStack.registerState<PauseState>(States::Pause);
-	mStateStack.registerState<SettingsState>(States::Settings);
-	mStateStack.registerState<GameOverState>(States::GameOver);
-	mStateStack.registerState<DialogState>(States::Dialog);
-	mStateStack.registerState<ChoosingState>(States::Choosing);
-	mStateStack.registerState<TitreState>(States::Titre);
-	mStateStack.registerState<ChanginState>(States::Changing);
+	_stateStack.registerState<TitleState>(States::ID::Title);
+	_stateStack.registerState<MenuState>(States::ID::Menu);
+	_stateStack.registerState<GameState>(States::ID::Game);
+	_stateStack.registerState<LoadingState>(States::ID::Loading);
+	_stateStack.registerState<PauseState>(States::ID::Pause);
+	_stateStack.registerState<SettingsState>(States::ID::Settings);
+	_stateStack.registerState<GameOverState>(States::ID::GameOver);
+	_stateStack.registerState<DialogState>(States::ID::Dialog);
+	_stateStack.registerState<ChoosingState>(States::ID::Choosing);
+	_stateStack.registerState<TitreState>(States::ID::Titre);
+	_stateStack.registerState<ChanginState>(States::ID::Changing);
 }

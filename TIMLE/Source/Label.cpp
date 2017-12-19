@@ -1,15 +1,14 @@
-#include "../Include/Label.hpp"
-#include "../Include/Utility.hpp"
-
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+
+#include "../Include/Label.hpp"
 
 
 namespace GUI
 {
 
 Label::Label(const std::string& text, const FontHolder& fonts)
-: mText(text, fonts.get(Fonts::Main), 16)
+: _text(text, fonts.get(Fonts::ID::Main), 16)
 {
 }
 
@@ -25,12 +24,12 @@ void Label::handleEvent(const sf::Event&)
 void Label::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
-	target.draw(mText, states);
+	target.draw(_text, states);
 }
 
 void Label::setText(const sf::String& text)
 {
-	mText.setString(text);
+	_text.setString(text);
 }
 
 }

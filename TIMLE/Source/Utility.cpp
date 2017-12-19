@@ -1,27 +1,26 @@
-#include "../Include/Utility.hpp"
-
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
-
 #include <random>
 #include <cmath>
 #include <ctime>
 #include <cassert>
-#include <Windows.h>
+
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
+
+#include "../Include/Utility.hpp"
 
 
 namespace
 {
 	std::default_random_engine createRandomEngine()
 	{
-		auto seed = static_cast<unsigned long>(std::time(nullptr));
+		const auto seed = static_cast<unsigned long>(time(nullptr));
 		return std::default_random_engine(seed);
 	}
 
 	auto RandomEngine = createRandomEngine();
 }
 
-std::string toString(sf::Keyboard::Key key)
+std::string toString(const sf::Keyboard::Key key)
 {
 	#define BOOK_KEYTOSTRING_CASE(KEY) case sf::Keyboard::KEY: return #KEY;
 
@@ -139,37 +138,37 @@ std::string toString(sf::Keyboard::Key key)
 
 void centerOrigin(sf::Sprite& sprite)
 {
-	sf::FloatRect bounds = sprite.getLocalBounds();
+	const auto bounds = sprite.getLocalBounds();
 	sprite.setOrigin(floor(bounds.left + bounds.width / 2.f), 
 					 floor(bounds.top + bounds.height / 2.f));
 }
 
 void centerOrigin(sf::Text& text)
 {
-	sf::FloatRect bounds = text.getLocalBounds();
+	const auto bounds = text.getLocalBounds();
 	text.setOrigin(floor(bounds.left + bounds.width / 2.f), 
 				   floor(bounds.top + bounds.height / 2.f));
 }
 
-float toDegree(float radian)
+float toDegree(const float radian)
 {
 	return 180.f / 3.141592653589793238462643383f * radian;
 }
 
-float toRadian(float degree)
+float toRadian(const float degree)
 {
 	return 3.141592653589793238462643383f / 180.f * degree;
 }
 
-int randomInt(int exclusiveMax)
+int randomInt(const int exclusiveMax)
 {
 	std::uniform_int_distribution<> distr(0, exclusiveMax - 1);
 	return distr(RandomEngine);
 }
 
-float length(sf::Vector2f vector)
+float length(const sf::Vector2f vector)
 {
-	return std::sqrt(vector.x * vector.x + vector.y * vector.y);
+	return sqrt(vector.x * vector.x + vector.y * vector.y);
 }
 
 sf::Vector2f unitVector(sf::Vector2f vector)
@@ -178,8 +177,9 @@ sf::Vector2f unitVector(sf::Vector2f vector)
 	return vector / length(vector);
 }
 
-sf::RectangleShape buildBorderLines(sf::Vector2f position, sf::Vector2f size, sf::Color fillColor,
-									sf::Color outlineColor, float outlineThickness)
+sf::RectangleShape buildBorderLines(const sf::Vector2f position, const sf::Vector2f size, 
+									const sf::Color fillColor, const sf::Color outlineColor, 
+									const float outlineThickness)
 {
 	sf::RectangleShape shape;
 	shape.setPosition(position);
@@ -191,8 +191,8 @@ sf::RectangleShape buildBorderLines(sf::Vector2f position, sf::Vector2f size, sf
 	return shape;
 }
 
-sf::RectangleShape buildBorderLines(sf::FloatRect rect, sf::Color fillColor,
-									sf::Color outlineColor, float outlineThickness)
+sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fillColor,
+									const sf::Color outlineColor, const float outlineThickness)
 {
 	sf::RectangleShape shape;
 	shape.setPosition(sf::Vector2f(rect.left, rect.top));

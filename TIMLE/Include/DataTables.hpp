@@ -1,13 +1,13 @@
 #ifndef DATATABLES_HPP
 #define DATATABLES_HPP
 
-#include "ResourceIdentifiers.hpp"
-
-#include <SFML/System/Time.hpp>
-#include <SFML/Graphics/Color.hpp>
-
 #include <vector>
 #include <functional>
+
+#include <SFML/System/Time.hpp>
+#include <SFML/Graphics/Rect.hpp>
+
+#include "ResourceIdentifiers.hpp"
 
 
 // Forward declaration.
@@ -23,17 +23,17 @@ namespace Type
 	/**
 	 * \brief Constant for counting hero types.
 	 */
-	const size_t HeroCount = 3;
+	const std::size_t HERO_COUNT = 3;
 
 	/**
 	 * \brief Constant for counting enemy types.
 	 */
-	const size_t EnemyCount = 11;
+	const std::size_t ENEMY_COUNT = 12;
 
 	/**
 	 * \brief Constant for counting projectiles types.
 	 */
-	const size_t ProjectilesCount = 4;
+	const std::size_t PROJECTILES_COUNT = 5;
 
 	/**
 	 * \brief Identifiers of all entities.
@@ -55,11 +55,13 @@ namespace Type
 		Shadow,
 		GolemDark,
 		Tentacle,
+		DarkArcher,
 
 		AlliedBullet,
 		EnemyBullet,
 		Flamestrike,
 		Fireball,
+		MagicArrow,
 
 		MovingPlatform,
 		Rock,
@@ -75,6 +77,9 @@ namespace Type
 		Heinrich,
 		DeadJuggernaut,
 		DeadDwarf,
+
+		Bloodsplat,
+
 		TypeCount
 	};
 }
@@ -84,14 +89,14 @@ namespace Type
  */
 struct Direction
 {
-	Direction(float angle, float distance)
-	: angle(angle)
-	, distance(distance)
+	Direction(const float angle, const float distance)
+	: mAngle(angle)
+	, mDistance(distance)
 	{
 	}
 
-	float angle;
-	float distance;
+	float mAngle;
+	float mDistance;
 };
 
 /**
@@ -99,7 +104,7 @@ struct Direction
  */
 struct TeleportPoint
 {
-	TeleportPoint(float x, float y)
+	TeleportPoint(const float x, const float y)
 	: x(x)
 	, y(y)
 	{
@@ -114,12 +119,15 @@ struct TeleportPoint
  */
 struct EntityData
 {
-	size_t							hitpoints;
-	size_t							damage;
-	float							speed;
-	Textures::ID					texture;
-	sf::Time						fireInterval;
-	std::vector<Direction>			directions;
+	std::size_t						mHitpoints;
+	std::size_t						mDamage;
+	float							mSpeed;
+	Textures::ID					mTexture;
+	sf::Time						mFireInterval;
+	std::vector<Direction>			mDirections;
+	std::function<sf::FloatRect(float top, float left, 
+								float width, float height, float direction)> mCalcBodyRect;
+
 };
 
 /**
@@ -127,12 +135,12 @@ struct EntityData
  */
 struct ShadowData
 {
-	size_t							hitpoints;
-	size_t							damage;
-	float							speed;
-	Textures::ID					texture;
-	sf::Time						timeInterval;
-	std::vector<TeleportPoint>		teleportPoints;
+	std::size_t						mHitpoints;
+	std::size_t						mDamage;
+	float							mSpeed;
+	Textures::ID					mTexture;
+	sf::Time						mTimeInterval;
+	std::vector<TeleportPoint>		mTeleportPoints;
 };
 
 /**
@@ -140,11 +148,11 @@ struct ShadowData
  */
 struct GolemDarkData
 {
-	size_t							hitpoints;
-	size_t							damage;
-	float							speed;
-	Textures::ID					texture;
-	sf::Time						timeInterval;
+	std::size_t						mHitpoints;
+	std::size_t						mDamage;
+	float							mSpeed;
+	Textures::ID					mTexture;
+	sf::Time						mTimeInterval;
 };
 
 /**
@@ -152,9 +160,9 @@ struct GolemDarkData
  */
 struct ProjectileData
 {
-	size_t							damage;
-	float							speed;
-	Textures::ID					texture;
+	std::size_t						mDamage;
+	float							mSpeed;
+	Textures::ID					mTexture;
 };
 
 /**
@@ -162,8 +170,8 @@ struct ProjectileData
  */
 struct PickupData
 {
-	std::function<void(Player&)>	action;
-	Textures::ID					texture;
+	std::function<void(Player&)>	mAction;
+	Textures::ID					mTexture;
 };
 
 // Initialization block.

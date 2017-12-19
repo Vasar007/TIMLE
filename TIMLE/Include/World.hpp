@@ -1,10 +1,17 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
 
+#include <list>
+#include <memory>
+
+#include <SFML/System/NonCopyable.hpp>
+#include <SFML/Graphics/View.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Audio.hpp>
+
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Level.hpp"
-#include "Enemy.hpp"
 #include "Player.hpp"
 #include "Lifebar.hpp"
 #include "PlayerInfo.hpp"
@@ -12,16 +19,9 @@
 #include "Tentacle.hpp"
 #include "GolemDark.hpp"
 #include "AudioManager.hpp"
-
-#include <SFML/System/NonCopyable.hpp>
-#include <SFML/Graphics/View.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Audio/SoundBuffer.hpp>
-#include <SFML/Audio.hpp>
-
-#include <array>
-#include <queue>
-#include <list>
+#include "Projectile.hpp"
+#include "Effect.hpp"
+#include "State.hpp"
 
 
 // Forward declaration.
@@ -43,7 +43,7 @@ class World : private sf::NonCopyable
 		 */
 		struct SpawnPoint
 		{
-			SpawnPoint(Type::ID type, float x, float y)
+			SpawnPoint(const Type::ID type, const float x, const float y)
 			: mType(type)
 			, x(x)
 			, y(y)
@@ -61,7 +61,7 @@ class World : private sf::NonCopyable
 		struct ShadowBoss
 		{
 			ShadowBoss()
-			: mNumberOfTentacles(4)
+			: mNumberOfTentacles(4u)
 			, mIsActive(false)
 			, mIsFinished(false)
 			, mShadow(nullptr)
@@ -71,15 +71,15 @@ class World : private sf::NonCopyable
 			{
 			}
 
-			const size_t			mNumberOfTentacles;
+			const std::size_t			mNumberOfTentacles;
 
-			bool					mIsActive;
-			bool					mIsFinished;
+			bool						mIsActive;
+			bool						mIsFinished;
 
-			Shadow*					mShadow;
-			LifeBar*				mShadowLifeBar;
-			std::list<Tentacle*>	mTentacles;
-			std::list<Tentacle*>	mTentaclesStatic;
+			std::unique_ptr<Shadow>		mShadow;
+			std::unique_ptr<LifeBar>	mShadowLifeBar;
+			std::list<Tentacle>			mTentacles;
+			std::list<Tentacle>			mTentaclesStatic;
 		};
 
 		/**
@@ -105,64 +105,68 @@ class World : private sf::NonCopyable
 			bool						mIsWeakened;
 			int							mCameraCounter;
 
-			GolemDark*					mGolem;
-			LifeBar*					mGolemLifeBar;
-			std::vector<SpawnPoint*>	mRocks;
+			std::unique_ptr<GolemDark>	mGolem;
+			std::unique_ptr<LifeBar>	mGolemLifeBar;
+			std::vector<SpawnPoint>		mRocks;
 		};
 	
 	
 	private:
-		sf::RenderWindow&		mWindow;
-		sf::View				mWorldView;
-		TextureHolder&			mTextures;
-		FontHolder&				mFonts;
-		SoundBufferHolder&		mSounds;
-		AudioManager&			mAudioManager;
-		Level*					mLevel;
+		sf::RenderWindow&				_window;
+		sf::View						_worldView;
+		TextureHolder&					_textures;
+		FontHolder&						_fonts;
+		SoundBufferHolder&				_sounds;
+		AudioManager&					_audioManager;
+		std::unique_ptr<Level>			_level;
+									
+									
+		sf::FloatRect					_worldBounds;
+		sf::Vector2f					_spawnPosition;
+		std::size_t						_currentLevelNumber;
+		sf::Vector2f					_position;
+		float							_scrollSpeed;
+		std::unique_ptr<Player>			_playerHero;
+		PlayerInfo*						_playerInfo;
+		std::unique_ptr<LifeBar>		_lifeBar;
+									
+									
+		ShadowBoss						_shadowBoss;
+		GolemBoss						_golemBoss;
 
 	
-		sf::FloatRect			mWorldBounds;
-		sf::Vector2f			mSpawnPosition;
-		size_t					mLevelNumber;
-		sf::Vector2f			mPosition;
-		float					mScrollSpeed;
-		Player*					mPlayerHero;
-		PlayerInfo*				mPlayerInfo;
-		LifeBar*				mLifeBar;
+		std::list<Entity*>				_entities;
+		std::list<Effect*>				_effects;
+		std::vector<SpawnPoint>			_enemySpawnPoints;	// Not using now.
+		std::vector<Projectile*>		_guidedProjectiles;
+		std::vector<Object>				_objects;
 
-
-		ShadowBoss				mShadowBoss;
-		GolemBoss				mGolemBoss;
-
-	
-		std::list<Entity*>		mEntities;
-		std::vector<SpawnPoint>	mEnemySpawnPoints;	// Not using now.
-		std::vector<Enemy*>		mEnemies;	// Not using now.
-		std::vector<Object>		mObjects;
+		std::vector<sf::RectangleShape> _debugRectsToDraw;
 
 
 		/**
 		 * \brief Need to loading different sounds in this variable and play them.
 		 */
-		sf::Sound				mSound;
+		sf::Sound						_sound;
 
 
 		/**
 		 * \brief Boolean flag for enabling debug-mode.
 		 */
-		bool					mDebug;
+		bool							_debug;
 	
 
 	private:
-		void					setPlayerCoordinateForView(float x, float y, size_t levelNumber);
+		void					setPlayerCoordinateForView(const float x, const float y, 
+														   const std::size_t levelNumber);
 		
-		void					handleCollisions(float dt);
+		void					handleCollisions(const float dt);
 	
 		void					buildScene();
 		
 		void					addObjects();
 		
-		void					addEnemy(Type::ID type, float relX, float relY);
+		void					addEnemy(const Type::ID type, const float relX, const float relY);
 		
 		void					spawnEnemies();
 		
@@ -174,6 +178,9 @@ class World : private sf::NonCopyable
 		
 		sf::FloatRect			getBattlefieldBounds() const;
 
+		bool					loadObjects(std::vector<Object>& objects, 
+											const std::string_view objectName);
+
 
 	public:
 		/**
@@ -184,12 +191,14 @@ class World : private sf::NonCopyable
 		 * \param sounds		Sounds holder for extracting necessary textures.
 		 * \param playerInfo	Class that contains player's data.
 		 * \param audioManager	Audio manager for manipulating app's music.
+		 * \param debugMode		Parameter used to define debug mode.
 		 */
 		explicit				World(sf::RenderWindow& window, TextureHolder& textures,
-									  FontHolder& fonts, SoundBufferHolder& sounds, 
-									  PlayerInfo* playerInfo, AudioManager& audioManager);
+									  FontHolder& fonts, SoundBufferHolder& sounds,
+									  PlayerInfo* playerInfo, AudioManager& audioManager,
+									  const State::DebugMode debugMode);
 
-		void					loadLevel(size_t levelNumber);
+		void					loadLevel(const std::size_t levelNumber);
 		
 		void					update(sf::Time dt);
 		
@@ -201,7 +210,7 @@ class World : private sf::NonCopyable
 		
 		bool 					hasPlayerReachedEnd() const;
 
-		size_t					getLevelNumber() const;
+		std::size_t				getLevelNumber() const;
 };
 
 #endif // WORLD_HPP

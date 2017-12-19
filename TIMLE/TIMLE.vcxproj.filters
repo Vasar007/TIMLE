@@ -64,6 +64,18 @@
     <Filter Include="Файлы исходного кода\States">
       <UniqueIdentifier>{75f09c08-2b17-4aa1-8f60-21bf1f3f5398}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Projectiles">
+      <UniqueIdentifier>{025d9008-4520-4d94-8b4f-cbe9a508d3f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Projectiles">
+      <UniqueIdentifier>{61b71069-493c-4117-b3c8-71df65cf341f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Effects">
+      <UniqueIdentifier>{61899ea3-d5b8-40ef-b70e-31407e1eacaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Effects">
+      <UniqueIdentifier>{835f75b1-c49a-4822-ac23-9a008acd4a0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TinyXML\tinystr.cpp">
@@ -84,9 +96,6 @@
     <ClCompile Include="Source\Player.cpp">
       <Filter>Файлы исходного кода\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Bullet.cpp">
-      <Filter>Файлы исходного кода\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Entity.cpp">
       <Filter>Файлы исходного кода\Objects</Filter>
     </ClCompile>
@@ -106,9 +115,6 @@
       <Filter>Файлы исходного кода\Enemies</Filter>
     </ClCompile>
     <ClCompile Include="Source\Dwarf.cpp">
-      <Filter>Файлы исходного кода\Enemies</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Darksoldier.cpp">
       <Filter>Файлы исходного кода\Enemies</Filter>
     </ClCompile>
     <ClCompile Include="Source\Ghost.cpp">
@@ -213,11 +219,29 @@
     <ClCompile Include="Source\ChangingState.cpp">
       <Filter>Файлы исходного кода\States</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DarkArcher.cpp">
+      <Filter>Файлы исходного кода\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DarkSoldier.cpp">
+      <Filter>Файлы исходного кода\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Bullet.cpp">
+      <Filter>Файлы исходного кода\Projectiles</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Flamestrike.cpp">
-      <Filter>Файлы исходного кода\Objects</Filter>
+      <Filter>Файлы исходного кода\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Source\Projectile.cpp">
-      <Filter>Файлы исходного кода\Objects</Filter>
+      <Filter>Файлы исходного кода\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MagicArrow.cpp">
+      <Filter>Файлы исходного кода\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Bloodsplat.cpp">
+      <Filter>Файлы исходного кода\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect.cpp">
+      <Filter>Файлы исходного кода\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -243,9 +267,6 @@
       <Filter>Заголовочные файлы\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="Include\MinotaurMage.hpp">
-      <Filter>Заголовочные файлы\Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Darksoldier.hpp">
       <Filter>Заголовочные файлы\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="Include\Button.hpp">
@@ -281,23 +302,14 @@
     <ClInclude Include="Include\World.hpp">
       <Filter>Заголовочные файлы\Mechanics</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Foreach.hpp">
-      <Filter>Заголовочные файлы\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Utility.hpp">
       <Filter>Заголовочные файлы\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Bullet.hpp">
-      <Filter>Заголовочные файлы\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Include\Entity.hpp">
       <Filter>Заголовочные файлы\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Include\MovingPlatform.hpp">
       <Filter>Заголовочные файлы\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Pickup.hpp">
-      <Filter>Заголовочные файлы\Player</Filter>
     </ClInclude>
     <ClInclude Include="Include\Player.hpp">
       <Filter>Заголовочные файлы\Player</Filter>
@@ -374,11 +386,29 @@
     <ClInclude Include="Include\ChangingState.hpp">
       <Filter>Заголовочные файлы\States</Filter>
     </ClInclude>
+    <ClInclude Include="Include\DarkArcher.hpp">
+      <Filter>Заголовочные файлы\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DarkSoldier.hpp">
+      <Filter>Заголовочные файлы\Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Flamestrike.hpp">
-      <Filter>Заголовочные файлы\Objects</Filter>
+      <Filter>Заголовочные файлы\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="Include\Projectile.hpp">
-      <Filter>Заголовочные файлы\Objects</Filter>
+      <Filter>Заголовочные файлы\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Bullet.hpp">
+      <Filter>Заголовочные файлы\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MagicArrow.hpp">
+      <Filter>Заголовочные файлы\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Bloodsplat.hpp">
+      <Filter>Заголовочные файлы\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Effect.hpp">
+      <Filter>Заголовочные файлы\Effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

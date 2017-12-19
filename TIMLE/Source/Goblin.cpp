@@ -1,51 +1,52 @@
 #include "../Include/Goblin.hpp"
 
 
-Goblin::Goblin(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl,
-			   float X, float Y, int width, int height, std::string Type)
-: Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
+Goblin::Goblin(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+			   const Level& lvl, const float X, const float Y, const int width,
+			   const int height, const std::string& type)
+: Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 {
-	mTexture = textures.get(Textures::Goblin);
+	mTexture = textures.get(Textures::ID::Goblin);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(10, 67, mWidth, mHeight));
 	mSprite.setScale(0.5f, 0.5f);
 	dx = 0.07f;
 }
 
-void Goblin::checkCollisionWithMap(float Dx, float Dy)
+void Goblin::checkCollisionWithMap(const float Dx, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
-			if (mLevelObjects[i].mName == "enemyBorder")
+			if (object.mName == "enemyBorder")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
+					x = object.mRect.left - mWidth;
 					mIsTurned = true;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
-					mIsTurned = true;
+					x = object.mRect.left + object.mRect.width;
+					mIsTurned = true;;
 				}
 			}
 
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -53,7 +54,7 @@ void Goblin::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Goblin::update(float dt)
+void Goblin::update(const float dt)
 {
 	// Притяжение к земле
 	dy += 0.0015f * dt;
@@ -168,7 +169,7 @@ void Goblin::update(float dt)
 		mMoveTimer += dt;
 		if (mMoveTimer > 1000.f)
 		{
-			mCounter++;
+			++mCounter;
 			mMoveTimer = 0.f;
 		}
 		mCurrentDeath += 0.0035f * dt;

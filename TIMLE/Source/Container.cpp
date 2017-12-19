@@ -1,27 +1,26 @@
-#include "../Include/Container.hpp"
-#include "../Include/Foreach.hpp"
-
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+
+#include "../Include/Container.hpp"
 
 
 namespace GUI
 {
 
 Container::Container()
-: mChildren()
-, mSelectedChild(-1)
+: _children()
+, _selectedChild(-1)
 {
 }
 
-void Container::pack(Component::Ptr component)
+void Container::pack(const Component::shPtr component)
 {
-	mChildren.push_back(component);
+	_children.push_back(component);
 
 	if (!hasSelection() && component->isSelectable())
 	{
-		select(mChildren.size() - 1);
+		select(_children.size() - 1);
 	}
 }
 
@@ -33,9 +32,9 @@ bool Container::isSelectable() const
 void Container::handleEvent(const sf::Event& event)
 {
 	// If we have selected a child then give it events.
-	if (hasSelection() && mChildren[mSelectedChild]->isActive())
+	if (hasSelection() && _children[_selectedChild]->isActive())
 	{
-		mChildren[mSelectedChild]->handleEvent(event);
+		_children[_selectedChild]->handleEvent(event);
 	}
 	else if (event.type == sf::Event::KeyReleased)
 	{
@@ -51,7 +50,7 @@ void Container::handleEvent(const sf::Event& event)
 		{
 			if (hasSelection())
 			{
-				mChildren[mSelectedChild]->activate();
+				_children[_selectedChild]->activate();
 			}
 		}
 	}
@@ -61,7 +60,7 @@ void Container::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
 
-	FOREACH(const Component::Ptr& child, mChildren)
+	for (const auto& child : _children)
 	{
 		target.draw(*child, states);
 	}
@@ -69,20 +68,20 @@ void Container::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 bool Container::hasSelection() const
 {
-	return mSelectedChild >= 0;
+	return _selectedChild >= 0;
 }
 
-void Container::select(size_t index)
+void Container::select(const std::size_t index)
 {
-	if (mChildren[index]->isSelectable())
+	if (_children[index]->isSelectable())
 	{
 		if (hasSelection())
 		{
-			mChildren[mSelectedChild]->deselect();
+			_children[_selectedChild]->deselect();
 		}
 
-		mChildren[index]->select();
-		mSelectedChild = index;
+		_children[index]->select();
+		_selectedChild = index;
 	}
 }
 
@@ -94,12 +93,12 @@ void Container::selectNext()
 	}
 
 	// Search next component that is selectable, wrap around if necessary.
-	int next = mSelectedChild;
+	int next = _selectedChild;
 	do
 	{
-		next = (next + 1) % mChildren.size();
+		next = (next + 1) % _children.size();
 	}
-	while (!mChildren[next]->isSelectable());
+	while (!_children[next]->isSelectable());
 
 	// Select that component.
 	select(next);
@@ -113,12 +112,12 @@ void Container::selectPrevious()
 	}
 
 	// Search previous component that is selectable, wrap around if necessary.
-	int prev = mSelectedChild;
+	int prev = _selectedChild;
 	do
 	{
-		prev = (prev + mChildren.size() - 1) % mChildren.size();
+		prev = (prev + _children.size() - 1) % _children.size();
 	}
-	while (!mChildren[prev]->isSelectable());
+	while (!_children[prev]->isSelectable());
 
 	// Select that component.
 	select(prev);

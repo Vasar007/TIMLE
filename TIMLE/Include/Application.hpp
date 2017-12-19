@@ -1,15 +1,15 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "ResourceHolder.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "Player.hpp"
-#include "StateStack.hpp"
-
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
+
+#include "ResourceHolder.hpp"
+#include "ResourceIdentifiers.hpp"
+#include "Player.hpp"
+#include "StateStack.hpp"
 
 
 /**
@@ -31,52 +31,52 @@ class Application
 		/**
 		 * \brief Active window to using.
 		 */
-		sf::RenderWindow		mWindow;
+		sf::RenderWindow		_window;
 
 		/**
 		 * \brief Variable, which contains all textures for this app.
 		 */
-		TextureHolder			mTextures;
+		TextureHolder			_textures;
 
 		/**
 		 * \brief Variable, which contains all fonts for this app.
 		 */
-		FontHolder				mFonts;
+		FontHolder				_fonts;
 
 		/**
 		* \brief Variable, which contains all sounds for this app.
 		*/
-		SoundBufferHolder		mSounds;
+		SoundBufferHolder		_sounds;
 
 		/**
 		 * \brief Variable, which contains all player's data.
 		 */
-		PlayerInfo				mPlayerInfo;
+		PlayerInfo				_playerInfo;
 
 		/**
 		 * \brief Structure for containing all settings.
 		 */
-		State::CurrentSettings	mCurrentSettings;
+		State::CurrentSettings	_currentSettings;
 	
 		/**
 		 * \brief State stack, can contain and update different states (section "States").
 		 */
-		StateStack				mStateStack;
+		StateStack				_stateStack;
 	
 		/**
 		 * \brief Text for appearing current FPS of this app.
 		 */
-		sf::Text				mStatisticsText;
+		sf::Text				_statisticsText;
 
 		/**
 		 * \brief Time for updating current FPS of this app.
 		 */
-		sf::Time				mStatisticsUpdateTime;
+		sf::Time				_statisticsUpdateTime;
 
 		/**
 		 * \brief Number FPS of this app.
 		 */
-		std::size_t				mStatisticsNumFrames;
+		std::size_t				_statisticsNumFrames;
 
 
 	private:
@@ -89,7 +89,7 @@ class Application
 		 * \brief		Update stack of the states.
 		 * \param dt	Delta time parameter.
 		 */
-		void	update(sf::Time dt);
+		void	update(const sf::Time dt);
 		
 		/**
 		 * \brief Manipulate with window (such as drawing and changing view).
@@ -100,7 +100,7 @@ class Application
 		 * \brief		Update statictics information of the app.
 		 * \param dt	Delta time parameter.
 		 */
-		void	updateStatistics(sf::Time dt);
+		void	updateStatistics(const sf::Time dt);
 		/**
 		 * \brief Register states for working with it.
 		 */

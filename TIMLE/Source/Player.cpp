@@ -3,50 +3,75 @@
 
 namespace
 {
-	const std::vector<EntityData> Table = initializeHeroData();
+	const std::vector<EntityData> PLAYER_TABLE = initializeHeroData();
 }
 
-Player::Player(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
-			   float X, float Y, int width, int height, PlayerInfo* playerInfo)
-: Entity(Id, X, Y, width, height, Table[Id].speed, Table[Id].hitpoints, Table[Id].damage)
+Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolder&, 
+			   const Level& lvl, const float X, const  float Y, const int width, const int height, 
+			   PlayerInfo* playerInfo)
+: Entity(id, X, Y, width, height, PLAYER_TABLE[id].mSpeed, PLAYER_TABLE[id].mHitpoints,
+		 PLAYER_TABLE[id].mDamage)
+, _beforeJump(0.f)
+, _afterJump(0.f)
+, _fallingHeight(0.f)
+, _isLeft(false)
+, _isRight(false)
+, _needFirstMainDelay(false)
+, _hadFirstMainDelay(false)
+, _needFirstMiniDelay(false)
+, _hadFirstMiniDelay(false)
 , mStayTimer(0.f)
 , mOnPlatform(0.f)
 , mShootTimer(0.f)
 , mJumpTimer(0.f)
-, mBeforeJump(0.f)
-, mAfterJump(0.f)
-, mFallingHeight(0.f)
+, mDelayTimer(0.f)
 , mCounter(0)
 , mDialogNumber(0)
-, mMaxHitpoints(Table[Id].hitpoints)
+, mMaxHitpoints(PLAYER_TABLE[id].mHitpoints)
 , mIsShoot(false)
 , mCanShoted(true)
 , mIsJumped(false)
-, mIsLeft(false)
-, mIsRight(false)
 , mShooted(false)
 , mIsShooting(false)
 , mDoubleJump(false)
 , mCanDoubleJump(false)
 , mPressJump(false)
 , mIsRichedEnd(false)
-, mHasStartedFirstBoss(false)
-, mHasStartedSecondBoss(false)
+, mHasStartedFirstMainBoss(false)
+, mHasStartedFirstMiniBoss(false)
 , mGotKey(false)
 , mActivatedGate(false)
 , mHasTeleported(false)
-, mState(Stay)
+, mIsStartedDelay(false)
+, mState(Player::State::Stay)
 , mPlayerInfo(playerInfo)
 {
 	// Инициализируем и получаем все объекты для взаимодействия персонажа с картой
 	mLevelObjects = lvl.getAllObjects();
-	mTexture = textures.get(Textures::Archer);
+	mTexture = textures.get(Textures::ID::Archer);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(77, 1104, 100, 110));
 	mSprite.setScale(0.33f, 0.33f);
 }
 
-void Player::control(float dt)
+void Player::doDelay(const float dt, bool& flag, bool& checker)
+{
+	mDelayTimer += dt;
+	if (mDelayTimer > 1500.f)
+	{
+		flag = false;
+		checker = true;
+		mDelayTimer = 0.f;
+		mIsStartedDelay = false;
+	}
+	else if (mDelayTimer > 250.f)
+	{
+		mIsStartedDelay = true;
+	}
+}
+
+
+void Player::control(const float dt)
 {
 	if (!mCanShoted)
 	{
@@ -92,7 +117,7 @@ void Player::control(float dt)
 	{
 		if (mOnGround)
 		{
-			//mState = jump;
+			//mState = State::Jjump;
 			dy = -0.35f;
 
 			// Прыжок != на земле
@@ -102,7 +127,7 @@ void Player::control(float dt)
 		}
 		else if (mDoubleJump)
 		{
-			//mState = jump;
+			//mState = State::Jump;
 			dy = -0.425f;
 
 			// Прыжок != на земле
@@ -114,20 +139,20 @@ void Player::control(float dt)
 
 	if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveDown)))
 	{
-		//mState = down;
-		//mSpeed = 0.1;
+		mState = State::Down;
+		//mSpeed = 0.1f;
 	}
 
 	if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveLeft)))
 	{
-		mState = Left;
+		mState = State::Left;
 		mSpeed = 0.09f;
-		mIsLeft = true;
+		_isLeft = true;
 		mMoveTimer += dt;
 	}
-	else if (mIsLeft)
+	else if (_isLeft)
 	{
-		mIsLeft = false;
+		_isLeft = false;
 		if (mMoveTimer < 100.f)
 		{
 			mCurrentFrame = static_cast<int>(mCurrentFrame) + 0.5f;
@@ -137,14 +162,14 @@ void Player::control(float dt)
 
 	if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveRight)))
 	{
-		mState = Right;
+		mState = State::Right;
 		mSpeed = 0.09f;
-		mIsRight = true;
+		_isRight = true;
 		mMoveTimer += dt;
 	}
-	else if (mIsRight)
+	else if (_isRight)
 	{
-		mIsRight = false;
+		_isRight = false;
 		if (mMoveTimer < 100.f)
 		{
 			mCurrentFrame = static_cast<int>(mCurrentFrame) + 0.5f;
@@ -159,68 +184,68 @@ void Player::control(float dt)
 	}
 }
 
-void Player::checkCollisionWithMap(float Dx, float Dy)
+void Player::checkCollisionWithMap(const float Dx, const float Dy)
 {
 	mDialogNumber = 0;
 
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
 			// Если встретили препятствие
-			if (mLevelObjects[i].mName == "solid" || mLevelObjects[i].mName == "rock")
+			if (object.mName == "solid" || object.mName == "rock")
 			{	
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 					mDoubleJump = false;
 					mCanDoubleJump = false;
 					mPressJump = false;
 
-					if (mBeforeJump != 0.f)
+					if (_beforeJump != 0.f)
 					{
-						mAfterJump = y;
+						_afterJump = y;
 					}
 
-					mFallingHeight = mAfterJump - mBeforeJump;
+					_fallingHeight = _afterJump - _beforeJump;
 
-					if (mFallingHeight > 100.f)
+					if (_fallingHeight > 100.f)
 					{
-						mHitpoints -= static_cast<int>(0.4f * (mFallingHeight - 100.f));
+						mHitpoints -= static_cast<int>(0.45f * (_fallingHeight - 100.f));
 					}
 
-					mBeforeJump = 0.f;
-					mAfterJump = 0.f;
+					_beforeJump = 0.f;
+					_afterJump = 0.f;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
+					x = object.mRect.left - mWidth;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
+					x = object.mRect.left + object.mRect.width;
 				}
 			}
 
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{	
 				mHitpoints = 0;
 			}
 
 			// Если встретили диалог
-			if (mLevelObjects[i].mName == "dialogMessage")
+			if (object.mName == "dialogMessage")
 			{
-				mDialogNumber = std::stoi(mLevelObjects[i].mType);
-				if (std::stoi(mLevelObjects[i].mType) == 3 && mGotKey)
+				mDialogNumber = std::stoi(object.mType);
+				if (std::stoi(object.mType) == 3 && mGotKey)
 				{
 					mActivatedGate = true;
 					mDialogNumber = 5;
@@ -228,27 +253,27 @@ void Player::checkCollisionWithMap(float Dx, float Dy)
 			}
 
 			// Если встретили конец уровня
-			if (mLevelObjects[i].mName == "end")
+			if (object.mName == "end")
 			{
 				mIsRichedEnd = true;
 			}
 
 			// Если встретили босса
-			if (mLevelObjects[i].mName == "boss")
+			if (object.mName == "boss")
 			{
-				switch (std::stoi(mLevelObjects[i].mType))
+				switch (std::stoi(object.mType))
 				{
 					case 1:
-						mHasStartedFirstBoss = true;
+						mHasStartedFirstMainBoss = true;
+						_needFirstMainDelay = _hadFirstMainDelay ? false : true;
 						break;
 					case 2:
-						mHasStartedSecondBoss = true;
-						break;
-					case 3:
+						mHasStartedFirstMiniBoss = true;
+						_needFirstMiniDelay = _hadFirstMiniDelay ? false : true;
 						break;
 					default:
-						mHasStartedFirstBoss = false;
-						mHasStartedSecondBoss = false;
+						mHasStartedFirstMainBoss = false;
+						mHasStartedFirstMiniBoss = false;
 						break;
 				}
 			}
@@ -258,32 +283,42 @@ void Player::checkCollisionWithMap(float Dx, float Dy)
 		{
 			mOnGround = false;
 
-			if (mBeforeJump == 0.f)
+			if (_beforeJump == 0.f)
 			{
-				mBeforeJump = y;
+				_beforeJump = y;
 			}
 		}
 	}
 }
 
-void Player::update(float dt)
+void Player::update(const float dt)
 {
 	if (mPlayerInfo->mQuests[1])
 	{
 		mGotKey = true;
 	}
 
-	if ((mDialogNumber == 9) && !mHasTeleported)
+	if (mDialogNumber == 9 && !mHasTeleported)
 	{
-		x = 8304;
-		y = 1168;
+		x = 8304.f;
+		y = 1168.f;
 		mHasTeleported = true;
+	}
+
+
+	if (_needFirstMainDelay)
+	{
+		doDelay(dt, _needFirstMainDelay, _hadFirstMainDelay);
+	}
+	if (_needFirstMiniDelay)
+	{
+		doDelay(dt, _needFirstMiniDelay, _hadFirstMiniDelay);
 	}
 
 	switch (mTypeID)
 	{
 		case Type::ID::Archer:
-			if (mLife && (mHitpoints > 0) && !mIsRichedEnd)
+			if (mLife && mHitpoints > 0 && !mIsRichedEnd && !mIsStartedDelay)
 			{
 				control(dt);
 			}
@@ -291,26 +326,26 @@ void Player::update(float dt)
 			// В зависимости от направления
 			switch (mState)
 			{
-				case Left:
+				case Player::State::Left:
 					dx = -mSpeed;
 					break;
-				case Right:
+				case Player::State::Right:
 					dx = mSpeed;
 					break;
-				case Up:
+				case Player::State::Up:
 
 					break;
-				case Down:
+				case Player::State::Down:
 					dx = 0.f;
 					break;
-				case Jump:
+				case Player::State::Jump:
 
 					break;
-				case Stay:
+				case Player::State::Stay:
 
 					break;
 				default:
-					mState = Stay;
+					mState = Player::State::Stay;
 					break;
 			}
 
@@ -342,7 +377,7 @@ void Player::update(float dt)
 			{
 				mSpeed = 0.f;
 			}
-			mSprite.setPosition(x + (mWidth / 2.f) - 13.f, y + (mHeight / 2.f) - 10.f);
+			mSprite.setPosition(x + mWidth / 2.f - 13.f, y + mHeight / 2.f - 10.f);
 
 			if (mSpeed > 0.f)
 			{
@@ -353,21 +388,21 @@ void Player::update(float dt)
 				mSpeed = 0.f;
 			}
 
-			if (mBeforeJump == 0.f && dy > 0.f && !mOnGround)
+			if (_beforeJump == 0.f && dy > 0.f && !mOnGround)
 			{
-				mBeforeJump = y;
+				_beforeJump = y;
 			}
 
 			// Притяжение к земле
 			dy += 0.0015f * dt;
 
 
-			if ((dx < 0.05f) && (dx > -0.05f))
+			if (dx < 0.05f && dx > -0.05f)
 			{
 				dx = 0.f;
 			}
 
-			if (mLife && (mHitpoints > 0))
+			if (mLife && mHitpoints > 0)
 			{
 				if (mOnGround)
 				{
@@ -388,7 +423,7 @@ void Player::update(float dt)
 						mShooted = false;
 						return;
 					}
-					else if ((mCurrentAttack > 1.7f) && (mCurrentAttack < 1.76f))
+					else if (mCurrentAttack > 1.7f && mCurrentAttack < 1.76f)
 					{
 						mIsShooting = true;
 					}
@@ -418,7 +453,7 @@ void Player::update(float dt)
 						}
 						else if (dx == 0.f)
 						{
-							mSprite.setTextureRect(sf::IntRect(256 * 3 + 77, (((mState == Right) || (mState == Stay)) ? 1104 : 77), 100, 110));
+							mSprite.setTextureRect(sf::IntRect(256 * 3 + 77, (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
 						}
 						else
 						{
@@ -435,7 +470,7 @@ void Player::update(float dt)
 					}
 					else if ((dx == 0.f) && mIsJumped)
 					{
-						mSprite.setTextureRect(sf::IntRect(256 * 0 + 77, (((mState == Right) || (mState == Stay)) ? 1104 : 77), 100, 110));
+						mSprite.setTextureRect(sf::IntRect(256 * 0 + 77, (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
 						mIsJumped = false;
 						mCurrentFrame = 0.f;
 					}
@@ -458,8 +493,8 @@ void Player::update(float dt)
 			if (mHitpoints <= 0)
 			{
 				mCurrentDeath += 0.003f * dt;
-				dx = 0.f;
-				dy = 0.f;
+				//dx = 0.f;
+				//dy = 0.f;
 
 				if (mCurrentDeath > 2.f)
 				{
@@ -474,28 +509,28 @@ void Player::update(float dt)
 					else if (mDeathTimer > 1000.f)
 					{
 						mDeathTimer = 0.f;
-						mCounter++;
+						++mCounter;
 					}
 				}
 				mSprite.setPosition(x + (mWidth / 2.f) - 14.f, y + (mHeight / 2.f) - 10.f);
 				if (static_cast<int>(mCurrentDeath) == 0)
 				{
-					mSprite.setTextureRect(sf::IntRect(256 * 0 + 77, (mState == Left ? 77 : 1104), 100, 110));
+					mSprite.setTextureRect(sf::IntRect(256 * 0 + 77, (mState == State::Left ? 77 : 1104), 100, 110));
 				}
 				else if (static_cast<int>(mCurrentDeath) == 1)
 				{
-					mSprite.setTextureRect(sf::IntRect(256 * 6 + 77, (mState == Left ? 77 : 1104), 100, 110));
+					mSprite.setTextureRect(sf::IntRect(256 * 6 + 77, (mState == State::Left ? 77 : 1104), 100, 110));
 				}
 				else if (static_cast<int>(mCurrentDeath) == 2)
 				{
-					mSprite.setTextureRect(sf::IntRect(256 * 7 + 77, (mState == Left ? 1869 : 848), 120, 110)); //77 - 1104
+					mSprite.setTextureRect(sf::IntRect(256 * 7 + 77, (mState == State::Left ? 1869 : 848), 120, 110)); //77 - 1104
 				}
 			}
 
 			break;
 
 		default:
-			std::cout << "Invalid hero type!" << std::endl;
+			std::cout << "Invalid hero type\n";
 			break;
 	}
 

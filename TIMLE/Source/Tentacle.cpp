@@ -1,28 +1,29 @@
 #include "../Include/Tentacle.hpp"
 
 
-Tentacle::Tentacle(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
-				   float X, float Y, int width, int height, std::string Type)
-: Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
-, mAppearing(0.f)
-, mDisappearing(0.f)
+Tentacle::Tentacle(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+				   const Level& lvl, const float X, const float Y, const int width,
+				   const int height, const std::string& type)
+: Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
+, _appearing(0.f)
+, _disappearing(0.f)
 {
-	mTexture = textures.get(Textures::Tentacle);
+	mTexture = textures.get(Textures::ID::Tentacle);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(0, 0, mWidth, mHeight));
 	mSprite.setScale(0.5f, 0.5f);
 	dx = 0.f;
 }
 
-void Tentacle::checkCollisionWithMap(float Dx, float Dy)
+void Tentacle::checkCollisionWithMap(const float, const float)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -30,37 +31,37 @@ void Tentacle::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Tentacle::appear(float dt)
+void Tentacle::appear(const float dt)
 {
-	mAppearing += 0.0075f * dt;
-	if (mAppearing >= 13.f)
+	_appearing += 0.0075f * dt;
+	if (_appearing >= 13.f)
 	{
-		mAppearing = 0.f;
+		_appearing = 0.f;
 		mIsEnabled = false;
 		return;
 	}
 	mSprite.setPosition(x + (mWidth / 2.f) - 2.f, y + (mHeight / 2.f) - 11.f);
-	mSprite.setTextureRect(sf::IntRect(25 * (static_cast<int>(mAppearing) < 5 ? static_cast<int>(mAppearing) : static_cast<int>(mAppearing) - 5),
-		90 * (static_cast<int>(mAppearing) < 5 ? 0 : 1), 25, 90));
+	mSprite.setTextureRect(sf::IntRect(25 * (static_cast<int>(_appearing) < 5 ? static_cast<int>(_appearing) : static_cast<int>(_appearing) - 5),
+		90 * (static_cast<int>(_appearing) < 5 ? 0 : 1), 25, 90));
 
 }
 
-void Tentacle::disappear(float dt)
+void Tentacle::disappear(const float dt)
 {
-	mDisappearing += 0.0075f * dt;
-	if (mDisappearing >= 13.f)
+	_disappearing += 0.0075f * dt;
+	if (_disappearing >= 13.f)
 	{
-		mDisappearing = 0.f;
+		_disappearing = 0.f;
 		mIsDisabled = false;
 		return;
 	}
 
 	mSprite.setPosition(x + (mWidth / 2.f) - 2.f, y + (mHeight / 2.f) - 11.f);
-	mSprite.setTextureRect(sf::IntRect(25 * (static_cast<int>(mDisappearing) < 8 ? 7 - static_cast<int>(mDisappearing): 12 - static_cast<int>(mDisappearing)),
-		90 * (static_cast<int>(mDisappearing) < 8 ? 1 : 0), 25, 90));
+	mSprite.setTextureRect(sf::IntRect(25 * (static_cast<int>(_disappearing) < 8 ? 7 - static_cast<int>(_disappearing): 12 - static_cast<int>(_disappearing)),
+		90 * (static_cast<int>(_disappearing) < 8 ? 1 : 0), 25, 90));
 }
 
-void Tentacle::update(float dt)
+void Tentacle::update(const float dt)
 {
 	if (!mIsStarted)
 	{

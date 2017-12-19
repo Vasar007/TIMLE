@@ -1,51 +1,52 @@
 #include "../Include/DarkSoldier.hpp"
 
 
-DarkSoldier::DarkSoldier(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-						 Level &lvl, float X, float Y, int width, int height, std::string Type)
-: Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
+DarkSoldier::DarkSoldier(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+						 const Level& lvl, const float X, const  float Y, const int width,
+						 const int height, const std::string& type)
+: Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 {
-	mTexture = textures.get(Textures::DarkSoldier);
+	mTexture = textures.get(Textures::ID::DarkSoldier);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(14, 131, mWidth, mHeight));
 	mSprite.setScale(0.5f, 0.5f);
 	dx = 0.05f;
 }
 
-void DarkSoldier::checkCollisionWithMap(float Dx, float Dy)
+void DarkSoldier::checkCollisionWithMap(const float Dx, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
-			if (mLevelObjects[i].mName == "enemyBorder")
+			if (object.mName == "enemyBorder")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
+					x = object.mRect.left - mWidth;
 					mIsTurned = true;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
-					mIsTurned = true;
+					x = object.mRect.left + object.mRect.width;
+					mIsTurned = true;;
 				}
 			}
 
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -53,7 +54,7 @@ void DarkSoldier::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void DarkSoldier::update(float dt)
+void DarkSoldier::update(const float dt)
 {
 	if (mIsTurned)
 	{
@@ -71,15 +72,15 @@ void DarkSoldier::update(float dt)
 		if (!mIsAttacked && !mIsTurned)
 		{
 			x += dx * dt;
-			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 9.f);
+			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 7.f);
 		}
 		else if (!mIsTurned)
 		{
-			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 7.f);
+			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 6.f);
 		}
 		else
 		{
-			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 7.f);
+			mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 6.f);
 		}
 		checkCollisionWithMap(dx, 0.f);
 

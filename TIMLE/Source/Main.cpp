@@ -1,7 +1,6 @@
-#include "../Include/Application.hpp"
-
-#include <stdexcept>
 #include <iostream>
+
+#include "../Include/Application.hpp"
 
 
 int main()

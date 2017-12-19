@@ -3,32 +3,33 @@
 
 namespace
 {
-	const GolemDarkData GBTable = initializeGolemDarkData();
+	const GolemDarkData GOLEM_TABLE = initializeGolemDarkData();
 }
 
-GolemDark::GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-					 Level& lvl, float X, float Y, int width, int height, std::string Type)
-: Entity(Id, X, Y, width, height, GBTable.speed, GBTable.hitpoints, GBTable.damage)
-, mCounter(0)
-, mIsTurned(false)
+GolemDark::GolemDark(const Type::ID id, const TextureHolder& textures, const FontHolder&,
+					 const Level& lvl, const float X, const float Y, const int width,
+					 const int height, const std::string& type)
+: Entity(id, X, Y, width, height, GOLEM_TABLE.mSpeed, GOLEM_TABLE.mHitpoints, GOLEM_TABLE.mDamage)
+, _counter(0)
+, _isTurned(false)
 {
 	// Initialize basic objects for interaction golem with it.
-	std::vector<Object> levelObjects = lvl.getObjects("enemyBorder");
-	for (size_t i = 0; i < levelObjects.size(); i++)
+	auto levelObjects = lvl.getObjects("enemyBorder");
+	for (const auto& object : levelObjects)
 	{
-		if (levelObjects[i].mType == Type)
+		if (object.mType == type)
 		{
-			mLevelObjects.push_back(levelObjects[i]);
+			mLevelObjects.push_back(object);
 		}
 	}
 
 	levelObjects = lvl.getObjects("death");
-	for (size_t i = 0; i < levelObjects.size(); i++)
-		mLevelObjects.push_back(levelObjects[i]);
+	for (const auto& object : levelObjects)
+		mLevelObjects.push_back(object);
 
-	mTexture = textures.get(Textures::GolemDark);
-	mTextureAttack = textures.get(Textures::GolemDarkAttack);
-	mTextureDeath = textures.get(Textures::GolemDarkDeath);
+	mTexture = textures.get(Textures::ID::GolemDark);
+	mTextureAttack = textures.get(Textures::ID::GolemDarkAttack);
+	mTextureDeath = textures.get(Textures::ID::GolemDarkDeath);
 	mSprite.setTexture(mTexture);
 	mSprite.setTextureRect(sf::IntRect(0, 192, 64, 64));
 	mSprite.setScale(1.0f, 1.0f);
@@ -36,40 +37,40 @@ GolemDark::GolemDark(Type::ID Id, const TextureHolder& textures, const FontHolde
 	mIsEnd = false;
 }
 
-void GolemDark::checkCollisionWithMap(float Dx, float Dy)
+void GolemDark::checkCollisionWithMap(const float Dx, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Check collision with borders.
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
-			if (mLevelObjects[i].mName == "enemyBorder")
+			if (object.mName == "enemyBorder")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
-					mIsTurned = true;
+					x = object.mRect.left - mWidth;
+					_isTurned = true;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
-					mIsTurned = true;;
+					x = object.mRect.left + object.mRect.width;
+					_isTurned = true;;
 				}
 			}
 
 			// If golem meets death area, then he dies.
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -77,11 +78,11 @@ void GolemDark::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void GolemDark::update(float time)
+void GolemDark::update(const float dt)
 {
 	// The attraction to the earth.
-	dy += 0.0015f * time;
-	y += dy * time;
+	dy += 0.0015f * dt;
+	y += dy * dt;
 	checkCollisionWithMap(0.f, dy);
 
 	/// Complicated and tangled logic for setting right position of the sprite.
@@ -96,7 +97,7 @@ void GolemDark::update(float time)
 	}
 	else if (!mIsEnd)
 	{
-		mCurrentDeath -= 0.005f * time;
+		mCurrentDeath -= 0.005f * dt;
 		if (mCurrentDeath < 0.f)
 		{
 			mCurrentDeath = 0.f;
@@ -108,34 +109,34 @@ void GolemDark::update(float time)
 		return;
 	}
 
-	mMoveTimer += time;
-	if (mMoveTimer > 2000.f && mIsTurned)
+	mMoveTimer += dt;
+	if (mMoveTimer > 2000.f && _isTurned)
 	{
 		dx = -dx;
 		mMoveTimer = 0.f;
-		mIsTurned = false;
+		_isTurned = false;
 	}
-	else if (mMoveTimer > 1000.f && !mIsTurned)
+	else if (mMoveTimer > 1000.f && !_isTurned)
 	{
 		mMoveTimer = 0.f;
 		if (mHitpoints <= 0)
 		{
-			mCounter++;
+			++_counter;
 		}
 	}
 
 	if (mLife && (mHitpoints > 0))
 	{
 		// Moving phase.
-		if (!mIsAttacked && !mIsTurned)
+		if (!mIsAttacked && !_isTurned)
 		{
-			x += dx * time;
+			x += dx * dt;
 		}
 		checkCollisionWithMap(dx, 0.f);
 
 		mSprite.setPosition(x + (mWidth / 2.f) + 11.f, y + (mHeight / 2.f) - 2.f);
 
-		mCurrentFrame += 0.005f * time;
+		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 7.f)
 		{
 			mCurrentFrame -= 7.f;
@@ -143,7 +144,7 @@ void GolemDark::update(float time)
 		// Attack phase.
 		if (mIsAttacked)
 		{
-			mCurrentAttack += 0.005f * time;
+			mCurrentAttack += 0.005f * dt;
 			if (mCurrentAttack > 7.f)
 			{
 				mCurrentAttack -= 7.f;
@@ -174,16 +175,16 @@ void GolemDark::update(float time)
 		{
 			mSprite.setTexture(mTexture);
 			mCurrentAttack = 0.f;
-			if (mIsTurned)
+			if (_isTurned)
 			{
 				mCurrentFrame = 0.f;
 				mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentFrame) + (dx > 0 ? 0 : 17), (dx > 0 ? 192 : 64), 48, 64));
 			}
-			if (dx > 0.f && !mIsTurned)
+			if (dx > 0.f && !_isTurned)
 			{
 				mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentFrame), 192, 48, 64));
 			}
-			else if (dx < 0.f && !mIsTurned)
+			else if (dx < 0.f && !_isTurned)
 			{
 				mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentFrame) + 17, 64, 48, 64));
 			}
@@ -193,13 +194,13 @@ void GolemDark::update(float time)
 	// Dead phase.
 	if (mHitpoints <= 0)
 	{
-		mCurrentDeath += 0.0035f * time;
+		mCurrentDeath += 0.0035f * dt;
 		dx = 0.f;
 		dy = 0.f;
 		if (mCurrentDeath > 6.f)
 		{
 			mCurrentDeath = 6.f;
-			if (mCounter == 6)
+			if (_counter == 6)
 			{
 				mLife = false;
 			}

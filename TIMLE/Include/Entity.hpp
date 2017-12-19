@@ -1,22 +1,33 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
+#include <SFML/Graphics.hpp>
+
 #include "Level.hpp"
 #include "ResourceHolder.hpp"
 #include "DataTables.hpp"
-
-#include <SFML/Graphics.hpp>
 
 
 class Entity 
 {
 	public:
+		typedef std::function<sf::FloatRect(float left, float top,
+											float width, float height, 
+											float direction)> FuncCalcBodyRect;
+
+
+	private:
+		FuncCalcBodyRect	_calcBodyRect;
+		sf::Vector2f		_velocity;
+
+
+	public:
 		float				x;
-		float				y;	// Координаты
+		float				y;
 		float				dx;	// Ускорение по x
 		float				dy;	// Ускорение по y
 		float				mSpeed;	// Скорость
-		float				mMoveTimer;	// Таймер
+		float				mMoveTimer;
 		float				mDeathTimer;
 		float				mCurrentFrame;	// Таймер анимации
 		float				mCurrentAttack;
@@ -24,8 +35,14 @@ class Entity
 
 		int					mWidth;	// Ширина
 		int					mHeight;	// Высота
+
+		float				mBodyX;
+		float				mBodyY;
+		float				mBodyWidth;
+		float				mBodyHeight;
+
 		int					mHitpoints;	// Количество здоровья
-		size_t				mDamage;
+		std::size_t			mDamage;
 
 		bool				mLife; // Жизнь сущности
 		bool				mIsMove;	// Разрешение движения
@@ -53,18 +70,27 @@ class Entity
 	
 	
 	public:
-							Entity(Type::ID Id, float X, float Y, int width, int height, 
-								   float speed, int hitpoints, size_t damage, 
-								   std::string Type = "0");
-		virtual				~Entity();
-	
-		sf::FloatRect		getRect() const;	// Функция получения прямоугольника, его координат и размеров(ширина, высота)
+		Entity(const Type::ID id, const float X, const float Y, const int width, const int height,
+			   const float speed, const int hitpoints, const  std::size_t damage, 
+			   const std::string& type = "0", const FuncCalcBodyRect calcBodyRect = nullptr);
 
+		virtual				~Entity() = default;
+	
+		void				setVelocity(const sf::Vector2f velocity);
+		void				setVelocity(const float vx, const float vy);
+		sf::Vector2f		getVelocity() const;
+
+		// Функция получения прямоугольника, его координат и размеров(ширина, высота).
+		sf::FloatRect		getRect() const;
+
+		sf::FloatRect		getBodyRect() const;
+
+		sf::Vector2f		getCenter() const;
 		sf::Vector2f		getWorldPosition() const;
 		sf::Transform		getWorldTransform() const;
 		virtual void		draw(sf::RenderTarget& target) const;
 	
-		virtual void		update(float dt) = 0;
+		virtual void		update(const float dt) = 0;
 };
 
 #endif // ENTITY_HPP

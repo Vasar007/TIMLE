@@ -1,5 +1,5 @@
-#ifndef DARKSOLDIER_HPP
-#define DARKSOLDIER_HPP
+#ifndef DARK_SOLDIER_HPP
+#define DARK_SOLDIER_HPP
 
 #include "Enemy.hpp"
 
@@ -12,7 +12,7 @@ class DarkSoldier final : public Enemy
 	public:
 		/**
 		 * \brief			A constructor with basic parameters.
-		 * \param Id		The identifier of the current entity.
+		 * \param id		The identifier of the current entity.
 		 * \param textures	Textures holder for extracting necessary textures.
 		 * \param fonts		Fonts holder for extracting necessary textures.
 		 * \param lvl		The reference to the level-class object.
@@ -20,11 +20,11 @@ class DarkSoldier final : public Enemy
 		 * \param Y			The initial y-coordinate of this object.
 		 * \param width		Width of this object.
 		 * \param height	Height if this object.
-		 * \param Type		An additional parameter for interaction with map.
+		 * \param type		An additional parameter for interaction with map.
 		 */
-				DarkSoldier(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-							Level& lvl, float X, float Y, int width, int height, 
-							std::string Type = "0");
+				DarkSoldier(const Type::ID id, const TextureHolder& textures,
+							const FontHolder& fonts, const Level& lvl, const float X, const float Y,
+							const int width, const int height, const std::string& type = "0");
 	
 
 		/**
@@ -32,13 +32,13 @@ class DarkSoldier final : public Enemy
 		 * \param Dx	The current delta x-coordinate of this object for checking.
 		 * \param Dy	The current delta y-coordinate of this object for checking.
 		 */
-		void	checkCollisionWithMap(float Dx, float Dy) override;
+		void	checkCollisionWithMap(const float Dx, const float Dy) override;
 
 		/**
 		 * \brief		Overrided funtion for updating this object and its states.
 		 * \param dt	Delta time parameter.
 		 */
-		void	update(float dt) override;
+		void	update(const float dt) override;
 };
 
-#endif // DARKSOLDIER_HPP
+#endif // DARK_SOLDIER_HPP

@@ -1,10 +1,10 @@
 #ifndef LIFEBAR_HPP
 #define LIFEBAR_HPP
 
+#include <SFML/Graphics.hpp>
+
 #include "ResourceHolder.hpp"
 #include "DataTables.hpp"
-
-#include <SFML/Graphics.hpp>
 
 
 /**
@@ -16,50 +16,50 @@ class LifeBar
 		/**
 		 * \brief Maximum value, which equals entity's hitpoints.
 		 */
-		const int			mMax;
+		const int			_max;
 	
 		/**
 		 * \brief Texture of the lifebar.
 		 */
-		sf::Texture			mTexture;
+		sf::Texture			_texture;
 
 		/**
 		 * \brief Empty texture of the lifebar, need for correct drawing.
 		 */
-		sf::Texture			mTextureEmpty;
+		sf::Texture			_textureEmpty;
 
 		/**
 		 * \brief Sprite of the lifebar.
 		 */
-		sf::Sprite			mSprite;
+		sf::Sprite			_sprite;
 
 		/**
 		 * \brief Empty sprite of the lifebar, need for correct drawing.
 		 */
-		sf::Sprite			mSpriteEmpty;
+		sf::Sprite			_spriteEmpty;
 
 		
 		/**
 		 * \brief Identifier of entity, which helps to create right lifebar.
 		 */
-		Type::ID			mType;
+		Type::ID			_type;
 
 		/**
 		 * \brief Text that is above lifebar.
 		 */
-		sf::Text			mBossName;
+		sf::Text			_bossName;
 	
 	
 	public:
 	/**
 	 * \brief			A constructor with basic parameters.
-	 * \param Id		The identifier of the entity.
+	 * \param id		The identifier of the entity.
 	 * \param textures	The reference to textures holder for extracting necessary textures.
 	 * \param fonts		The reference to fonts holder for extracting necessary textures.
 	 * \param hitpoints	Number of the HP entity.
 	 */
-							LifeBar(Type::ID Id, const TextureHolder& textures, 
-									const FontHolder& fonts, int hitpoints);
+							LifeBar(Type::ID id, const TextureHolder& textures, 
+									const FontHolder& fonts, const int hitpoints);
 	
 		/**
 		 * \brief			Updating this object and its states.

@@ -1,58 +1,59 @@
 #include "../Include/Dwarf.hpp"
 
 
-Dwarf::Dwarf(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level &lvl, 
-			 float X, float Y, int width, int height, std::string Type, int dwarfType)
-: Enemy(Id, textures, fonts, lvl, X, Y, width, height, Type)
-, mDwarfType(dwarfType)
-, mInaccuracy(0.f)
+Dwarf::Dwarf(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
+			 const Level& lvl, const float X, const float Y, const int width, const int height,
+			 const std::string& type, const  int dwarfType)
+: Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
+, _dwarfType(dwarfType)
+, _inaccuracy(0.f)
 {
-	mTexture = textures.get(Textures::Dwarf);
+	mTexture = textures.get(Textures::ID::Dwarf);
 	mSprite.setTexture(mTexture);
 	mSprite.setScale(0.5f, 0.5f);
-	mSprite.setTextureRect(sf::IntRect(0, 80 * mDwarfType, mWidth, mHeight));
+	mSprite.setTextureRect(sf::IntRect(0, 80 * _dwarfType, mWidth, mHeight));
 	dx = 0.075f;
 	mSprite.scale(-1.f, 1.f);
-	if (Id == Type::DwarvenCommander)
+	if (id == Type::ID::DwarvenCommander)
 		mIsSpawn = false;
 	else
 		mIsSpawn = true;
 }
 
-void Dwarf::checkCollisionWithMap(float Dx, float Dy)
+void Dwarf::checkCollisionWithMap(const float Dx, const float Dy)
 {
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
+	for (const auto& object : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(object.mRect))
 		{
-			if (mLevelObjects[i].mName == "enemyBorder")
+			if (object.mName == "enemyBorder")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = object.mRect.top - mHeight;
 					dy = 0.f;
 					mOnGround = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = object.mRect.top + object.mRect.height;
 					dy = 0.f;
 				}
 				if (Dx > 0.f)
 				{
-					x = mLevelObjects[i].mRect.left - mWidth;
+					x = object.mRect.left - mWidth;
 					mIsTurned = true;
 				}
 				if (Dx < 0.f)
 				{
-					x = mLevelObjects[i].mRect.left + mLevelObjects[i].mRect.width;
-					mIsTurned = true;
+					x = object.mRect.left + object.mRect.width;
+					mIsTurned = true;;
 				}
 			}
 
 			// Если встретили смерть
-			if (mLevelObjects[i].mName == "death")
+			if (object.mName == "death")
 			{
 				mHitpoints = 0;
 			}
@@ -60,7 +61,7 @@ void Dwarf::checkCollisionWithMap(float Dx, float Dy)
 	}
 }
 
-void Dwarf::update(float dt)
+void Dwarf::update(const float dt)
 {
 	// Притяжение к земле
 	dy += 0.0015f * dt;
@@ -75,7 +76,7 @@ void Dwarf::update(float dt)
 			mCurrentDeath -= 4.f;
 		}
 		mSprite.setPosition(x + (mWidth / 2.f) + 16.f, y + (mHeight / 2.f) - 19.f);
-		mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + 16), 80 * mDwarfType, 100, 80));
+		mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + 16), 80 * _dwarfType, 100, 80));
 		mCurrentAttack = 3.f;
 		return;
 	}
@@ -102,7 +103,7 @@ void Dwarf::update(float dt)
 			temp = 13;
 		}
 		mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 19.f);
-		mSprite.setTextureRect(sf::IntRect(100 * temp, 80 * mDwarfType, 100, 80));
+		mSprite.setTextureRect(sf::IntRect(100 * temp, 80 * _dwarfType, 100, 80));
 		return;
 	}
 
@@ -135,7 +136,22 @@ void Dwarf::update(float dt)
 		}
 		if (mIsAttacked)
 		{
-			mCurrentAttack += 0.005f * dt;
+			switch (_dwarfType)
+			{
+				case 0:
+					mCurrentAttack += 0.0055f * dt;
+					break;
+				case 1:
+					mCurrentAttack += 0.004f * dt;
+					break;
+				case 2:
+					mCurrentAttack += 0.0055f * dt;
+					break;
+				default:
+					mCurrentAttack += 0.005f * dt;
+					break;
+			}
+			
 			if (mCurrentAttack > 4.f)
 			{
 				mCurrentAttack -= 4.f;
@@ -155,11 +171,11 @@ void Dwarf::update(float dt)
 
 			if (dx > 0.f)
 			{
-				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * mDwarfType, 100, 80));
+				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * _dwarfType, 100, 80));
 			}
 			else if (dx < 0.f)
 			{
-				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * mDwarfType, 100, 80));
+				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * _dwarfType, 100, 80));
 			}
 		}
 		else
@@ -167,18 +183,18 @@ void Dwarf::update(float dt)
 			mCurrentAttack = 0.f;
 			if (mIsTurned)
 			{
-				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) % 4), 80 * mDwarfType, 100, 80));
+				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) % 4), 80 * _dwarfType, 100, 80));
 			}
 			if (dx > 0.f && !mIsTurned)
 			{
-				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * mDwarfType, 100, 80));
+				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * _dwarfType, 100, 80));
 			}
 			else if (dx < 0.f && !mIsTurned)
 			{
-				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * mDwarfType, 100, 80));
+				mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * _dwarfType, 100, 80));
 			}
 		}
-		mInaccuracy = dx;
+		_inaccuracy = dx;
 	}
 
 	if (mHitpoints <= 0)
@@ -186,7 +202,7 @@ void Dwarf::update(float dt)
 		mMoveTimer += dt;
 		if (mMoveTimer > 1000.f)
 		{
-			mCounter++;
+			++mCounter;
 			mMoveTimer = 0.f;
 		}
 		mCurrentDeath += 0.0035f * dt;
@@ -200,7 +216,7 @@ void Dwarf::update(float dt)
 				mLife = false;
 			}
 		}
-		mSprite.setPosition(x + (mWidth / 2.f) + (mInaccuracy > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 19.f);
-		mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + (static_cast<int>(mCurrentDeath) == 0? 0 : 13)), 80 * mDwarfType, 100, 80));
+		mSprite.setPosition(x + (mWidth / 2.f) + (_inaccuracy > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 19.f);
+		mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + (static_cast<int>(mCurrentDeath) == 0? 0 : 13)), 80 * _dwarfType, 100, 80));
 	}
 }

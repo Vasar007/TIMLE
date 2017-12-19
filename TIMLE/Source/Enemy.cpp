@@ -3,66 +3,31 @@
 
 namespace
 {
-	const std::vector<EntityData> ETable = initializeEnemyData();
+	const std::vector<EntityData> ENEMY_TABLE = initializeEnemyData();
 }
 
-Enemy::Enemy(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, Level& lvl,
-			 float X, float Y, int width, int height, std::string Type)
-: Entity(Id, X, Y, width, height, ETable[Id - Type::HeroCount].speed, 
-		 ETable[Id - Type::HeroCount].hitpoints, ETable[Id - Type::HeroCount].damage, Type)
+Enemy::Enemy(const Type::ID id, const TextureHolder&, const FontHolder&, const Level& lvl,
+			 const float X, const float Y, const int width, const int height, 
+			 const std::string& type)
+: Entity(id, X, Y, width, height, ENEMY_TABLE[id - Type::HERO_COUNT].mSpeed, 
+		 ENEMY_TABLE[id - Type::HERO_COUNT].mHitpoints, ENEMY_TABLE[id - Type::HERO_COUNT].mDamage,
+		 type, ENEMY_TABLE[id - Type::HERO_COUNT].mCalcBodyRect)
 , mCounter(0)
 , mIsTurned(false)
 {
 	// Инициализируем.получаем нужные объекты для взаимодействия врага с картой
-	std::vector<Object> levelObjects = lvl.getObjects("enemyBorder");
-	for (size_t i = 0; i < levelObjects.size(); i++)
+	auto levelObjects = lvl.getObjects("enemyBorder");
+	for (const auto& object : levelObjects)
 	{
-		if (levelObjects[i].mType == Type)
+		if (object.mType == type)
 		{
-			mLevelObjects.push_back(levelObjects[i]);
+			mLevelObjects.push_back(object);
 		}
 	}
 
 	levelObjects = lvl.getObjects("death");
-	for (size_t i = 0; i < levelObjects.size(); i++)
+	for (const auto& object : levelObjects)
 	{
-		mLevelObjects.push_back(levelObjects[i]);
+		mLevelObjects.push_back(object);
 	}
-
-	/*
-	for (size_t i = 0; i < mLevelObjects.size(); i++)
-		// Проверяем пересечени с объектом
-		if (getRect().intersects(mLevelObjects[i].rect))
-		{
-			// Если встретили препятствие
-			if (mLevelObjects[i].name == "solid")
-			{
-				if (Dy > 0)
-				{
-					y = mLevelObjects[i].rect.top - mHeight;
-					dy = 0;
-					onGround = true;
-				}
-				if (Dy < 0)
-				{
-					y = mLevelObjects[i].rect.top + mLevelObjects[i].rect.height;
-					dy = 0;
-				}
-				if (Dx > 0)
-				{
-					x = mLevelObjects[i].rect.left - mWidth;
-					isTurned = true;
-					dx = -0.075f;
-					//sprite.scale(-1, 1);
-				}
-				if (Dx < 0)
-				{
-					x = mLevelObjects[i].rect.left + mLevelObjects[i].rect.width;
-					isTurned = true;
-					dx = 0.075f;
-					//sprite.scale(-1, 1);
-				}
-			}
-		}
-	*/
 }

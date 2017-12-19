@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../Include/Projectile.hpp"
 #include "../Include/DataTables.hpp"
 #include "../Include/Utility.hpp"
@@ -5,55 +7,59 @@
 
 namespace
 {
-	const std::vector<ProjectileData> Table = initializeProjectileData();
+	const std::vector<ProjectileData> PROJECTILE_TABLE = initializeProjectileData();
 }
 
-Projectile::Projectile(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts,
-					   Level &lvl, float X, float Y, int width, int height)
-: Entity(Id, X, Y, width, height, Table[Id - Type::HeroCount - Type::EnemyCount].speed, 100,
-		 Table[Id - Type::HeroCount - Type::EnemyCount].damage)
-, mTargetDirection()
-, mGuided(false)
+Projectile::Projectile(const Type::ID id, const TextureHolder&, const FontHolder&,
+					   const Level&, const float X, const float Y, const int width, const int height)
+: Entity(id, X, Y, width, height, 
+		 PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed, 100,
+		 PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage)
+, _targetDirection()
+, _guided(false)
 {
+	if (id == Type::ID::MagicArrow)
+	{
+		_guided = true;
+	}
 }
 
-void Projectile::guideTowards(sf::Vector2f position)
+void Projectile::guideTowards(const sf::Vector2f position)
 {
-	mTargetDirection = unitVector(position - getWorldPosition());
+	_targetDirection = unitVector(position - getWorldPosition());
 }
 
 bool Projectile::isGuided() const
 {
-	return mGuided;
+	return _guided;
 }
 
-//void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
-//{
-//	if (isGuided())
-//	{
-//		const float approachRate = 200.f;
-//
-//		sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection +
-//								   getVelocity());
-//		newVelocity *= getMaxSpeed();
-//		float angle = std::atan2(newVelocity.y, newVelocity.x);
-//
-//		setRotation(toDegree(angle) + 90.f);
-//		setVelocity(newVelocity);
-//	}
-//
-//	Entity::updateCurrent(dt, commands);
-//}
+void Projectile::updateDirection(const float dt)
+{
+	if (isGuided())
+	{
+		const float approachRate = 100.f;
+
+		// float dt => sf::Time dt.asSeconds()
+		auto newVelocity = unitVector(approachRate * dt * _targetDirection + 
+									  getVelocity());
+		newVelocity *= getMaxSpeed();
+		const auto angle = atan2(newVelocity.y, newVelocity.x);
+
+		mSprite.setRotation(toDegree(angle));
+		setVelocity(newVelocity);
+	}
+}
 
 unsigned int Projectile::getCategory() const
 {
-	if (mTypeID == (Type::EnemyBullet | Type::Fireball | Type::Flamestrike))
+	if (mTypeID == Type::ID::AlliedBullet)
 	{
-		return EnemyProjectile;
+		return Category::AlliedProjectile;
 	}
 	else
 	{
-		return AlliedProjectile;
+		return Category::EnemyProjectile;
 	}
 }
 
@@ -64,10 +70,10 @@ sf::FloatRect Projectile::getBoundingRect() const
 
 float Projectile::getMaxSpeed() const
 {
-	return Table[mTypeID - Type::HeroCount - Type::EnemyCount].speed;
+	return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed;
 }
 
 int Projectile::getDamage() const
 {
-	return Table[mTypeID - Type::HeroCount - Type::EnemyCount].damage;
+	return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage;
 }

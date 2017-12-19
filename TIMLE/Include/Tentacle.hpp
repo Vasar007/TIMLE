@@ -13,12 +13,12 @@ class Tentacle final : public Enemy
 		/**
 		 * \brief Counter for helping with setting tentacles' sprites while they are appearing.
 		 */
-		float	mAppearing;
+		float	_appearing;
 
 		/**
 		 * \brief Counter for helping with setting tentacles' sprites while they are disappearing.
 		 */
-		float	mDisappearing;
+		float	_disappearing;
 
 
 	private:
@@ -26,19 +26,19 @@ class Tentacle final : public Enemy
 		 * \brief		Helper function for appearing this object.
 		 * \param dt	Delta time parameter.
 		 */
-		void	appear(float dt);
+		void	appear(const float dt);
 
 		/**
 		 * \brief		Helper function for disappearing this object.
 		 * \param dt	Delta time parameter.
 		 */
-		void	disappear(float dt);
+		void	disappear(const float dt);
 
 
 	public:
 		/**
 		 * \brief			A constructor with basic parameters.
-		 * \param Id		The identifier of the current entity.
+		 * \param id		The identifier of the current entity.
 		 * \param textures	Textures holder for extracting necessary textures.
 		 * \param fonts		Fonts holder for extracting necessary textures.
 		 * \param lvl		The reference to the level-class object.
@@ -46,11 +46,11 @@ class Tentacle final : public Enemy
 		 * \param Y			The initial y-coordinate of this object.
 		 * \param width		Width of this object.
 		 * \param height	Height if this object.
-		 * \param Type		An additional parameter for interaction with map.
+		 * \param type		An additional parameter for interaction with map.
 		 */
-				Tentacle(Type::ID Id, const TextureHolder& textures, const FontHolder& fonts, 
-						 Level& lvl, float X, float Y, int width, int height, 
-						 std::string Type = "0");
+				Tentacle(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
+						 const Level& lvl, const float X, const float Y, const int width,
+						 const int height, const std::string& type);
 
 
 		/**
@@ -58,13 +58,13 @@ class Tentacle final : public Enemy
 		 * \param Dx	The current delta x-coordinate of this object for checking.
 		 * \param Dy	The current delta y-coordinate of this object for checking.
 		 */
-		void	checkCollisionWithMap(float Dx, float Dy) override;
+		void	checkCollisionWithMap(const float Dx, const float Dy) override;
 
 		/**
 		 * \brief		Overrided funtion for updating this object and its states.
 		 * \param dt	Delta time parameter.
 		 */
-		void	update(float dt) override;
+		void	update(const float dt) override;
 };
 
 #endif // TENTACLE_HPP

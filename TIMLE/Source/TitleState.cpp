@@ -1,43 +1,43 @@
+#include <SFML/Graphics/RenderWindow.hpp>
+
 #include "../Include/TitleState.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-
 
 TitleState::TitleState(StateStack& stack, Context context)
 : State(stack, context)
-, mText()
-, mShowText(true)
-, mTextEffectTime(sf::Time::Zero)
+, _text()
+, _showText(true)
+, _textEffectTime(sf::Time::Zero)
 {
-	mBackgroundSprite.setTexture(context.mTextures->get(Textures::TitleScreen));
+	_backgroundSprite.setTexture(context.mTextures->get(Textures::ID::TitleScreen));
 
-	mText.setFont(context.mFonts->get(Fonts::Main));
-	mText.setString(L"Нажмите любую кнопку для продолжения");
-	centerOrigin(mText);
-	mText.setPosition(sf::Vector2f(context.mWindow->getSize() / 2u));
+	_text.setFont(context.mFonts->get(Fonts::ID::Main));
+	_text.setString(L"Нажмите любую кнопку для продолжения");
+	centerOrigin(_text);
+	_text.setPosition(sf::Vector2f(context.mWindow->getSize() / 2u));
 }
 
 void TitleState::draw()
 {
-	sf::RenderWindow& window = *getContext().mWindow;
-	window.draw(mBackgroundSprite);
+	auto& window = *getContext().mWindow;
+	window.draw(_backgroundSprite);
 
-	if (mShowText)
+	if (_showText)
 	{
-		window.draw(mText);
+		window.draw(_text);
 	}
 }
 
-bool TitleState::update(sf::Time dt)
+bool TitleState::update(const sf::Time dt)
 {
-	mTextEffectTime += dt;
+	_textEffectTime += dt;
 
-	if (mTextEffectTime >= sf::seconds(0.5f))
+	if (_textEffectTime >= sf::seconds(0.5f))
 	{
-		mShowText = !mShowText;
-		mTextEffectTime = sf::Time::Zero;
+		_showText = !_showText;
+		_textEffectTime = sf::Time::Zero;
 	}
 
 	return true;
@@ -49,7 +49,7 @@ bool TitleState::handleEvent(const sf::Event& event)
 	if (event.type == sf::Event::KeyReleased)
 	{
 		requestStackPop();
-		requestStackPush(States::Menu);
+		requestStackPush(States::ID::Menu);
 	}
 
 	return true;

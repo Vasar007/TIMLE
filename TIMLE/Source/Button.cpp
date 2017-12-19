@@ -1,9 +1,9 @@
-#include "../Include/Button.hpp"
-#include "../Include/Utility.hpp"
-
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+
+#include "../Include/Button.hpp"
+#include "../Include/Utility.hpp"
 
 
 namespace GUI
@@ -11,37 +11,37 @@ namespace GUI
 
 Button::Button(const FontHolder& fonts, const TextureHolder& textures, 
 			   const SoundBufferHolder& soundBuffer)
-: mCallback()
-, mNormalTexture(textures.get(Textures::ButtonNormal))
-, mSelectedTexture(textures.get(Textures::ButtonSelected))
-, mPressedTexture(textures.get(Textures::ButtonPressed))
-, mSoundBuffer(soundBuffer.get(Sounds::ButtonCLick))
-, mSound()
-, mSprite()
-, mText("", fonts.get(Fonts::Main), 16)
-, mIsToggle(false)
+: _callback()
+, _normalTexture(textures.get(Textures::ID::ButtonNormal))
+, _selectedTexture(textures.get(Textures::ID::ButtonSelected))
+, _pressedTexture(textures.get(Textures::ID::ButtonPressed))
+, _soundBuffer(soundBuffer.get(Sounds::ID::ButtonCLick))
+, _sound()
+, _sprite()
+, _text("", fonts.get(Fonts::ID::Main), 16)
+, _isToggle(false)
 {
-	mSound.setBuffer(mSoundBuffer);
-	mSprite.setTexture(mNormalTexture);
+	_sound.setBuffer(_soundBuffer);
+	_sprite.setTexture(_normalTexture);
 
-	sf::FloatRect bounds = mSprite.getLocalBounds();
-	mText.setPosition(bounds.width / 2.f, bounds.height / 2.f);
+	const sf::FloatRect bounds = _sprite.getLocalBounds();
+	_text.setPosition(bounds.width / 2.f, bounds.height / 2.f);
 }
 
 void Button::setCallback(Callback callback)
 {
-	mCallback = std::move(callback);
+	_callback = std::move(callback);
 }
 
 void Button::setText(const sf::String& text)
 {
-	mText.setString(text);
-	centerOrigin(mText);
+	_text.setString(text);
+	centerOrigin(_text);
 }
 
-void Button::setToggle(bool flag)
+void Button::setToggle(const bool flag)
 {
-	mIsToggle = flag;
+	_isToggle = flag;
 }
 
 bool Button::isSelectable() const
@@ -53,15 +53,15 @@ void Button::select()
 {
 	Component::select();
 	
-	mSound.play();
-	mSprite.setTexture(mSelectedTexture);
+	_sound.play();
+	_sprite.setTexture(_selectedTexture);
 }
 
 void Button::deselect()
 {
 	Component::deselect();
 
-	mSprite.setTexture(mNormalTexture);
+	_sprite.setTexture(_normalTexture);
 }
 
 void Button::activate()
@@ -69,19 +69,19 @@ void Button::activate()
 	Component::activate();
 
 	// If we are toggle then we should show that the button is pressed and thus "toggled".
-	if (mIsToggle)
+	if (_isToggle)
 	{
-		mSound.play();
-		mSprite.setTexture(mPressedTexture);
+		_sound.play();
+		_sprite.setTexture(_pressedTexture);
 	}
 
-	if (mCallback)
+	if (_callback)
 	{
-		mCallback();
+		_callback();
 	}
 
 	// If we are not a toggle then deactivate the button since we are just momentarily activated.
-	if (!mIsToggle)
+	if (!_isToggle)
 	{
 		deactivate();
 	}
@@ -91,16 +91,16 @@ void Button::deactivate()
 {
 	Component::deactivate();
 
-	if (mIsToggle)
+	if (_isToggle)
 	{
 		// Reset texture to right one depending on if we are selected or not.
 		if (isSelected())
 		{
-			mSprite.setTexture(mSelectedTexture);
+			_sprite.setTexture(_selectedTexture);
 		}
 		else
 		{
-			mSprite.setTexture(mNormalTexture);
+			_sprite.setTexture(_normalTexture);
 		}
 	}
 }
@@ -112,8 +112,8 @@ void Button::handleEvent(const sf::Event&)
 void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
-	target.draw(mSprite, states);
-	target.draw(mText, states);
+	target.draw(_sprite, states);
+	target.draw(_text, states);
 }
 
 }
