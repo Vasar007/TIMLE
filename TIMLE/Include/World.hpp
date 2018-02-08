@@ -66,8 +66,6 @@ class World : private sf::NonCopyable
 			, mIsFinished(false)
 			, mShadow(nullptr)
 			, mShadowLifeBar(nullptr)
-			, mTentacles()
-			, mTentaclesStatic()
 			{
 			}
 
@@ -95,7 +93,6 @@ class World : private sf::NonCopyable
 			, mCameraCounter(0)
 			, mGolem(nullptr)
 			, mGolemLifeBar(nullptr)
-			, mRocks()
 			{
 			}
 

@@ -265,11 +265,11 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
 				{
 					case 1:
 						mHasStartedFirstMainBoss = true;
-						_needFirstMainDelay = _hadFirstMainDelay ? false : true;
+						_needFirstMainDelay = !_hadFirstMainDelay;
 						break;
 					case 2:
 						mHasStartedFirstMiniBoss = true;
-						_needFirstMiniDelay = _hadFirstMiniDelay ? false : true;
+						_needFirstMiniDelay = !_hadFirstMiniDelay;
 						break;
 					default:
 						mHasStartedFirstMainBoss = false;

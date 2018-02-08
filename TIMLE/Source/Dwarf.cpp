@@ -48,7 +48,7 @@ void Dwarf::checkCollisionWithMap(const float Dx, const float Dy)
 				if (Dx < 0.f)
 				{
 					x = object.mRect.left + object.mRect.width;
-					mIsTurned = true;;
+					mIsTurned = true;
 				}
 			}
 
@@ -80,7 +80,7 @@ void Dwarf::update(const float dt)
 		mCurrentAttack = 3.f;
 		return;
 	}
-	else if (!mIsEnd)
+	if (!mIsEnd)
 	{
 		mCurrentAttack -= 0.0025f * dt;
 		if (mCurrentAttack < 0.f)
@@ -127,7 +127,7 @@ void Dwarf::update(const float dt)
 		}
 		checkCollisionWithMap(dx, 0.f);
 
-		mSprite.setPosition(x + (mWidth / 2) + (dx > 0 ? 10.f : -10.f), y + (mHeight / 2) - 19.f);
+		mSprite.setPosition(x + static_cast<float>(mWidth) / 2.f + (dx > 0 ? 10.f : -10.f), y + static_cast<float>(mHeight) / 2.f - 19.f);
 
 		mCurrentFrame += 0.005f * dt;
 		if (mCurrentFrame > 6.f)

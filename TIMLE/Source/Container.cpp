@@ -9,12 +9,11 @@ namespace GUI
 {
 
 Container::Container()
-: _children()
-, _selectedChild(-1)
+: _selectedChild(-1)
 {
 }
 
-void Container::pack(const Component::shPtr component)
+void Container::pack(const Component::ShPtr& component)
 {
 	_children.push_back(component);
 

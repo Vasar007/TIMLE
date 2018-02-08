@@ -71,10 +71,18 @@ class Entity
 	
 	public:
 		Entity(const Type::ID id, const float X, const float Y, const int width, const int height,
-			   const float speed, const int hitpoints, const  std::size_t damage, 
-			   const std::string& type = "0", const FuncCalcBodyRect calcBodyRect = nullptr);
+			   const float speed, const int hitpoints, const  std::size_t damage,
+		       std::string type = "0", const FuncCalcBodyRect& calcBodyRect = nullptr);
 
 		virtual				~Entity() = default;
+
+		Entity(const Entity& other) = default;
+
+		Entity(Entity&& other) = default;
+
+		Entity& operator=(const Entity& other) = default;
+
+		Entity& operator=(Entity&& other) = default;
 	
 		void				setVelocity(const sf::Vector2f velocity);
 		void				setVelocity(const float vx, const float vy);

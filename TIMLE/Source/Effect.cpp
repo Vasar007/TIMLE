@@ -1,8 +1,9 @@
+#include <utility>
 #include "../Include/Effect.hpp"
 
 
 Effect::Effect(const Type::ID id, const float X, const float Y, const int width, const int height,
-			   const std::string& type)
+			   std::string type)
 : x(X)
 , y(Y)
 , mWidth(width)
@@ -10,7 +11,7 @@ Effect::Effect(const Type::ID id, const float X, const float Y, const int width,
 , mCurrentFrame(0.f)
 , mIsStarted(false)
 , mIsEnd(false)
-, mType(type)
+, mType(std::move(type))
 , mTypeID(id)
 {
 	mSprite.setOrigin(static_cast<float>(mWidth) / 2.f, static_cast<float>(mHeight) / 2.f);

@@ -7,7 +7,6 @@
 
 TitreState::TitreState(StateStack& stack, Context context)
 : State(stack, context)
-, _text()
 , _textEffectTime(sf::Time::Zero)
 , _textAppearenceTime(sf::Time::Zero)
 {

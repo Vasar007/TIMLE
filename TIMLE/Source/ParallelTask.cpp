@@ -7,8 +7,6 @@ ParallelTask::ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds,
 , _threadClock(&ParallelTask::runTask, this)
 , _finished(false)
 , _finishedLoading(false)
-, _elapsedTime()
-, _mutex()
 , _textures(textures)
 , _sounds(sounds)
 , _playerInfo(playerInfo)

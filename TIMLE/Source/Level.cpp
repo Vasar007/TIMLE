@@ -25,11 +25,7 @@ Level::Level()
 , _tileWidth(0)
 , _tileHeight(0)
 , _firstTileID(0)
-, _drawingBounds()
-, _tilesetImage()
-, _layers()
 , mLevelNumber(0u)
-, mObjects()
 {
 }
 
@@ -98,7 +94,7 @@ bool Level::loadFromFile(const std::string& filename)
 			rect.left	= x * _tileWidth;
 			rect.width	= _tileWidth;
 
-			subRects.push_back(std::move(rect));
+			subRects.push_back(rect);
 		}
 	}
 
@@ -111,7 +107,7 @@ bool Level::loadFromFile(const std::string& filename)
 		// Если присутствует opacity, то задаем прозрачность слоя, иначе он полностью непрозрачен
 		if (layerElement->Attribute("opacity") != nullptr)
 		{
-			const float opacity	= static_cast<float>(strtod(layerElement->Attribute("opacity"), nullptr));
+			const auto opacity	= static_cast<float>(strtod(layerElement->Attribute("opacity"), nullptr));
 			layer.mOpacity		= 255 * static_cast<int>(opacity);
 		}
 		else
@@ -322,30 +318,30 @@ sf::Vector2i Level::getTileSize() const
 void Level::drawAll(sf::RenderWindow& window) const
 {
 	// Рисуем все тайлы (объекты не рисуем!)
-	for (std::size_t layer = 0u; layer < _layers.size(); ++layer)
+	for (const auto& layer : _layers)
 	{
-		for (std::size_t tile = 0u; tile < _layers.at(layer).mTiles.size(); ++tile)
+		for (const auto& mTile : layer.mTiles)
 		{
-			window.draw(_layers.at(layer).mTiles.at(tile));
+			window.draw(mTile);
 		}
 	}
 }
 
 void Level::draw(sf::RenderWindow& window)
 {
-	const auto center = window.getView().getCenter();
-	const auto size = window.getView().getSize();
+	const auto center	= window.getView().getCenter();
+	const auto size		= window.getView().getSize();
 
 	_drawingBounds = sf::FloatRect(center.x - (size.x / 2.f) - 25.f,
 								   center.y - (size.y / 2.f) - 25.f, size.x + 25.f, size.y + 25.f);
 
-	for (std::size_t layer = 0u; layer < _layers.size(); ++layer)
+	for (const auto& layer : _layers)
 	{
-		for (std::size_t tile = 0u; tile < _layers.at(layer).mTiles.size(); ++tile)
+		for (const auto& mTile : layer.mTiles)
 		{
-			if (_drawingBounds.contains(_layers.at(layer).mTiles.at(tile).getPosition()))
+			if (_drawingBounds.contains(mTile.getPosition()))
 			{
-				window.draw(_layers.at(layer).mTiles.at(tile));
+				window.draw(mTile);
 			}
 		}
 	}

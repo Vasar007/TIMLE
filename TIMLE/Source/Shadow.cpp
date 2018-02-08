@@ -76,7 +76,7 @@ void Shadow::update(const float dt)
 		mCurrentDeath = 0.f;
 		return;
 	}
-	else if (!mIsEnd)
+	if (!mIsEnd)
 	{
 		mCurrentDeath += 0.0075f * dt;
 		if (mCurrentDeath > 13.f)

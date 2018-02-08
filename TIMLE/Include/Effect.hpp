@@ -16,16 +16,16 @@ class Effect
 		int					mHeight;
 
 		float				mCurrentFrame;
-		float				mCurrentAttack;
-		float				mCurrentDeath;
-		float				mMoveTimer;
+		float				mCurrentAttack{};
+		float				mCurrentDeath{};
+		float				mMoveTimer{};
 
-		bool				mLife;
+		bool				mLife{};
 		bool				mIsStarted;
 		bool				mIsEnd;
-		bool				mIsAttacked;
-		bool				mIsHittedOnce;
-		bool				mIsHitted;
+		bool				mIsAttacked{};
+		bool				mIsHittedOnce{};
+		bool				mIsHitted{};
 
 		std::string			mType;
 
@@ -35,10 +35,17 @@ class Effect
 
 
 	public:
-		Effect(const Type::ID id, const float X, const float Y, const int width, const int height,
-			   const std::string& type = "0");
+		Effect(const Type::ID id, const float X, const float Y, const int width, const int height, std::string type = "0");
 
 		virtual ~Effect() = default;
+
+		Effect(const Effect& other) = default;
+
+		Effect(Effect&& other) = default;
+
+		Effect& operator=(const Effect& other) = default;
+
+		Effect& operator=(Effect&& other) = default;
 
 		sf::FloatRect		getRect() const;
 

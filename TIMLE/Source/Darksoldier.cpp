@@ -41,7 +41,7 @@ void DarkSoldier::checkCollisionWithMap(const float Dx, const float Dy)
 				if (Dx < 0.f)
 				{
 					x = object.mRect.left + object.mRect.width;
-					mIsTurned = true;;
+					mIsTurned = true;
 				}
 			}
 

@@ -119,9 +119,9 @@ struct TeleportPoint
  */
 struct EntityData
 {
-	std::size_t						mHitpoints;
-	std::size_t						mDamage;
-	float							mSpeed;
+	std::size_t						mHitpoints{};
+	std::size_t						mDamage{};
+	float							mSpeed{};
 	Textures::ID					mTexture;
 	sf::Time						mFireInterval;
 	std::vector<Direction>			mDirections;
@@ -135,9 +135,9 @@ struct EntityData
  */
 struct ShadowData
 {
-	std::size_t						mHitpoints;
-	std::size_t						mDamage;
-	float							mSpeed;
+	std::size_t						mHitpoints{};
+	std::size_t						mDamage{};
+	float							mSpeed{};
 	Textures::ID					mTexture;
 	sf::Time						mTimeInterval;
 	std::vector<TeleportPoint>		mTeleportPoints;
@@ -148,9 +148,9 @@ struct ShadowData
  */
 struct GolemDarkData
 {
-	std::size_t						mHitpoints;
-	std::size_t						mDamage;
-	float							mSpeed;
+	std::size_t						mHitpoints{};
+	std::size_t						mDamage{};
+	float							mSpeed{};
 	Textures::ID					mTexture;
 	sf::Time						mTimeInterval;
 };

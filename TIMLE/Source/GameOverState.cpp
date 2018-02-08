@@ -11,7 +11,6 @@
 GameOverState::GameOverState(StateStack& stack, Context context)
 : State(stack, context)
 , _opacity(0)
-, _gameOverText()
 , _elapsedTime(sf::Time::Zero)
 , _playerInfo(*context.mPlayerInfo)
 {
