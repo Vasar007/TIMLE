@@ -7,9 +7,6 @@
 
 SettingsState::SettingsState(StateStack& stack, Context context)
 : State(stack, context)
-, _backgroundSprite()
-, _guiContainer()
-, _sound()
 , _window(*context.mWindow)
 , _videoModes(sf::VideoMode::getFullscreenModes())
 , _labelsNames(SettingsState::SettingCount)

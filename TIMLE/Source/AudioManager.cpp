@@ -4,7 +4,6 @@
 AudioManager::AudioManager()
 : _currentMusic(MusicType::None)
 , _currentState(CurrentState::Stop)
-, _musics()
 {
 	buildMusic();
 }

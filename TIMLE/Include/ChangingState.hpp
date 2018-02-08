@@ -26,7 +26,7 @@ class ChanginState final : public State
 	public:
 								ChanginState(StateStack& stack, Context context);
 
-		void					addText(const sf::String text);
+		void					addText(const sf::String& text);
 		void					setText(const std::size_t number);
 		void					draw() override;
 		bool					update(const sf::Time dt) override;

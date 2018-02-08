@@ -39,22 +39,22 @@ void Gate::close()
 
 void Gate::checkCollisionWithMap(const float, const float Dy)
 {
-	for (std::size_t i = 0; i < mLevelObjects.size(); ++i)
+	for (auto& mLevelObject : mLevelObjects)
 	{
 		// Проверяем пересечение с объектом
-		if (getRect().intersects(mLevelObjects[i].mRect))
+		if (getRect().intersects(mLevelObject.mRect))
 		{
-			if (mLevelObjects[i].mName == "solid")
+			if (mLevelObject.mName == "solid")
 			{
 				if (Dy > 0.f)
 				{
-					y = mLevelObjects[i].mRect.top - mHeight;
+					y = mLevelObject.mRect.top - mHeight;
 					dy = 0.f;
 					mIsEnd = true;
 				}
 				if (Dy < 0.f)
 				{
-					y = mLevelObjects[i].mRect.top + mLevelObjects[i].mRect.height;
+					y = mLevelObject.mRect.top + mLevelObject.mRect.height;
 					dy = 0.f;
 				}
 			}
@@ -106,7 +106,7 @@ void Gate::update(const float dt)
 			y += dy * dt;
 			if ((y >= mWaySizeDown && !mIsEnd) || (y <= mWaySizeUp && mIsEnd))
 			{
-				mIsEnd = dy > 0.f ? true : false;
+				mIsEnd = dy > 0.f;
 				dy = -dy;
 			}
 

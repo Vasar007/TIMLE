@@ -13,13 +13,6 @@ DialogState::DialogState(StateStack& stack, Context context)
 , _textNumber(0u)
 , _choosing(false)
 , _texture(context.mTextures->get(Textures::ID::DialogBox))
-, _sprite()
-, _text()
-, _talking()
-, _guiContainer()
-, _sound()
-, _dialogText()
-, _dialogTalking()
 , _playerInfo(*context.mPlayerInfo)
 {
 	const auto windowSize(context.mWindow->getView().getSize());
@@ -191,7 +184,7 @@ DialogState::DialogState(StateStack& stack, Context context)
 	_guiContainer.pack(skipButton);
 }
 
-void DialogState::addText(const sf::String text, const sf::String talking)
+void DialogState::addText(const sf::String& text, const sf::String& talking)
 {
 	_dialogText.push_back(text);
 	_dialogTalking.push_back(talking);

@@ -32,7 +32,7 @@ class DialogState final : public State
 	public:
 								DialogState(StateStack& stack, Context context);
 
-		void					addText(const sf::String text, const sf::String talking);
+		void					addText(const sf::String& text, const sf::String& talking);
 		void					setText(const std::size_t number);
 		void					draw() override;
 		bool					update(const sf::Time dt) override;

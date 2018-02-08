@@ -96,7 +96,16 @@ class State
 
 	public:
 								State(StateStack& stack, const Context context);
-		virtual					~State();
+
+		virtual					~State() = default;
+
+		State(const State& other) = default;
+
+		State(State&& other) = default;
+
+		State& operator=(const State& other) = default;
+
+		State& operator=(State&& other) = default;
 
 		virtual void			draw() = 0;
 		virtual bool			update(const sf::Time dt) = 0;

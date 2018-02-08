@@ -4,10 +4,7 @@
 
 
 StateStack::StateStack(const State::Context context)
-: _stack()
-, _pendingList()
-, _context(context)
-, _factories()
+: _context(context)
 {
 }
 
@@ -50,17 +47,17 @@ void StateStack::handleEvent(const sf::Event& event)
 
 void StateStack::pushState(const States::ID stateID)
 {
-	_pendingList.push_back(PendingChange(Action::Push, stateID));
+	_pendingList.emplace_back(Action::Push, stateID);
 }
 
 void StateStack::popState()
 {
-	_pendingList.push_back(PendingChange(Action::Pop));
+	_pendingList.emplace_back(Action::Pop);
 }
 
 void StateStack::clearStates()
 {
-	_pendingList.push_back(PendingChange(Action::Clear));
+	_pendingList.emplace_back(Action::Clear);
 }
 
 bool StateStack::isEmpty() const

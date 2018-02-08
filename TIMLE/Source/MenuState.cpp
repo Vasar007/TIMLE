@@ -9,9 +9,6 @@
 
 MenuState::MenuState(StateStack& stack, Context context)
 : State(stack, context)
-, _backgroundSprite()
-, _guiContainer()
-, _sound()
 {
 	// Define some variables for convenience.
 	const auto windowSize(context.mWindow->getView().getSize());

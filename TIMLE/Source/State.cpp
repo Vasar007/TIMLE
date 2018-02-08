@@ -36,10 +36,6 @@ State::State(StateStack& stack, const Context context)
 {
 }
 
-State::~State()
-{
-}
-
 void State::requestStackPush(const States::ID stateID) const
 {
 	_stack->pushState(stateID);

@@ -14,6 +14,14 @@ class Bloodsplat final : public Effect
 
 		~Bloodsplat() = default;
 
+		Bloodsplat(const Bloodsplat& other) = default;
+
+		Bloodsplat(Bloodsplat&& other) = default;
+
+		Bloodsplat& operator=(const Bloodsplat& other) = default;
+
+		Bloodsplat& operator=(Bloodsplat&& other) = default;
+
 		void update(const float dt) override;
 };
 

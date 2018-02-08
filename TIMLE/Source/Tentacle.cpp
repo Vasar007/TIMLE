@@ -70,7 +70,7 @@ void Tentacle::update(const float dt)
 		mCurrentDeath = 0.f;
 		return;
 	}
-	else if (!mIsEnd)
+	if (!mIsEnd)
 	{
 		mCurrentDeath += 0.0075f * dt;
 		if (mCurrentDeath > 12.f)
@@ -81,7 +81,7 @@ void Tentacle::update(const float dt)
 		}
 		mSprite.setPosition(x + (mWidth / 2.f) - 2.f, y + (mHeight / 2.f) - 11.f);
 		mSprite.setTextureRect(sf::IntRect(25 * (static_cast<int>(mCurrentDeath) < 5 ? static_cast<int>(mCurrentDeath) : static_cast<int>(mCurrentDeath) - 5),
-			90 * (static_cast<int>(mCurrentDeath) < 5 ? 0 : 1), 25, 90));
+		                                   90 * (static_cast<int>(mCurrentDeath) < 5 ? 0 : 1), 25, 90));
 		return;
 	}
 

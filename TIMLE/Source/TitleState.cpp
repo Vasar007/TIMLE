@@ -7,7 +7,6 @@
 
 TitleState::TitleState(StateStack& stack, Context context)
 : State(stack, context)
-, _text()
 , _showText(true)
 , _textEffectTime(sf::Time::Zero)
 {

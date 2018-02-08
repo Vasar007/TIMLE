@@ -54,6 +54,14 @@ class StateStack : private sf::NonCopyable
 		explicit			StateStack(const State::Context context);
 		virtual				~StateStack() = default;
 
+		StateStack(const StateStack& other) = delete;
+
+		StateStack(StateStack&& other) = delete;
+
+		StateStack& operator=(const StateStack& other) = delete;
+
+		StateStack& operator=(StateStack&& other) = delete;
+
 		template <typename T>
 		void				registerState(const States::ID stateID);
 

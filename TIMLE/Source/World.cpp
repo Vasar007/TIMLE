@@ -21,7 +21,7 @@
 #include "../Include/DeadMan.hpp"
 #include "../Include/Flamestrike.hpp"
 #include "../Include/DarkArcher.hpp"
-#include "../Include/MAgicArrow.hpp"
+#include "../Include/MagicArrow.hpp"
 #include "../Include/Bloodsplat.hpp"
 
 
@@ -38,24 +38,12 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , _worldBounds(0.f, 0.f, 13072.f, 3200.f)
 , _spawnPosition(_worldView.getSize().x / 2.f, _worldBounds.height - _worldView.getSize().y / 2.f)
 , _currentLevelNumber(1u)
-, _position()
 , _scrollSpeed(0.f)
 , _playerHero(nullptr)
 , _playerInfo(playerInfo)
 , _lifeBar(nullptr)
-, _shadowBoss()
-, _golemBoss()
-, _entities()
-, _effects()
-, _enemySpawnPoints()
-, _guidedProjectiles()
-, _objects()
-, _debugRectsToDraw()
-, _sound()
-, _debug(false)
+, _debug(debugMode == State::DebugOn)
 {
-	_debug = debugMode == State::DebugOn ? true : false;
-
 	_sound.setBuffer(sounds.get(Sounds::ID::Bullet));
 
 	audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
@@ -110,7 +98,7 @@ void World::update(sf::Time dt)
 
 	guideMissiles();
 	
-	for (std::list<Entity*>::iterator it = _entities.begin(); it != _entities.end();)
+	for (auto it = _entities.begin(); it != _entities.end();)
 	{
 		// Call the update function for objects.
 		(*it)->update(static_cast<float>(dt.asMilliseconds()));
@@ -125,7 +113,7 @@ void World::update(sf::Time dt)
 		}
 	}
 
-	for (std::list<Effect*>::iterator it = _effects.begin(); it != _effects.end();)
+	for (auto it = _effects.begin(); it != _effects.end();)
 	{
 		(*it)->update(static_cast<float>(dt.asMilliseconds()));
 		if ((*it)->mLife)
@@ -157,7 +145,7 @@ void World::update(sf::Time dt)
 	// Updates ShadowBoss actions.
 	if (_shadowBoss.mIsActive)
 	{
-		for (std::list<Tentacle>::iterator it = _shadowBoss.mTentaclesStatic.begin(); 
+		for (auto it = _shadowBoss.mTentaclesStatic.begin(); 
 			 it != _shadowBoss.mTentaclesStatic.end();)
 		{
 			(*it).update(static_cast<float>(dt.asMilliseconds()));
@@ -171,8 +159,7 @@ void World::update(sf::Time dt)
 			}
 		}
 
-		for (std::list<Tentacle>::iterator it = _shadowBoss.mTentacles.begin(); 
-			 it != _shadowBoss.mTentacles.end();)
+		for (auto it = _shadowBoss.mTentacles.begin(); it != _shadowBoss.mTentacles.end();)
 		{
 			(*it).update(static_cast<float>(dt.asMilliseconds()));
 			if ((*it).mLife)
@@ -1093,10 +1080,10 @@ void World::handleCollisions(const float dt)
 				if (_playerHero->mHitpoints > 0)
 				{
 					if (!_golemBoss.mGolem->mIsBack &&
-						(_playerHero->x - _golemBoss.mGolem->x > 0.f &&
-						(_golemBoss.mGolem->dx < 0.f) ||
-							(_playerHero->x - _golemBoss.mGolem->x) < 0.f &&
-							_golemBoss.mGolem->dx > 0.f))
+						((_playerHero->x - _golemBoss.mGolem->x > 0.f &&
+						(_golemBoss.mGolem->dx < 0.f)) ||
+						 ((_playerHero->x - _golemBoss.mGolem->x) < 0.f &&
+							_golemBoss.mGolem->dx > 0.f)))
 					{
 						_golemBoss.mGolem->mIsBack = true;
 						_golemBoss.mGolem->dx = -_golemBoss.mGolem->dx;
@@ -1142,7 +1129,7 @@ void World::handleCollisions(const float dt)
 		_audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
 	}
 
-	for (std::list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); ++it)
+	for (auto it = _entities.begin(); it != _entities.end(); ++it)
 	{
 		if (!battleRect.intersects((*it)->getRect()))
 		{
@@ -1220,8 +1207,8 @@ void World::handleCollisions(const float dt)
 					// Нанесение урона
 					Entity* flamestrike = new Flamestrike(Type::ID::Flamestrike, _textures, _fonts,
 														  *_level,
-														  _playerHero->x + _playerHero->mWidth / 4,
-														  _playerHero->y - _playerHero->mHeight / 2,
+														  _playerHero->x + static_cast<float>(_playerHero->mWidth) / 4.f,
+														  _playerHero->y - static_cast<float>(_playerHero->mHeight) / 2.f,
 														  13, 45);
 					flamestrike->mIsStarted = true;
 					_entities.push_back(std::move(flamestrike));
@@ -1891,7 +1878,7 @@ void World::handleCollisions(const float dt)
 			objectRect.left		= (*it)->x;
 			objectRect.height	= static_cast<float>((*it)->mHeight);
 			objectRect.width	= static_cast<float>((*it)->mWidth);
-			tempObject.mRect	= std::move(objectRect);
+			tempObject.mRect	= objectRect;
 			_level->mObjects.push_back(tempObject);
 			_playerHero->mLevelObjects.push_back(std::move(tempObject));
 		}
@@ -1914,13 +1901,13 @@ void World::handleCollisions(const float dt)
 			objectRect.left		= (*it)->x;
 			objectRect.height	= static_cast<float>((*it)->mHeight);
 			objectRect.width	= static_cast<float>((*it)->mWidth);
-			tempObject.mRect	= std::move(objectRect);
+			tempObject.mRect	= objectRect;
 			_level->mObjects.push_back(tempObject);
 			_playerHero->mLevelObjects.push_back(std::move(tempObject));
 		}
 
 		/// Collision detection between objects.
-		for (std::list<Entity*>::iterator it2 = it; it2 != _entities.end(); ++it2)
+		for (auto it2 = it; it2 != _entities.end(); ++it2)
 		{
 			// This must be different objects.
 			if (*it != *it2)

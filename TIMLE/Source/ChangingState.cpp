@@ -11,9 +11,6 @@
 ChanginState::ChanginState(StateStack& stack, Context context)
 : State(stack, context)
 , _textNumber(0)
-, _guiContainer()
-, _sound()
-, _dialogText()
 , _playerInfo(*context.mPlayerInfo)
 , _currentSettings(context.mCurrentSettings)
 {
@@ -447,7 +444,7 @@ ChanginState::ChanginState(StateStack& stack, Context context)
 	setText(_textNumber);
 }
 
-void ChanginState::addText(const sf::String text)
+void ChanginState::addText(const sf::String& text)
 {
 	_dialogText.push_back(text);
 }

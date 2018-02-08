@@ -2,6 +2,7 @@
 #define PLAYERINFO_HPP
 
 #include <map>
+#include <deque>
 
 #include <SFML/Window/Event.hpp>
 
@@ -113,7 +114,7 @@ class PlayerInfo final
 		 * \details 3 – killing first boss Shadow;
 		 * \details 4 – killing first mini-boss GolemDark.
 		 */
-		std::vector<bool>					mQuests;
+		std::deque<bool>					mQuests;
 
 		/**
 		 * \brief Boolean flag for notification of completion downloading level and resources.

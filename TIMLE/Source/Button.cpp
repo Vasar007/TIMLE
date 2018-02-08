@@ -11,13 +11,10 @@ namespace GUI
 
 Button::Button(const FontHolder& fonts, const TextureHolder& textures, 
 			   const SoundBufferHolder& soundBuffer)
-: _callback()
-, _normalTexture(textures.get(Textures::ID::ButtonNormal))
+: _normalTexture(textures.get(Textures::ID::ButtonNormal))
 , _selectedTexture(textures.get(Textures::ID::ButtonSelected))
 , _pressedTexture(textures.get(Textures::ID::ButtonPressed))
 , _soundBuffer(soundBuffer.get(Sounds::ID::ButtonCLick))
-, _sound()
-, _sprite()
 , _text("", fonts.get(Fonts::ID::Main), 16)
 , _isToggle(false)
 {

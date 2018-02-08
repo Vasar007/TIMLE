@@ -11,10 +11,6 @@
 ChoosingState::ChoosingState(StateStack& stack, Context context)
 : State(stack, context)
 , _textNumber(0)
-, _guiContainer()
-, _sound()
-, _dialogText()
-, _dialogTalking()
 , _playerInfo(*context.mPlayerInfo)
 {
 	// Define some variables for convenience.
@@ -140,7 +136,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 	setText(_textNumber);
 }
 
-void ChoosingState::addText(const sf::String text)
+void ChoosingState::addText(const sf::String& text)
 {
 	_dialogText.push_back(text);
 }

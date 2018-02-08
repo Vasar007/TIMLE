@@ -22,15 +22,9 @@ const std::vector<sf::Color> Application::mColorConstants = { sf::Color(85, 170,
 
 Application::Application()
 : _window(sf::VideoMode(1280, 720), "TIMLE", sf::Style::Close)
-, _textures()
-, _fonts()
-, _sounds()
-, _playerInfo()
 , _currentSettings(_window.getSize(), State::WindowStyle::Close, 100.f, 
 				   Fonts::ID::Main, State::ActualLanguage::Russian, State::DebugMode::DebugOff)
 , _stateStack(State::Context(_window, _textures, _fonts, _sounds, _playerInfo, _currentSettings))
-, _statisticsText()
-, _statisticsUpdateTime()
 , _statisticsNumFrames(0)
 {
 	_window.setKeyRepeatEnabled(false);
@@ -84,7 +78,7 @@ void Application::run()
 
 void Application::processInput()
 {
-	sf::Event event;
+	sf::Event event{};
 	while (_window.pollEvent(event))
 	{
 		_stateStack.handleEvent(event);

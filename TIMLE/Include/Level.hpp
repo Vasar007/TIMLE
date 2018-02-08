@@ -72,7 +72,7 @@ struct Layer
 	/**
 	 * \brief The opacity of the layer.
 	 */
-	int						mOpacity;
+	int						mOpacity{};
 
 	/**
 	 * \brief Vector tiles layer.

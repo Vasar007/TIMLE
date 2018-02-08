@@ -15,7 +15,6 @@ Projectile::Projectile(const Type::ID id, const TextureHolder&, const FontHolder
 : Entity(id, X, Y, width, height, 
 		 PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed, 100,
 		 PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage)
-, _targetDirection()
 , _guided(false)
 {
 	if (id == Type::ID::MagicArrow)

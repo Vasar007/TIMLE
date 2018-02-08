@@ -43,6 +43,14 @@ class Enemy : public Entity
 		 */
 		virtual			~Enemy() = default;
 
+		Enemy(const Enemy& other) = default;
+
+		Enemy(Enemy&& other) = default;
+
+		Enemy& operator=(const Enemy& other) = default;
+
+		Enemy& operator=(Enemy&& other) = default;
+
 		/**
 		 * \brief		Check collision this object with other objects and special areas in the map.
 		 * \param Dx	The current delta x-coordinate of this object for checking.

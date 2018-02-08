@@ -29,7 +29,7 @@ class Container final : public Component
 		/**
 		 * \brief Array that contains all elements for manipulating them.
 		 */
-		std::vector<Component::shPtr>	_children;
+		std::vector<Component::ShPtr>	_children;
 
 		/**
 		 * \brief Number of the selected child.
@@ -78,7 +78,7 @@ class Container final : public Component
 		 * \brief			Pack new component in this container.
 		 * \param component Component that need to pack.
 		 */
-		void				pack(const Component::shPtr component);
+		void				pack(const Component::ShPtr& component);
 
 		/**
 		 * \brief	Check if container can be selectable.

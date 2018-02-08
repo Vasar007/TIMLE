@@ -30,7 +30,7 @@ class Component : public sf::Drawable, public sf::Transformable, private sf::Non
 		/**
 		 * \brief Syntactic sugar. ( std::shared_ptr<Component> ).
 		 */
-		typedef std::shared_ptr<Component> shPtr;
+		typedef std::shared_ptr<Component> ShPtr;
 
 
 	private:
@@ -55,6 +55,14 @@ class Component : public sf::Drawable, public sf::Transformable, private sf::Non
 		 * \brief Default destructor.
 		 */
 		virtual			~Component() = default;
+
+		Component(const Component& other) = delete;
+
+		Component(Component&& other) = delete;
+
+		Component& operator=(const Component& other) = delete;
+
+		Component& operator=(Component&& other) = delete;
 
 
 		/**

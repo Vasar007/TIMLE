@@ -1,11 +1,11 @@
+#include <utility>
 #include "../Include/Entity.hpp"
 
 
 Entity::Entity(const Type::ID id, const float X, const  float Y, const int width, const int height, 
-			   const float speed, const int hitpoints, const std::size_t damage, 
-			   const std::string& type, const FuncCalcBodyRect calcBodyRect)
+			   const float speed, const int hitpoints, const std::size_t damage,
+			   std::string type, const FuncCalcBodyRect& calcBodyRect)
 : _calcBodyRect(calcBodyRect)
-, _velocity()
 , x(X)
 , y(Y)
 , dx(0.f)
@@ -37,7 +37,7 @@ Entity::Entity(const Type::ID id, const float X, const  float Y, const int width
 , mIsEnabled(false)
 , mIsDisabled(false)
 , mIsEnabling(false)
-, mType(type)
+, mType(std::move(type))
 , mTypeID(id)
 {
 	mSprite.setOrigin(static_cast<float>(mWidth) / 2.f, static_cast<float>(mHeight) / 2.f);

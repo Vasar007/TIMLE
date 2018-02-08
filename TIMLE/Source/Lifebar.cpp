@@ -4,8 +4,6 @@
 LifeBar::LifeBar(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
 				 const int hitpoints)
 : _max(hitpoints)
-, _texture()
-, _textureEmpty()
 , _type(id)
 , _bossName("", fonts.get(Fonts::ID::Main))
 {

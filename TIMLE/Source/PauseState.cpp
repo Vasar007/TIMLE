@@ -10,10 +10,6 @@
 
 PauseState::PauseState(StateStack& stack, Context context)
 : State(stack, context)
-, _backgroundSprite()
-, _pausedText()
-, _guiContainer()
-, _sound()
 , _playerInfo(*context.mPlayerInfo)
 {
 	sf::Font& font = context.mFonts->get(Fonts::ID::Main);
