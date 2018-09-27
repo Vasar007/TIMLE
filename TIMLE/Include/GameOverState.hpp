@@ -8,21 +8,21 @@
 
 class GameOverState final : public State
 {
-	private:
-		int				_opacity;
+    private:
+        int                _opacity;
 
-		sf::Text		_gameOverText;
-		sf::Time		_elapsedTime;
+        sf::Text        _gameOverText;
+        sf::Time        _elapsedTime;
 
-		PlayerInfo&		_playerInfo;
+        PlayerInfo&        _playerInfo;
 
 
-	public:
-						GameOverState(StateStack& stack, Context context);
+    public:
+                        GameOverState(StateStack& stack, Context context);
 
-		void			draw() override;
-		bool			update(const sf::Time dt) override;
-		bool			handleEvent(const sf::Event& event) override;
+        void            draw() override;
+        bool            update(const sf::Time dt) override;
+        bool            handleEvent(const sf::Event& event) override;
 };
 
 #endif // GAMEOVERSTATE_HPP

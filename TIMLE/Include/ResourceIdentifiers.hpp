@@ -6,9 +6,9 @@
 
 namespace sf
 {
-	class Texture;
-	class Font;
-	class SoundBuffer;
+    class Texture;
+    class Font;
+    class SoundBuffer;
 }
 
 /**
@@ -16,64 +16,64 @@ namespace sf
  */
 namespace Textures
 {
-	/**
-	 * \brief Enumeration of identificators of all app textures.
-	 */
-	enum class ID
-	{
-		Archer,
-		Swordsman,
-		Mage,
+    /**
+     * \brief Enumeration of identificators of all app textures.
+     */
+    enum class ID
+    {
+        Archer,
+        Swordsman,
+        Mage,
 
-		Ghost,
-		GhostDeath,
-		Golem,
-		GolemAttack,
-		GolemDeath,
-		GolemDark,
-		GolemDarkAttack,
-		GolemDarkDeath,
-		DarkSoldier,
-		Goblin,
-		MinotaurMage,
-		Dwarf,
-		Shadow,
-		Tentacle,
-		DarkArcher,
+        Ghost,
+        GhostDeath,
+        Golem,
+        GolemAttack,
+        GolemDeath,
+        GolemDark,
+        GolemDarkAttack,
+        GolemDarkDeath,
+        DarkSoldier,
+        Goblin,
+        MinotaurMage,
+        Dwarf,
+        Shadow,
+        Tentacle,
+        DarkArcher,
 
-		Bullet,
-		Fire,
-		MagicArrow,
-		MovingPlatform,
-		Quest,
+        Bullet,
+        Fire,
+        MagicArrow,
+        MovingPlatform,
+        Quest,
 
-		Bloodsplat,
+        Bloodsplat,
 
-		RockDirt,
-		RockCristal,
-		RockDarkStone,
-		RockHellStone,
-		RockCastle,
+        RockDirt,
+        RockCristal,
+        RockDarkStone,
+        RockHellStone,
+        RockCastle,
 
-		GateDirt,
-		GateCristal,
-		GateDarkRock,
-		GateHellRock,
-		GateWood,
+        GateDirt,
+        GateCristal,
+        GateDarkRock,
+        GateHellRock,
+        GateWood,
 
-		DialogBox,
-		HealthBar,
-		ManaBar,
-		EmptyBar,
-		BossBar,
+        DialogBox,
+        HealthBar,
+        ManaBar,
+        EmptyBar,
+        BossBar,
 
-		Knight,
+        Knight,
 
-		TitleScreen,
-		ButtonNormal,
-		ButtonSelected,
-		ButtonPressed
-	};
+        TitleScreen,
+        ButtonNormal,
+        ButtonSelected,
+        ButtonPressed
+    };
 }
 
 /**
@@ -81,13 +81,13 @@ namespace Textures
  */
 namespace Fonts
 {
-	/**
-	 * \brief Enumeration of identificators of all app fonts.
-	 */
-	enum class ID
-	{
-		Main,
-	};
+    /**
+     * \brief Enumeration of identificators of all app fonts.
+     */
+    enum class ID
+    {
+        Main,
+    };
 }
 
 /**
@@ -95,18 +95,18 @@ namespace Fonts
 */
 namespace Sounds
 {
-	/**
-	* \brief Enumeration of identificators of all app sounds.
-	*/
-	enum class ID
-	{
-		ButtonCLick,
+    /**
+    * \brief Enumeration of identificators of all app sounds.
+    */
+    enum class ID
+    {
+        ButtonCLick,
 
-		StartingDialog,
-		Death,
+        StartingDialog,
+        Death,
 
-		Bullet
-	};
+        Bullet
+    };
 }
 
 
@@ -116,12 +116,12 @@ template <typename Resource, typename Identifier>
 class ResourceHolder;
 
 // Syntactic sugar. ( ResourceHolder<sf::Texture, Textures::ID> ).
-typedef ResourceHolder<sf::Texture, Textures::ID>	TextureHolder;
+typedef ResourceHolder<sf::Texture, Textures::ID>    TextureHolder;
 
-// Syntactic sugar. ( ResourceHolder<sf::Font, Fonts::ID>	 ).
-typedef ResourceHolder<sf::Font, Fonts::ID>			FontHolder;
+// Syntactic sugar. ( ResourceHolder<sf::Font, Fonts::ID>     ).
+typedef ResourceHolder<sf::Font, Fonts::ID>            FontHolder;
 
 // Syntactic sugar. ( ResourceHolder<sf::SoundBuffer, Sounds::ID> ).
-typedef ResourceHolder<sf::SoundBuffer, Sounds::ID>	SoundBufferHolder;
+typedef ResourceHolder<sf::SoundBuffer, Sounds::ID>    SoundBufferHolder;
 
 #endif // RESOURCEIDENTIFIERS_HPP

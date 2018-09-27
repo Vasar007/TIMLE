@@ -7,72 +7,72 @@
 
 namespace
 {
-	const std::vector<ProjectileData> PROJECTILE_TABLE = initializeProjectileData();
+    const std::vector<ProjectileData> PROJECTILE_TABLE = initializeProjectileData();
 }
 
 Projectile::Projectile(const Type::ID id, const TextureHolder&, const FontHolder&,
-					   const Level&, const float X, const float Y, const int width, const int height)
+                       const Level&, const float X, const float Y, const int width, const int height)
 : Entity(id, X, Y, width, height, 
-		 PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed, 100,
-		 PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage)
+         PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed, 100,
+         PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage)
 , _guided(false)
 {
-	if (id == Type::ID::MagicArrow)
-	{
-		_guided = true;
-	}
+    if (id == Type::ID::MagicArrow)
+    {
+        _guided = true;
+    }
 }
 
 void Projectile::guideTowards(const sf::Vector2f position)
 {
-	_targetDirection = unitVector(position - getWorldPosition());
+    _targetDirection = unitVector(position - getWorldPosition());
 }
 
 bool Projectile::isGuided() const
 {
-	return _guided;
+    return _guided;
 }
 
 void Projectile::updateDirection(const float dt)
 {
-	if (isGuided())
-	{
-		const float approachRate = 100.f;
+    if (isGuided())
+    {
+        const float approachRate = 100.f;
 
-		// float dt => sf::Time dt.asSeconds()
-		auto newVelocity = unitVector(approachRate * dt * _targetDirection + 
-									  getVelocity());
-		newVelocity *= getMaxSpeed();
-		const auto angle = atan2(newVelocity.y, newVelocity.x);
+        // float dt => sf::Time dt.asSeconds()
+        auto newVelocity = unitVector(approachRate * dt * _targetDirection + 
+                                      getVelocity());
+        newVelocity *= getMaxSpeed();
+        const auto angle = atan2(newVelocity.y, newVelocity.x);
 
-		mSprite.setRotation(toDegree(angle));
-		setVelocity(newVelocity);
-	}
+        mSprite.setRotation(toDegree(angle));
+        setVelocity(newVelocity);
+    }
 }
 
 unsigned int Projectile::getCategory() const
 {
-	if (mTypeID == Type::ID::AlliedBullet)
-	{
-		return Category::AlliedProjectile;
-	}
-	else
-	{
-		return Category::EnemyProjectile;
-	}
+    if (mTypeID == Type::ID::AlliedBullet)
+    {
+        return Category::AlliedProjectile;
+    }
+    else
+    {
+        return Category::EnemyProjectile;
+    }
 }
 
 sf::FloatRect Projectile::getBoundingRect() const
 {
-	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
+    return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 
 float Projectile::getMaxSpeed() const
 {
-	return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed;
+    return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed;
 }
 
 int Projectile::getDamage() const
 {
-	return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage;
+    return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage;
 }

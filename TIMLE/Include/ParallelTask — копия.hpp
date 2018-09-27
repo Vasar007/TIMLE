@@ -17,32 +17,32 @@
 
 class ParallelTask
 {
-	private:
-		std::thread			mThread;
-		std::thread			mThreadClock;
-		std::atomic<bool>	mFinished;
-		std::atomic<bool>	mFinishedLoading;
-		sf::Clock			mElapsedTime;
-		std::mutex			mMutex;
-		mutable std::shared_mutex mutex_;
+    private:
+        std::thread            mThread;
+        std::thread            mThreadClock;
+        std::atomic<bool>    mFinished;
+        std::atomic<bool>    mFinishedLoading;
+        sf::Clock            mElapsedTime;
+        std::mutex            mMutex;
+        mutable std::shared_mutex mutex_;
 
-		TextureHolder&		mTextures;
-		SoundBufferHolder&	mSounds;
+        TextureHolder&        mTextures;
+        SoundBufferHolder&    mSounds;
 
-		PlayerInfo*			mPlayerInfo;
-	
-	
-	private:
-		void			runTask();
-		void			loadTextures();
+        PlayerInfo*            mPlayerInfo;
+    
+    
+    private:
+        void            runTask();
+        void            loadTextures();
 
 
-	public:
-		explicit 		ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds,
-									 PlayerInfo* playerInfo);
-		void			execute();
-		bool			isFinished();
-		float			getCompletion();
+    public:
+        explicit         ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds,
+                                     PlayerInfo* playerInfo);
+        void            execute();
+        bool            isFinished();
+        float            getCompletion();
 };
 
 #endif // PARALLELTASK_HPP

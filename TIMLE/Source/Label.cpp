@@ -14,7 +14,7 @@ Label::Label(const std::string& text, const FontHolder& fonts)
 
 bool Label::isSelectable() const
 {
-	return false;
+    return false;
 }
 
 void Label::handleEvent(const sf::Event&)
@@ -23,13 +23,13 @@ void Label::handleEvent(const sf::Event&)
 
 void Label::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	states.transform *= getTransform();
-	target.draw(_text, states);
+    states.transform *= getTransform();
+    target.draw(_text, states);
 }
 
 void Label::setText(const sf::String& text)
 {
-	_text.setString(text);
+    _text.setString(text);
 }
 
 }

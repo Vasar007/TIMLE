@@ -11,21 +11,21 @@
 
 class PauseState final : public State
 {
-	private:
-		sf::Sprite		_backgroundSprite;
-		sf::Text		_pausedText;
-		GUI::Container 	_guiContainer;
-		sf::Sound		_sound;
+    private:
+        sf::Sprite        _backgroundSprite;
+        sf::Text        _pausedText;
+        GUI::Container     _guiContainer;
+        sf::Sound        _sound;
 
-		PlayerInfo&		_playerInfo;
+        PlayerInfo&        _playerInfo;
 
 
-	public:
-						PauseState(StateStack& stack, Context context);
+    public:
+                        PauseState(StateStack& stack, Context context);
 
-		void			draw() override;
-		bool			update(const sf::Time dt) override;
-		bool			handleEvent(const sf::Event& event) override;
+        void            draw() override;
+        bool            update(const sf::Time dt) override;
+        bool            handleEvent(const sf::Event& event) override;
 };
 
 #endif // PAUSESTATE_HPP

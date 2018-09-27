@@ -10,90 +10,90 @@ StateStack::StateStack(const State::Context context)
 
 void StateStack::update(const sf::Time dt)
 {
-	// Iterate from top to bottom, stop as soon as update() returns false.
-	for (auto itr = _stack.rbegin(); itr != _stack.rend(); ++itr)
-	{
-		if (!(*itr)->update(dt))
-		{
-			break;
-		}
-	}
+    // Iterate from top to bottom, stop as soon as update() returns false.
+    for (auto itr = _stack.rbegin(); itr != _stack.rend(); ++itr)
+    {
+        if (!(*itr)->update(dt))
+        {
+            break;
+        }
+    }
 
-	applyPendingChanges();
+    applyPendingChanges();
 }
 
 void StateStack::draw()
 {
-	// Draw all active states from bottom to top.
-	for (auto& state : _stack)
-	{
-		state->draw();
-	}
+    // Draw all active states from bottom to top.
+    for (auto& state : _stack)
+    {
+        state->draw();
+    }
 }
 
 void StateStack::handleEvent(const sf::Event& event)
 {
-	// Iterate from top to bottom, stop as soon as handleEvent() returns false.
-	for (auto itr = _stack.rbegin(); itr != _stack.rend(); ++itr)
-	{
-		if (!(*itr)->handleEvent(event))
-		{
-			break;
-		}
-	}
+    // Iterate from top to bottom, stop as soon as handleEvent() returns false.
+    for (auto itr = _stack.rbegin(); itr != _stack.rend(); ++itr)
+    {
+        if (!(*itr)->handleEvent(event))
+        {
+            break;
+        }
+    }
 
-	applyPendingChanges();
+    applyPendingChanges();
 }
 
 void StateStack::pushState(const States::ID stateID)
 {
-	_pendingList.emplace_back(Action::Push, stateID);
+    _pendingList.emplace_back(Action::Push, stateID);
 }
 
 void StateStack::popState()
 {
-	_pendingList.emplace_back(Action::Pop);
+    _pendingList.emplace_back(Action::Pop);
 }
 
 void StateStack::clearStates()
 {
-	_pendingList.emplace_back(Action::Clear);
+    _pendingList.emplace_back(Action::Clear);
 }
 
 bool StateStack::isEmpty() const
 {
-	return _stack.empty();
+    return _stack.empty();
 }
 
 State::unPtr StateStack::createState(const States::ID stateID)
 {
-	auto found = _factories.find(stateID);
-	assert(found != _factories.end());
+    auto found = _factories.find(stateID);
+    assert(found != _factories.end());
 
-	return found->second();
+    return found->second();
 }
 
 void StateStack::applyPendingChanges()
 {
-	for (const auto& change : _pendingList)
-	{
-		switch (change.mAction)
-		{
-			case Action::Push:
-				_stack.push_back(createState(change.mStateID));
-				break;
+    for (const auto& change : _pendingList)
+    {
+        switch (change.mAction)
+        {
+            case Action::Push:
+                _stack.push_back(createState(change.mStateID));
+                break;
 
-			case Action::Pop:
-				_stack.pop_back();
-				break;
+            case Action::Pop:
+                _stack.pop_back();
+                break;
 
-			case Action::Clear:
-				_stack.clear();
-				break;
-		}
-	}
+            case Action::Clear:
+                _stack.clear();
+                break;
+        }
+    }
 
-	_pendingList.clear();
+    _pendingList.clear();
 }
 
 StateStack::PendingChange::PendingChange(const Action action, const States::ID stateID)

@@ -12,32 +12,32 @@ Component::Component()
 
 bool Component::isSelected() const
 {
-	return mIsSelected;
+    return mIsSelected;
 }
 
 void Component::select()
 {
-	mIsSelected = true;
+    mIsSelected = true;
 }
 
 void Component::deselect()
 {
-	mIsSelected = false;
+    mIsSelected = false;
 }
 
 bool Component::isActive() const
 {
-	return mIsActive;
+    return mIsActive;
 }
 
 void Component::activate()
 {
-	mIsActive = true;
+    mIsActive = true;
 }
 
 void Component::deactivate()
 {
-	mIsActive = false;
+    mIsActive = false;
 }
 
 }

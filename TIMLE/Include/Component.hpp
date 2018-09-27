@@ -12,7 +12,7 @@
 
 namespace sf
 {
-	class Event;
+    class Event;
 }
 
 /**
@@ -26,88 +26,88 @@ namespace GUI
  */
 class Component : public sf::Drawable, public sf::Transformable, private sf::NonCopyable
 {
-	public:
-		/**
-		 * \brief Syntactic sugar. ( std::shared_ptr<Component> ).
-		 */
-		typedef std::shared_ptr<Component> ShPtr;
+    public:
+        /**
+         * \brief Syntactic sugar. ( std::shared_ptr<Component> ).
+         */
+        typedef std::shared_ptr<Component> ShPtr;
 
 
-	private:
-		/**
-		 * \brief Selection flag of the component.
-		 */
-		bool			mIsSelected;
+    private:
+        /**
+         * \brief Selection flag of the component.
+         */
+        bool            mIsSelected;
 
-		/**
-		 * \brief Active flag of the component.
-		 */
-		bool			mIsActive;
-
-
-	public:
-		/**
-		 * \brief Default constructor.
-		 */
-						Component();
-
-		/**
-		 * \brief Default destructor.
-		 */
-		virtual			~Component() = default;
-
-		Component(const Component& other) = delete;
-
-		Component(Component&& other) = delete;
-
-		Component& operator=(const Component& other) = delete;
-
-		Component& operator=(Component&& other) = delete;
+        /**
+         * \brief Active flag of the component.
+         */
+        bool            mIsActive;
 
 
-		/**
-		 * \brief	Check if component can be selectable.
-		 * \return	True if component is selectable or false otherwise.
-		 */
-		virtual bool	isSelectable() const = 0;
+    public:
+        /**
+         * \brief Default constructor.
+         */
+                        Component();
 
-		/**
-		 * \brief	Check if component is already selected.
-		 * \return	True if this component is selected or not otherwise.
-		 */
-		bool			isSelected() const;
+        /**
+         * \brief Default destructor.
+         */
+        virtual            ~Component() = default;
 
-		/**
-		 * \brief Change focus on the other component.
-		 */
-		virtual void	select();
+        Component(const Component& other) = delete;
 
-		/**
-		 * \brief Remove select flag from this component.
-		 */
-		virtual void	deselect();
+        Component(Component&& other) = delete;
 
-		/**
-		 * \brief	Check if this component is active.
-		 * \return	True if this component is active or false otherwise.
-		 */
-		virtual bool	isActive() const;
+        Component& operator=(const Component& other) = delete;
 
-		/**
-		 * \brief Toggle active flag on true.
-		 */
-		virtual void	activate();
+        Component& operator=(Component&& other) = delete;
 
-		/**
-		 * \brief Toggle active flag on false.
-		 */
-		virtual void	deactivate();
 
-		/**
-		 * \brief		Handle input events.
-		 * \param event The event that was sent.
-		 */
-		virtual void	handleEvent(const sf::Event& event) = 0;
+        /**
+         * \brief    Check if component can be selectable.
+         * \return    True if component is selectable or false otherwise.
+         */
+        virtual bool    isSelectable() const = 0;
+
+        /**
+         * \brief    Check if component is already selected.
+         * \return    True if this component is selected or not otherwise.
+         */
+        bool            isSelected() const;
+
+        /**
+         * \brief Change focus on the other component.
+         */
+        virtual void    select();
+
+        /**
+         * \brief Remove select flag from this component.
+         */
+        virtual void    deselect();
+
+        /**
+         * \brief    Check if this component is active.
+         * \return    True if this component is active or false otherwise.
+         */
+        virtual bool    isActive() const;
+
+        /**
+         * \brief Toggle active flag on true.
+         */
+        virtual void    activate();
+
+        /**
+         * \brief Toggle active flag on false.
+         */
+        virtual void    deactivate();
+
+        /**
+         * \brief        Handle input events.
+         * \param event The event that was sent.
+         */
+        virtual void    handleEvent(const sf::Event& event) = 0;
 };
 
 }

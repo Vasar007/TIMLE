@@ -4,21 +4,21 @@
 
 namespace States
 {
-	enum class ID
-	{
-		None,
-		Title,
-		Menu,
-		Game,
-		Loading,
-		Pause,
-		Settings,
-		GameOver,
-		Dialog,
-		Choosing,
-		Titre,
-		Changing
-	};
+    enum class ID
+    {
+        None,
+        Title,
+        Menu,
+        Game,
+        Loading,
+        Pause,
+        Settings,
+        GameOver,
+        Dialog,
+        Choosing,
+        Titre,
+        Changing
+    };
 }
 
 #endif // STATEIDENTIFIERS_HPP

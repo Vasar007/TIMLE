@@ -3,8 +3,8 @@
 
 
 Entity::Entity(const Type::ID id, const float X, const  float Y, const int width, const int height, 
-			   const float speed, const int hitpoints, const std::size_t damage,
-			   std::string type, const FuncCalcBodyRect& calcBodyRect)
+               const float speed, const int hitpoints, const std::size_t damage,
+               std::string type, const FuncCalcBodyRect& calcBodyRect)
 : _calcBodyRect(calcBodyRect)
 , x(X)
 , y(Y)
@@ -40,62 +40,62 @@ Entity::Entity(const Type::ID id, const float X, const  float Y, const int width
 , mType(std::move(type))
 , mTypeID(id)
 {
-	mSprite.setOrigin(static_cast<float>(mWidth) / 2.f, static_cast<float>(mHeight) / 2.f);
-	//centerOrigin(mSprite);
+    mSprite.setOrigin(static_cast<float>(mWidth) / 2.f, static_cast<float>(mHeight) / 2.f);
+    //centerOrigin(mSprite);
 }
 
 void Entity::setVelocity(const sf::Vector2f velocity)
 {
-	_velocity = velocity;
+    _velocity = velocity;
 }
 
 void Entity::setVelocity(const float vx, const float vy)
 {
-	_velocity.x = vx;
-	_velocity.y = vy;
+    _velocity.x = vx;
+    _velocity.y = vy;
 }
 
 sf::Vector2f Entity::getVelocity() const
 {
-	return _velocity;
+    return _velocity;
 }
 
 sf::FloatRect Entity::getRect() const
 {
-	return sf::FloatRect(x, y, static_cast<float>(mWidth), static_cast<float>(mHeight));
+    return sf::FloatRect(x, y, static_cast<float>(mWidth), static_cast<float>(mHeight));
 }
 
 sf::Vector2f Entity::getCenter() const
 {
-	return sf::Vector2f(x + static_cast<float>(mWidth) / 2.f,
-						y + static_cast<float>(mHeight) / 2.f);
+    return sf::Vector2f(x + static_cast<float>(mWidth) / 2.f,
+                        y + static_cast<float>(mHeight) / 2.f);
 }
 
 sf::FloatRect Entity::getBodyRect() const
 {
-	if (!_calcBodyRect)
-	{
-		return sf::FloatRect();
-	}
+    if (!_calcBodyRect)
+    {
+        return sf::FloatRect();
+    }
 
-	return _calcBodyRect(x, y, static_cast<float>(mWidth), static_cast<float>(mHeight), dx);
+    return _calcBodyRect(x, y, static_cast<float>(mWidth), static_cast<float>(mHeight), dx);
 }
 
 sf::Vector2f Entity::getWorldPosition() const
 {
-	return getWorldTransform() * sf::Vector2f();
+    return getWorldTransform() * sf::Vector2f();
 }
 
 sf::Transform Entity::getWorldTransform() const
 {
-	sf::Transform transform = sf::Transform::Identity;
+    sf::Transform transform = sf::Transform::Identity;
 
-	transform *= mSprite.getTransform();
+    transform *= mSprite.getTransform();
 
-	return transform;
+    return transform;
 }
 
 void Entity::draw(sf::RenderTarget& target) const
 {
-	target.draw(mSprite);
+    target.draw(mSprite);
 }
