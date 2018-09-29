@@ -11,21 +11,21 @@
 class LoadingState final : public State
 {
     private:
-        sf::Text            _loadingText;
-        sf::RectangleShape    _progressBarBackground;
-        sf::RectangleShape    _progressBar;
+        sf::Text           _loadingText;
+        sf::RectangleShape _progressBarBackground;
+        sf::RectangleShape _progressBar;
     
-        ParallelTask        _loadingTask;
+        ParallelTask       _loadingTask;
 
 
     public:
-                            LoadingState(StateStack& stack, Context context);
+             LoadingState(StateStack& stack, Context context);
     
-        void                draw() override;
-        bool                update(sf::Time dt) override;
-        bool                handleEvent(const sf::Event& event) override;
+        void draw() override;
+        bool update(sf::Time dt) override;
+        bool handleEvent(const sf::Event& event) override;
     
-        void                setCompletion(float percent);
+        void setCompletion(float percent);
 };
 
 #endif // LOADINGSTATE_HPP

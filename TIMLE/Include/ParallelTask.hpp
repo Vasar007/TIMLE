@@ -16,29 +16,29 @@
 class ParallelTask
 {
     private:
-        sf::Thread            _thread;
-        sf::Thread            _threadClock;
-        bool                _finished;
-        bool                _finishedLoading;
-        sf::Clock            _elapsedTime;
-        sf::Mutex            _mutex;
+        sf::Thread         _thread;
+        sf::Thread         _threadClock;
+        bool               _finished;
+        bool               _finishedLoading;
+        sf::Clock          _elapsedTime;
+        sf::Mutex          _mutex;
 
-        TextureHolder&        _textures;
-        SoundBufferHolder&    _sounds;
+        TextureHolder&     _textures;
+        SoundBufferHolder& _sounds;
 
-        PlayerInfo&            _playerInfo;
+        PlayerInfo&        _playerInfo;
     
     
     private:
-        void            runTask();
-        void            loadTextures();
+        void runTask();
+        void loadTextures();
 
 
     public:
-        explicit         ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds, PlayerInfo& playerInfo);
-        void            execute();
-        bool            isFinished();
-        float            getCompletion();
+        explicit ParallelTask(TextureHolder& textures, SoundBufferHolder& sounds, PlayerInfo& playerInfo);
+        void     execute();
+        bool     isFinished();
+        float    getCompletion();
 };
 
 #endif // PARALLELTASK_HPP

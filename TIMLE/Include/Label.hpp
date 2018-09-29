@@ -21,52 +21,52 @@ class Label final : public Component
 {
     public:
         /**
-         * \brief Syntactic sugar. ( std::shared_ptr<Label> ).
+         * \brief Syntactic sugar.
          */
-        typedef std::shared_ptr<Label> shPtr;
+        using shPtr = std::shared_ptr<Label>;
             
 
     private:
         /**
          * \brief Text of the label.
          */
-        sf::Text    _text;
+        sf::Text _text;
     
     
     private:
         /**
-         * \brief            Draw the object to a render target.
-         * \param target    Render target to draw to.
-         * \param states    Current render states.
+         * \brief             Draw the object to a render target.
+         * \param[out] target Render target to draw to.
+         * \param[in] states  Current render states.
          */
-        void        draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 
     public:
         /**
-         * \brief        Default constuctor.
-         * \param text    Text of the label.
-         * \param fonts    Font holder for extracting necessary font.
+         * \brief           Default constuctor.
+         * \param[in] text  Text of the label.
+         * \param[in] fonts Font holder for extracting necessary font.
          */
-                    Label(const std::string& text, const FontHolder& fonts);
+             Label(const std::string& text, const FontHolder& fonts);
 
         /**
-         * \brief    Check if label can be selectable.
-         * \return    True if label is selectable or false otherwise.
+         * \brief  Check if label can be selectable.
+         * \return True if label is selectable or false otherwise.
          */
-        bool        isSelectable() const override;
+        bool isSelectable() const override;
 
         /**
-         * \brief        Set text to this label.
-         * \param text    Text of the label.
+         * \brief          Set text to this label.
+         * \param[in] text Text of the label.
          */
-        void        setText(const sf::String& text);
+        void setText(const sf::String& text);
 
         /**
-         * \brief        Handle input events.
-         * \param event The event that was sent.
+         * \brief           Handle input events.
+         * \param[in] event The event that was sent.
          */
-        void        handleEvent(const sf::Event& event) override;
+        void handleEvent(const sf::Event& event) override;
 };
 
 }

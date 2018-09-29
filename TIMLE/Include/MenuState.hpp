@@ -11,17 +11,17 @@
 class MenuState final : public State
 {
     private:
-        sf::Sprite        _backgroundSprite;
-        GUI::Container    _guiContainer;
-        sf::Sound        _sound;
+        sf::Sprite     _backgroundSprite;
+        GUI::Container _guiContainer;
+        sf::Sound      _sound;
 
 
     public:
-                        MenuState(StateStack& stack, Context context);
+             MenuState(StateStack& stack, Context context);
 
-        void            draw() override;
-        bool            update(const sf::Time dt) override;
-        bool            handleEvent(const sf::Event& event) override;
+        void draw() override;
+        bool update(const sf::Time dt) override;
+        bool handleEvent(const sf::Event& event) override;
 };
 
 #endif // MENUSTATE_HPP

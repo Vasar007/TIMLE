@@ -8,16 +8,16 @@
 class GameState final : public State
 {
     private:
-        World            _world;
-        PlayerInfo&        _playerInfo;
+        World       _world;
+        PlayerInfo& _playerInfo;
 
 
     public:
-                        GameState(StateStack& stack, const Context context);
+             GameState(StateStack& stack, const Context context);
 
-        void            draw() override;
-        bool            update(const sf::Time dt) override;
-        bool            handleEvent(const sf::Event& event) override;
+        void draw() override;
+        bool update(const sf::Time dt) override;
+        bool handleEvent(const sf::Event& event) override;
 };
 
 #endif // GAMESTATE_HPP

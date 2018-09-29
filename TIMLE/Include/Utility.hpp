@@ -30,14 +30,14 @@ std::string        toString(sf::Keyboard::Key key);
 
 // Call setOrigin() with the center of the object.
 
-void            centerOrigin(sf::Sprite& sprite);
-void            centerOrigin(sf::Text& text);
+void               centerOrigin(sf::Sprite& sprite);
+void               centerOrigin(sf::Text& text);
 
 
 // Degree/radian conversion.
 
-float            toDegree(const float radian);
-float            toRadian(const float degree);
+float              toDegree(const float radian);
+float              toRadian(const float degree);
 
 
 // Random number generation.
@@ -47,8 +47,8 @@ int                randomInt(const int exclusiveMax);
 
 // Vector operations.
 
-float            length(const sf::Vector2f vector);
-sf::Vector2f    unitVector(const sf::Vector2f vector);
+float              length(const sf::Vector2f vector);
+sf::Vector2f       unitVector(const sf::Vector2f vector);
 
 // Debug operations.
 

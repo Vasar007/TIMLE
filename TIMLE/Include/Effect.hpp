@@ -10,51 +10,52 @@
 class Effect
 {
     public:
-        float                x;
-        float                y;
-        int                    mWidth;
-        int                    mHeight;
+        float       x;
+        float       y;
+        int         mWidth;
+        int         mHeight;
 
-        float                mCurrentFrame;
-        float                mCurrentAttack{};
-        float                mCurrentDeath{};
-        float                mMoveTimer{};
+        float       mCurrentFrame;
+        float       mCurrentAttack{};
+        float       mCurrentDeath{};
+        float       mMoveTimer{};
 
-        bool                mLife{};
-        bool                mIsStarted;
-        bool                mIsEnd;
-        bool                mIsAttacked{};
-        bool                mIsHittedOnce{};
-        bool                mIsHitted{};
+        bool        mLife{};
+        bool        mIsStarted;
+        bool        mIsEnd;
+        bool        mIsAttacked{};
+        bool        mIsHittedOnce{};
+        bool        mIsHitted{};
 
-        std::string            mType;
+        std::string mType;
 
-        sf::Sprite            mSprite;
-        sf::Texture            mTexture;
-        Type::ID            mTypeID;
+        sf::Sprite  mSprite;
+        sf::Texture mTexture;
+        Type::ID    mTypeID;
 
 
     public:
-        Effect(const Type::ID id, const float X, const float Y, const int width, const int height, std::string type = "0");
+                      Effect(const Type::ID id, const float X, const float Y, const int width,
+                             const int height, std::string type = "0");
 
-        virtual ~Effect() = default;
+        virtual       ~Effect() = default;
 
-        Effect(const Effect& other) = default;
+                      Effect(const Effect& other) = default;
 
-        Effect(Effect&& other) = default;
+                      Effect(Effect&& other) = default;
 
-        Effect& operator=(const Effect& other) = default;
+        Effect&       operator=(const Effect& other) = default;
 
-        Effect& operator=(Effect&& other) = default;
+        Effect&       operator=(Effect&& other) = default;
 
-        sf::FloatRect        getRect() const;
+        sf::FloatRect getRect() const;
 
-        sf::Vector2f        getCenter() const;
-        sf::Vector2f        getWorldPosition() const;
-        sf::Transform        getWorldTransform() const;
-        virtual void        draw(sf::RenderTarget& target) const;
+        sf::Vector2f  getCenter() const;
+        sf::Vector2f  getWorldPosition() const;
+        sf::Transform getWorldTransform() const;
+        virtual void  draw(sf::RenderTarget& target) const;
 
-        virtual void        update(const float dt) = 0;
+        virtual void  update(const float dt) = 0;
 };
 
 #endif // EFFECT_HPP

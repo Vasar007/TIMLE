@@ -48,7 +48,7 @@ class AudioManager
         /**
          * \brief Current playing music type.
          */
-        MusicType                _currentMusic;
+        MusicType               _currentMusic;
 
         /**
          * \brief Current music's state.
@@ -58,50 +58,50 @@ class AudioManager
         /**
         * \brief Main array with all musics.
         */
-        std::vector<sf::Music*>    _musics;
+        std::vector<sf::Music*> _musics;
 
 
     private:
         /**
          * \brief Initialization available musics.
          */
-        void            buildMusic();
+        void buildMusic();
 
 
     public:
         /**
          * \brief Default constructor.
          */
-                        AudioManager();
+                  AudioManager();
 
         /**
-         * \brief            Changes playing music for another.
-         * \param musicType New music type to play.
+         * \brief               Changes playing music for another.
+         * \param[in] musicType New music type to play.
          */
-        void            setMusic(const MusicType musicType);
+        void      setMusic(const MusicType musicType);
 
         /**
          * \brief Stops all tracks even they aren't playing now.
          */
-        void            stopAllMusics();
+        void      stopAllMusics();
 
         /**
-         * \brief    Gets current music type.
-         * \return    Current playing music type.
+         * \brief  Gets current music type.
+         * \return Current playing music type.
          */
-        MusicType        getMusicType() const;
+        MusicType getMusicType() const;
 
         /**
-         * \brief    Gets information about current state.
-         * \return    True, if music is playing, else – false.
+         * \brief  Gets information about current state.
+         * \return True, if music is playing, else – false.
          */
-        bool            isPlaying() const;
+        bool      isPlaying() const;
 
         /**
          * \brief            Set music volume.
-         * \param volume    New value to set.
+         * \param[in] volume New value to set.
          */
-        void            setMusicVolume(const float volume);
+        void      setMusicVolume(const float volume);
 
 
 };

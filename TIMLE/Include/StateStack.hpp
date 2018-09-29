@@ -30,50 +30,50 @@ class StateStack : private sf::NonCopyable
 
         struct PendingChange
         {
-            explicit        PendingChange(Action action, States::ID stateID = States::ID::None);
+            explicit   PendingChange(Action action, States::ID stateID = States::ID::None);
     
-            Action            mAction;
-            States::ID        mStateID;
+            Action     mAction;
+            States::ID mStateID;
         };
     
     
     private:
-        std::vector<State::unPtr>                            _stack;
-        std::vector<PendingChange>                            _pendingList;
+        std::vector<State::unPtr>                           _stack;
+        std::vector<PendingChange>                          _pendingList;
     
-        State::Context                                        _context;
-        std::map<States::ID, std::function<State::unPtr()>>    _factories;
+        State::Context                                      _context;
+        std::map<States::ID, std::function<State::unPtr()>> _factories;
 
 
     private:
-        State::unPtr        createState(const States::ID stateID);
-        void                applyPendingChanges();
+        State::unPtr createState(const States::ID stateID);
+        void         applyPendingChanges();
 
 
     public:        
-        explicit            StateStack(const State::Context context);
-        virtual                ~StateStack() = default;
+        explicit     StateStack(const State::Context context);
+        virtual      ~StateStack() = default;
 
-        StateStack(const StateStack& other) = delete;
+                     StateStack(const StateStack& other) = delete;
 
-        StateStack(StateStack&& other) = delete;
+                     StateStack(StateStack&& other) = delete;
 
-        StateStack& operator=(const StateStack& other) = delete;
+        StateStack&  operator=(const StateStack& other) = delete;
 
-        StateStack& operator=(StateStack&& other) = delete;
+        StateStack&  operator=(StateStack&& other) = delete;
 
         template <typename T>
-        void                registerState(const States::ID stateID);
+        void         registerState(const States::ID stateID);
 
-        virtual void        update(const sf::Time dt);
-        void                draw();
-        void                handleEvent(const sf::Event& event);
+        virtual void update(const sf::Time dt);
+        void         draw();
+        void         handleEvent(const sf::Event& event);
 
-        void                pushState(const States::ID stateID);
-        void                popState();
-        void                clearStates();
+        void         pushState(const States::ID stateID);
+        void         popState();
+        void         clearStates();
 
-        bool                isEmpty() const;
+        bool         isEmpty() const;
 };
 
 

@@ -84,17 +84,17 @@ class PlayerInfo final
         /**
          * \brief Current dialog number, which we need to show.
          */
-        std::size_t                         mDialogNumber;
+        std::size_t              mDialogNumber;
 
         /**
          * \brief Array of all showed dialogs, which we have shown yet.
          */
-        std::vector<std::size_t>            mShowedDialogs;
+        std::vector<std::size_t> mShowedDialogs;
 
         /**
          * \brief Variable for choosing number in the choosing state of dialog.
          */
-        std::size_t                         mChoosingNumber;
+        std::size_t              mChoosingNumber;
 
         /**
          * \brief   All choices, which player has done yet.
@@ -102,8 +102,7 @@ class PlayerInfo final
          * \details 0 - loot knight's and dwarven bodies;
          * \details 1 - choosing option to interactive with GolemDark.
          */
-        std::vector<std::size_t>            mChosenSolution;
-        
+        std::vector<std::size_t> mChosenSolution;
 
         /**
          * \brief   Array of the quests, which player can carry out.
@@ -114,41 +113,41 @@ class PlayerInfo final
          * \details 3 – killing first boss Shadow;
          * \details 4 – killing first mini-boss GolemDark.
          */
-        std::deque<bool>                    mQuests;
+        std::deque<bool>         mQuests;
 
         /**
          * \brief Boolean flag for notification of completion downloading level and resources.
          */
-        bool                                mLoaded;
+        bool                     mLoaded;
 
         /**
          * \brief Lives counter of the player's hero.
          */
-        std::size_t                         mLivesCount;
+        std::size_t              mLivesCount;
 
         /**
          * \brief Last save point of the current game.
          */
-        SavePoint                           mLastSavePoint;
+        SavePoint                mLastSavePoint;
 
         /**
          * \brief Define we can ressurect player's hero or not.
          */
-        bool                                mCanRessurect;
+        bool                     mCanRessurect;
 
 
     private:
         /**
          * \brief Default starter binding keys with action (action is only function<void>).
          */
-        void              initializeActions();
+        void        initializeActions();
 
         /**
-         * \brief        Check if sending action is realtime action or not.
-         * \param action Action for checking.
-         * \return       True if action is realtime or false otherwise.
+         * \brief            Check if sending action is realtime action or not.
+         * \param[in] action Action for checking.
+         * \return           True if action is realtime or false otherwise.
          */
-        static bool       isRealtimeAction(const Action action);
+        static bool isRealtimeAction(const Action action);
 
 
     public:
@@ -158,28 +157,28 @@ class PlayerInfo final
                           PlayerInfo();
     
         /**
-         * \brief        Sends a notification to dialog state to show a certain dialog.
-         * \param number Number of the necessary dialog.
+         * \brief            Sends a notification to dialog state to show a certain dialog.
+         * \param[in] number Number of the necessary dialog.
          */
         void              showDialog(const std::size_t number);
 
         /**
-         * \brief        Bind action with key.
-         * \param action Action for binding.
-         * \param key    Key for binding.
+         * \brief            Bind action with key.
+         * \param[in] action Action for binding.
+         * \param[in] key    Key for binding.
          */
         void              assignKey(const Action action, const sf::Keyboard::Key key);
 
         /**
-         * \brief        Get key that assigned with current action.
-         * \param action Action for searching assigned key.
-         * \return       Found key or Key::Unknown.
+         * \brief            Get key that assigned with current action.
+         * \param[in] action Action for searching assigned key.
+         * \return           Found key or Key::Unknown.
          */
         sf::Keyboard::Key getAssignedKey(const Action action) const;
     
         /**
-         * \brief        Change current game status of the app.
-         * \param status New game status.
+         * \brief            Change current game status of the app.
+         * \param[in] status New game status.
          */
         void              setGameStatus(const GameStatus status);
 
@@ -191,8 +190,8 @@ class PlayerInfo final
         GameStatus        getGameStatus() const;
 
         /**
-         * \brief        Change current level number.
-         * \param number New level number.
+         * \brief            Change current level number.
+         * \param[in] number New level number.
          */
         void              setLevelNumber(const std::size_t number);
 

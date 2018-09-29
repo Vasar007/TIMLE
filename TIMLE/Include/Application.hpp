@@ -21,103 +21,103 @@ class Application
         /**
          * \brief Constant for time per frame limits.
          */
-        static const sf::Time                TimePerFrame;
+        static const sf::Time               TimePerFrame;
 
         /**
          * \brief Array of constant for backgrounds in different levels.
          */
-        static const std::vector<sf::Color>    mColorConstants;
+        static const std::vector<sf::Color> mColorConstants;
     
         /**
          * \brief Active window to using.
          */
-        sf::RenderWindow        _window;
+        sf::RenderWindow                    _window;
 
         /**
          * \brief Variable, which contains all textures for this app.
          */
-        TextureHolder            _textures;
+        TextureHolder                       _textures;
 
         /**
          * \brief Variable, which contains all fonts for this app.
          */
-        FontHolder                _fonts;
+        FontHolder                          _fonts;
 
         /**
         * \brief Variable, which contains all sounds for this app.
         */
-        SoundBufferHolder        _sounds;
+        SoundBufferHolder                   _sounds;
 
         /**
          * \brief Variable, which contains all player's data.
          */
-        PlayerInfo                _playerInfo;
+        PlayerInfo                          _playerInfo;
 
         /**
          * \brief Structure for containing all settings.
          */
-        State::CurrentSettings    _currentSettings;
+        State::CurrentSettings              _currentSettings;
     
         /**
          * \brief State stack, can contain and update different states (section "States").
          */
-        StateStack                _stateStack;
+        StateStack                          _stateStack;
     
         /**
          * \brief Text for appearing current FPS of this app.
          */
-        sf::Text                _statisticsText;
+        sf::Text                            _statisticsText;
 
         /**
          * \brief Time for updating current FPS of this app.
          */
-        sf::Time                _statisticsUpdateTime;
+        sf::Time                            _statisticsUpdateTime;
 
         /**
          * \brief Number FPS of this app.
          */
-        std::size_t                _statisticsNumFrames;
+        std::size_t                         _statisticsNumFrames;
 
 
     private:
         /**
          * \brief App loop that processes all input events.
          */
-        void    processInput();
+        void processInput();
         
         /**
          * \brief        Update stack of the states.
-         * \param dt    Delta time parameter.
+         * \param[in] dt Delta time parameter.
          */
-        void    update(const sf::Time dt);
+        void update(const sf::Time dt);
         
         /**
          * \brief Manipulate with window (such as drawing and changing view).
          */
-        void    render();
+        void render();
     
         /**
          * \brief        Update statictics information of the app.
-         * \param dt    Delta time parameter.
+         * \param[in] dt Delta time parameter.
          */
-        void    updateStatistics(const sf::Time dt);
+        void updateStatistics(const sf::Time dt);
         /**
          * \brief Register states for working with it.
          */
-        void    registerStates();
+        void registerStates();
 
 
     public:
         /**
          * \brief Default constructor.
          */
-                Application();
+             Application();
 
         
         /**
          * \brief Main app loop.
          */
-        void    run();
+        void run();
 };
 
 #endif // APPLICATION_HPP

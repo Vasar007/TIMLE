@@ -11,42 +11,42 @@
 class Entity 
 {
     public:
-        typedef std::function<sf::FloatRect(float left, float top,
-                                            float width, float height, 
-                                            float direction)> FuncCalcBodyRect;
+        using FuncCalcBodyRect = std::function<sf::FloatRect(float left, float top,
+                                               float width, float height, 
+                                               float direction)>;
 
 
     private:
-        FuncCalcBodyRect    _calcBodyRect;
-        sf::Vector2f        _velocity;
+        FuncCalcBodyRect _calcBodyRect;
+        sf::Vector2f     _velocity;
 
 
     public:
-        float                x;
-        float                y;
-        float                dx;    // Ускорение по x
-        float                dy;    // Ускорение по y
-        float                mSpeed;    // Скорость
-        float                mMoveTimer;
-        float                mDeathTimer;
-        float                mCurrentFrame;    // Таймер анимации
-        float                mCurrentAttack;
-        float                mCurrentDeath;
+        float               x;
+        float               y;
+        float               dx;
+        float               dy;
+        float               mSpeed;
+        float               mMoveTimer;
+        float               mDeathTimer;
+        float               mCurrentFrame;
+        float               mCurrentAttack;
+        float               mCurrentDeath;
 
-        int                    mWidth;    // Ширина
-        int                    mHeight;    // Высота
+        int                 mWidth;
+        int                 mHeight;
 
-        float                mBodyX;
-        float                mBodyY;
-        float                mBodyWidth;
+        float               mBodyX;
+        float               mBodyY;
+        float               mBodyWidth;
         float                mBodyHeight;
 
-        int                    mHitpoints;    // Количество здоровья
-        std::size_t            mDamage;
+        int                 mHitpoints;
+        std::size_t         mDamage;
 
-        bool                mLife; // Жизнь сущности
-        bool                mIsMove;    // Разрешение движения
-        bool                mOnGround;    // Нахождение на земле
+        bool                mLife;
+        bool                mIsMove;
+        bool                mOnGround;
         bool                mIsAttacked;
         bool                mIsHitted;
         bool                mIsHittedOnce;
@@ -58,47 +58,47 @@ class Entity
         bool                mIsDisabled;
         bool                mIsEnabling;
 
-        std::string            mType;    // Тип сущности, получаем из TMX-карты
+        std::string         mType;
 
-        sf::Sprite            mSprite;
-        sf::Texture            mTexture;
-        sf::Texture            mTextureAttack;
-        sf::Texture            mTextureDeath;
+        sf::Sprite          mSprite;
+        sf::Texture         mTexture;
+        sf::Texture         mTextureAttack;
+        sf::Texture         mTextureDeath;
         Type::ID            mTypeID;
     
-        std::vector<Object>    mLevelObjects;    // Вектор объектов карты
-    
+        std::vector<Object> mLevelObjects;
+
     
     public:
-        Entity(const Type::ID id, const float X, const float Y, const int width, const int height,
-               const float speed, const int hitpoints, const  std::size_t damage,
-               std::string type = "0", const FuncCalcBodyRect& calcBodyRect = nullptr);
+                     Entity(const Type::ID id, const float X, const float Y, const int width,
+                            const int height, const float speed, const int hitpoints,
+                            const  std::size_t damage, std::string type = "0",
+                            const FuncCalcBodyRect& calcBodyRect = nullptr);
 
-        virtual                ~Entity() = default;
+        virtual      ~Entity() = default;
 
-        Entity(const Entity& other) = default;
+                     Entity(const Entity& other) = default;
 
-        Entity(Entity&& other) = default;
+                     Entity(Entity&& other) = default;
 
-        Entity& operator=(const Entity& other) = default;
+        Entity&      operator=(const Entity& other) = default;
 
-        Entity& operator=(Entity&& other) = default;
+        Entity&      operator=(Entity&& other) = default;
     
-        void                setVelocity(const sf::Vector2f velocity);
-        void                setVelocity(const float vx, const float vy);
-        sf::Vector2f        getVelocity() const;
+        void         setVelocity(const sf::Vector2f velocity);
+        void         setVelocity(const float vx, const float vy);
+        sf::Vector2f getVelocity() const;
 
-        // Функция получения прямоугольника, его координат и размеров(ширина, высота).
-        sf::FloatRect        getRect() const;
+        sf::FloatRect getRect() const;
 
-        sf::FloatRect        getBodyRect() const;
+        sf::FloatRect getBodyRect() const;
 
-        sf::Vector2f        getCenter() const;
-        sf::Vector2f        getWorldPosition() const;
-        sf::Transform        getWorldTransform() const;
-        virtual void        draw(sf::RenderTarget& target) const;
+        sf::Vector2f  getCenter() const;
+        sf::Vector2f  getWorldPosition() const;
+        sf::Transform getWorldTransform() const;
+        virtual void  draw(sf::RenderTarget& target) const;
     
-        virtual void        update(const float dt) = 0;
+        virtual void  update(const float dt) = 0;
 };
 
 #endif // ENTITY_HPP

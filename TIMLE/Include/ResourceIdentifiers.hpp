@@ -115,13 +115,13 @@ namespace Sounds
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
-// Syntactic sugar. ( ResourceHolder<sf::Texture, Textures::ID> ).
-typedef ResourceHolder<sf::Texture, Textures::ID>    TextureHolder;
+// Syntactic sugar.
+using TextureHolder     = ResourceHolder<sf::Texture, Textures::ID>;
 
-// Syntactic sugar. ( ResourceHolder<sf::Font, Fonts::ID>     ).
-typedef ResourceHolder<sf::Font, Fonts::ID>            FontHolder;
+// Syntactic sugar.
+using FontHolder        = ResourceHolder<sf::Font, Fonts::ID>;
 
-// Syntactic sugar. ( ResourceHolder<sf::SoundBuffer, Sounds::ID> ).
-typedef ResourceHolder<sf::SoundBuffer, Sounds::ID>    SoundBufferHolder;
+// Syntactic sugar.
+using SoundBufferHolder = ResourceHolder<sf::SoundBuffer, Sounds::ID>;
 
 #endif // RESOURCEIDENTIFIERS_HPP

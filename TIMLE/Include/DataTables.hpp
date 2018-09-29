@@ -119,12 +119,13 @@ struct TeleportPoint
  */
 struct EntityData
 {
-    std::size_t                  mHitpoints{};
-    std::size_t                  mDamage{};
-    float                        mSpeed{};
-    Textures::ID                 mTexture;
-    sf::Time                     mFireInterval;
-    std::vector<Direction>       mDirections;
+    std::size_t            mHitpoints{};
+    std::size_t            mDamage{};
+    float                  mSpeed{};
+    Textures::ID           mTexture;
+    sf::Time               mFireInterval;
+    std::vector<Direction> mDirections;
+
     std::function<sf::FloatRect(float top, float left, 
                                 float width, float height, float direction)> mCalcBodyRect;
 
@@ -135,12 +136,12 @@ struct EntityData
  */
 struct ShadowData
 {
-    std::size_t                  mHitpoints{};
-    std::size_t                  mDamage{};
-    float                        mSpeed{};
-    Textures::ID                 mTexture;
-    sf::Time                     mTimeInterval;
-    std::vector<TeleportPoint>   mTeleportPoints;
+    std::size_t                mHitpoints{};
+    std::size_t                mDamage{};
+    float                      mSpeed{};
+    Textures::ID               mTexture;
+    sf::Time                   mTimeInterval;
+    std::vector<TeleportPoint> mTeleportPoints;
 };
 
 /**
@@ -148,11 +149,11 @@ struct ShadowData
  */
 struct GolemDarkData
 {
-    std::size_t                  mHitpoints{};
-    std::size_t                  mDamage{};
-    float                        mSpeed{};
-    Textures::ID                 mTexture;
-    sf::Time                     mTimeInterval;
+    std::size_t  mHitpoints{};
+    std::size_t  mDamage{};
+    float        mSpeed{};
+    Textures::ID mTexture;
+    sf::Time     mTimeInterval;
 };
 
 /**
@@ -160,9 +161,9 @@ struct GolemDarkData
  */
 struct ProjectileData
 {
-    std::size_t                  mDamage;
-    float                        mSpeed;
-    Textures::ID                 mTexture;
+    std::size_t  mDamage;
+    float        mSpeed;
+    Textures::ID mTexture;
 };
 
 /**
@@ -176,11 +177,11 @@ struct PickupData
 
 // Initialization block.
 
-std::vector<EntityData>          initializeHeroData();
-std::vector<EntityData>          initializeEnemyData();
-ShadowData                       initializeShadowData();
-GolemDarkData                    initializeGolemDarkData();
-std::vector<ProjectileData>      initializeProjectileData();
-std::vector<PickupData>          initializePickupData();
+std::vector<EntityData>     initializeHeroData();
+std::vector<EntityData>     initializeEnemyData();
+ShadowData                  initializeShadowData();
+GolemDarkData               initializeGolemDarkData();
+std::vector<ProjectileData> initializeProjectileData();
+std::vector<PickupData>     initializePickupData();
 
 #endif // DATATABLES_HPP
