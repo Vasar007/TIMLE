@@ -250,6 +250,7 @@
     <ClCompile Include="Source\Tentacle.cpp" />
     <ClCompile Include="Source\TitleState.cpp" />
     <ClCompile Include="Source\TitreState.cpp" />
+    <ClCompile Include="Source\TransitionState.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\World.cpp" />
     <ClCompile Include="TinyXML\tinystr.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="Include\Tentacle.hpp" />
     <ClInclude Include="Include\TitleState.hpp" />
     <ClInclude Include="Include\TitreState.hpp" />
+    <ClInclude Include="Include\TransitionState.hpp" />
     <ClInclude Include="Include\Utility.hpp" />
     <ClInclude Include="Include\World.hpp" />
     <ClInclude Include="TinyXML\tinystr.h" />

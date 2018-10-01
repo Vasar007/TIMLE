@@ -66,7 +66,7 @@ ChanginState::ChanginState(StateStack& stack, Context context)
         {
             addText(L"Выберите размер окна:");
 
-            auto fullscreenModes = sf::VideoMode::getFullscreenModes();
+            const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
 
             std::size_t counter = 0;
 

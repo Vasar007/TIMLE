@@ -12,7 +12,7 @@ PauseState::PauseState(StateStack& stack, Context context)
 : State(stack, context)
 , _playerInfo(*context.mPlayerInfo)
 {
-    sf::Font& font = context.mFonts->get(Fonts::ID::Main);
+    const auto& font = context.mFonts->get(Fonts::ID::Main);
     const sf::Vector2f windowSize(context.mWindow->getSize());
 
     _sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));

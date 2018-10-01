@@ -5,23 +5,13 @@
 
 
 class Bloodsplat final : public Effect
-{        
+{
     public:
-                    Bloodsplat(const Type::ID id, const TextureHolder& textures, const float X,
-                               const float Y, const int width, const int height,
-                               const std::string& type = "0");
+             Bloodsplat(const Type::ID id, const TextureHolder& textures, const float X,
+                        const float Y, const int width, const int height,
+                        const std::string& type = "0");
 
-                    ~Bloodsplat() = default;
-
-                    Bloodsplat(const Bloodsplat& other) = default;
-
-                    Bloodsplat(Bloodsplat&& other) = default;
-
-        Bloodsplat& operator=(const Bloodsplat& other) = default;
-
-        Bloodsplat& operator=(Bloodsplat&& other) = default;
-
-        void        update(const float dt) override;
+        void update(const float dt) override;
 };
 
 #endif // BLOODSPLAT_HPP

@@ -2,28 +2,51 @@
 
 
 MovingPlatform::MovingPlatform(Type::ID id, const TextureHolder& textures, const FontHolder&,
-                               const Level&, const float X, const float Y, const int width, 
-                               const int height)
-: Entity(id, X, Y, width, height, 50.f, 100, 0)
+                               const Level& lvl, const float X, const float Y, const int width, 
+                               const int height, const std::string& type)
+: Entity(id, X, Y, width, height, 50.f, 100, 0, type)
 {
+    for (const auto& object : lvl.getObjects("platformBorder"))
+    {
+        if (object.mType == type)
+        {
+            mLevelObjects.push_back(object);
+        }
+    }
+
     mTexture = textures.get(Textures::ID::MovingPlatform);
     mSprite.setTexture(mTexture);
     mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
-    mSprite.setScale(0.5f, 0.5f);
+    mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));
     // Изначальное ускорение
     dx = 0.08f;
+}
+
+void MovingPlatform::checkCollisionWithMap()
+{
+    for (auto& mLevelObject : mLevelObjects)
+    {
+        // Проверяем пересечение с объектом
+        if (getRect().intersects(mLevelObject.mRect))
+        {
+            dx = -dx;
+            dy = -dy;
+        }
+    }
 }
 
 void MovingPlatform::update(const float dt)
 {
     // Движение по горизонтали
     x += dx * dt;
-    mMoveTimer += dt;
-    if (mMoveTimer > 2000.f)
-    {
-        dx *= -1.f;
-        // Если прошло 2 секунды, то меняем направление движения платформы на противоположное
-        mMoveTimer = 0.f;
-    }
+    checkCollisionWithMap();
+
+    //mMoveTimer += dt;
+    //if (mMoveTimer > 2000.f)
+    //{
+    //    dx *= -1.f;
+    //    // Если прошло 2 секунды, то меняем направление движения платформы на противоположное
+    //    mMoveTimer = 0.f;
+    //}
     mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f));
 }

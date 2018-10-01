@@ -3,21 +3,25 @@
 
 /*
  * Constant values of width and height for every object:
- *        – Ghost:                    w=51,        h=36
- *        – Golem:                    w=50,        h=38
- *        – DarkSoldier:              w=20,        h=30
- *        – Goblin:                   w=25,        h=28
- *        – MinotaurMage:             w=40,        h=40
- *        – Dwarf (all):              w=40,        h=27
- *        – Tentacle:                 w=13,        h=45
- *        – DarkArcher:               w=50,        h=50
- *        – Rock:                     w=type*16,   h=16
- *        – Gate (all):               w=16,        h=type*16
- *        – DialogPerson (Oswald):    w=16,        h=20
- *        – DialogPerson (Heinrich):  w=29,        h=32
- *        – MovingPlatform:           w=48,        h=11
- *        – DeadMan (DeadJuggernaut): w=35,        h=15
- *        – DeadMan (DeadDwarf):      w=25,        h=15
+ *        - Ghost:                    w=51,        h=36
+ *        - Golem:                    w=50,        h=38
+ *        - Shadow:                   w=40,        h=35
+ *        - GolemDark:                w=70,        h=60
+ *        - DarkSoldier:              w=20,        h=30
+ *        - Goblin:                   w=25,        h=28
+ *        - MinotaurMage:             w=40,        h=40
+ *        - Dwarf (all):              w=40,        h=27
+ *        - Tentacle:                 w=13,        h=45
+ *        - DarkArcher:               w=50,        h=50
+ *        - Rock:                     w=type*16,   h=16
+ *        - Gate (all):               w=16,        h=type*16
+ *        - DialogPerson (Oswald):    w=16,        h=20
+ *        - DialogPerson (Heinrich):  w=29,        h=32
+ *        - MovingPlatform:           w=48,        h=11
+ *        - DeadMan (DeadJuggernaut): w=35,        h=15
+ *        - DeadMan (DeadDwarf):      w=25,        h=15
+ *        - Projectile (Arrow):       w=7,         h=7
+ *        - Projectile (MagicArrow):  w=13,        h=9
  */
 
 // For std::bind() placeholders _1, _2, ...

@@ -9,17 +9,29 @@
  */
 class Dwarf final : public Enemy 
 {
+    public:
+        enum class DwarfType
+        {
+            Dwarf,
+            DwarvenArcher,
+            DwarvenCommander
+        };
+
     private:
         /**
          * \brief Keep current type of dwarf warrior.
          */
-        int   _dwarfType;
+        DwarfType _dwarfType;
 
+        /**
+         * \brief Image offset in texture.
+         */
+        int       _offset;
 
         /**
          * \brief Special vector for keeping all teleport points of this object.
          */
-        float _inaccuracy;
+        float     _inaccuracy;
 
 
     public:
@@ -38,7 +50,8 @@ class Dwarf final : public Enemy
          */
              Dwarf(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
                    const Level& lvl, const float X, const float Y, const int width, 
-                   const int height, const std::string& type = "0", const int dwarfType = 0);
+                   const int height, const std::string& type = "0",
+                   const DwarfType dwarfType = DwarfType::Dwarf);
 
 
         /**

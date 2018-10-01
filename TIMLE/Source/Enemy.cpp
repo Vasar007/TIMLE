@@ -16,8 +16,7 @@ Enemy::Enemy(const Type::ID id, const TextureHolder&, const FontHolder&, const L
 , mIsTurned(false)
 {
     // Инициализируем.получаем нужные объекты для взаимодействия врага с картой
-    auto levelObjects = lvl.getObjects("enemyBorder");
-    for (const auto& object : levelObjects)
+    for (const auto& object : lvl.getObjects("enemyBorder"))
     {
         if (object.mType == type)
         {
@@ -25,8 +24,7 @@ Enemy::Enemy(const Type::ID id, const TextureHolder&, const FontHolder&, const L
         }
     }
 
-    levelObjects = lvl.getObjects("death");
-    for (const auto& object : levelObjects)
+    for (const auto& object : lvl.getObjects("death"))
     {
         mLevelObjects.push_back(object);
     }

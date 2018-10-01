@@ -33,7 +33,7 @@ bool GameState::update(const sf::Time dt)
 
         if (_playerInfo.mLivesCount == 0)
         {
-            _playerInfo.setGameStatus(PlayerInfo::GameOver);
+            _playerInfo.setGameStatus(PlayerInfo::GameStatus::GameOver);
             _playerInfo.resetData();
             requestStackPush(States::ID::GameOver);
         }
@@ -50,7 +50,7 @@ bool GameState::update(const sf::Time dt)
             mAudioManager.stopAllMusics();
         }
 
-        _playerInfo.setGameStatus(PlayerInfo::LevelComplete);
+        _playerInfo.setGameStatus(PlayerInfo::GameStatus::LevelComplete);
         // TODO: make the transfer progress to the next levels.
         _playerInfo.resetData();
         requestStackPush(States::ID::GameOver);
@@ -66,6 +66,12 @@ bool GameState::update(const sf::Time dt)
     if (_playerInfo.getLevelNumber() != _world.getLevelNumber())
     {
         _playerInfo.setLevelNumber(_world.getLevelNumber());
+    }
+
+    if (_playerInfo.mTransiting)
+    {
+        _playerInfo.mTransiting = false;
+        requestStackPush(States::ID::Transit);
     }
 
     return true;

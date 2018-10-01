@@ -10,11 +10,12 @@ Bloodsplat::Bloodsplat(const Type::ID id, const TextureHolder& textures, const f
     mSprite.setTexture(mTexture);
     mSprite.setTextureRect(sf::IntRect(0, 0, 48, 24));
     //mSprite.setScale(0.5f, 0.5f);
-    const auto color = sf::Color(mSprite.getColor().r, mSprite.getColor().g, mSprite.getColor().b, 0);
+    const auto color = sf::Color(mSprite.getColor().r, mSprite.getColor().g,
+                                 mSprite.getColor().b, 0);
     mSprite.setColor(color);
 
-    mIsStarted    = true;
-    mIsEnd        = false;
+    mIsStarted = true;
+    mIsEnd = false;
 }
 
 void Bloodsplat::update(const float dt)
@@ -76,7 +77,7 @@ void Bloodsplat::update(const float dt)
             else
             {
                 mSprite.setColor(sf::Color(color.r, color.g, color.b,
-                    color.a - static_cast<sf::Uint8>(mCurrentDeath) * 5));
+                                           color.a - static_cast<sf::Uint8>(mCurrentDeath) * 5));
             }
         }
     }

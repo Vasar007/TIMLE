@@ -243,6 +243,9 @@
     <ClCompile Include="Source\Effect.cpp">
       <Filter>Файлы исходного кода\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\TransitionState.cpp">
+      <Filter>Файлы исходного кода\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TinyXML\tinystr.h">
@@ -409,6 +412,9 @@
     </ClInclude>
     <ClInclude Include="Include\Effect.hpp">
       <Filter>Заголовочные файлы\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TransitionState.hpp">
+      <Filter>Заголовочные файлы\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

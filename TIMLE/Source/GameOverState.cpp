@@ -14,11 +14,11 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 , _elapsedTime(sf::Time::Zero)
 , _playerInfo(*context.mPlayerInfo)
 {
-    auto& font = context.mFonts->get(Fonts::ID::Main);
+    const auto& font = context.mFonts->get(Fonts::ID::Main);
     const sf::Vector2f windowSize(context.mWindow->getSize());
 
     _gameOverText.setFont(font);
-    if (context.mPlayerInfo->getGameStatus() == PlayerInfo::GameOver)
+    if (context.mPlayerInfo->getGameStatus() == PlayerInfo::GameStatus::GameOver)
     {
         _gameOverText.setString(L"Игра окончена!");
     }
@@ -42,8 +42,6 @@ void GameOverState::draw()
         _opacity += 5;
     }
 
-    _playerInfo.getPlayer()->draw(window);
-
     // Create dark, semitransparent background.
     sf::RectangleShape backgroundShape;
     backgroundShape.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(_opacity)));
@@ -55,10 +53,10 @@ void GameOverState::draw()
 
 bool GameOverState::update(const sf::Time dt)
 {
-    // Show state for 5 seconds, after return to menu.
+    // Show state for 5 seconds, after return to menu or load next level.
     _elapsedTime += dt;
 
-    _playerInfo.getPlayer()->dx = 0.09f;
+    _playerInfo.getPlayer()->dx = 0.f;
     _playerInfo.getPlayer()->dy = 0.f;
     _playerInfo.getPlayer()->mState = Player::State::Right;
     _playerInfo.getPlayer()->update(static_cast<float>(_elapsedTime.asMilliseconds()));
@@ -66,7 +64,7 @@ bool GameOverState::update(const sf::Time dt)
     if (_elapsedTime > sf::seconds(5))
     {
         _playerInfo.mShowedDialogs.clear();
-        if (_playerInfo.getGameStatus() == PlayerInfo::LevelComplete)
+        if (_playerInfo.getGameStatus() == PlayerInfo::GameStatus::LevelComplete)
         {
             _playerInfo.setLevelNumber(_playerInfo.getLevelNumber() + 1);
 

@@ -35,7 +35,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
             firstButton->setText(L"Да");
             firstButton->setCallback([this]()
             {
-                _playerInfo.mChosenSolution[0] = 1;
+                _playerInfo.mChosenSolution.at(0) = 1;
                 requestStackPop();
             });
             _guiContainer.pack(firstButton);
@@ -47,7 +47,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
             secondButton->setText(L"Нет");
             secondButton->setCallback([this]()
             {
-                _playerInfo.mChosenSolution[0] = 2;
+                _playerInfo.mChosenSolution.at(0) = 2;
                 requestStackPop();
             });
             _guiContainer.pack(secondButton);
@@ -57,17 +57,17 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
         {
             addText(L"Пока что голем не нападает. Что вы намерены сделать?");
 
-            if (_playerInfo.mChosenSolution[0] == 1)
+            if (_playerInfo.mChosenSolution.at(0) == 1)
             {
                 auto firstButton = std::make_shared<GUI::Button>(*context.mFonts, 
                                                                  *context.mTextures, 
                                                                  *context.mSounds);
                 firstButton->setPosition(windowCenter.x + windowSize.x / 2.f - 220.f, 
                                          windowCenter.y + windowSize.y / 2.f - 307.f);
-                firstButton->setText(L"Сказать фразу");
+                firstButton->setText(L"Сказать особую фразу");
                 firstButton->setCallback([this]()
                 {
-                    _playerInfo.mChosenSolution[1] = 1;
+                    _playerInfo.mChosenSolution.at(1) = 1;
                     requestStackPop();
                 });
                 _guiContainer.pack(firstButton);
@@ -80,7 +80,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
                 secondButton->setText(L"Атаковать монстра");
                 secondButton->setCallback([this]()
                 {
-                    _playerInfo.mChosenSolution[1] = 2;
+                    _playerInfo.mChosenSolution.at(1) = 2;
                     requestStackPop();
                 });
                 _guiContainer.pack(secondButton);
@@ -93,12 +93,12 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
                 thirdButton->setText(L"Подождать");
                 thirdButton->setCallback([this]()
                 {
-                    _playerInfo.mChosenSolution[1] = 3;
+                    _playerInfo.mChosenSolution.at(1) = 3;
                     requestStackPop();
                 });
                 _guiContainer.pack(thirdButton);
             }
-            else if (_playerInfo.mChosenSolution[0] == 2)
+            else
             {
                 auto firstButton = std::make_shared<GUI::Button>(*context.mFonts,
                                                                  *context.mTextures, 
@@ -108,7 +108,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
                 firstButton->setText(L"Атаковать монстра");
                 firstButton->setCallback([this]()
                 {
-                    _playerInfo.mChosenSolution[1] = 2;
+                    _playerInfo.mChosenSolution.at(1) = 2;
                     requestStackPop();
                 });
                 _guiContainer.pack(firstButton);
@@ -121,7 +121,7 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
                 secondButton->setText(L"Подождать");
                 secondButton->setCallback([this]()
                 {
-                    _playerInfo.mChosenSolution[1] = 3;
+                    _playerInfo.mChosenSolution.at(1) = 3;
                     requestStackPop();
                 });
                 _guiContainer.pack(secondButton);

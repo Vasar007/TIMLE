@@ -18,7 +18,7 @@ class PlayerInfo final
         /**
          * \brief Array of action's player states.
          */
-        enum Action
+        enum class Action : std::size_t
         {
             MoveLeft,
             MoveRight,
@@ -26,13 +26,14 @@ class PlayerInfo final
             MoveDown,
             Fire,
             LaunchMissile,
+            UseDoor,
             ActionCount
         };
 
         /**
          * \brief Array of the game status, according to the player's state.
          */
-        enum GameStatus
+        enum class GameStatus
         {
             GameRunning,
             LevelComplete,
@@ -84,17 +85,17 @@ class PlayerInfo final
         /**
          * \brief Current dialog number, which we need to show.
          */
-        std::size_t              mDialogNumber;
+        std::size_t                 mDialogNumber;
 
         /**
          * \brief Array of all showed dialogs, which we have shown yet.
          */
-        std::vector<std::size_t> mShowedDialogs;
+        std::vector<std::size_t>    mShowedDialogs;
 
         /**
          * \brief Variable for choosing number in the choosing state of dialog.
          */
-        std::size_t              mChoosingNumber;
+        std::size_t                 mChoosingNumber;
 
         /**
          * \brief   All choices, which player has done yet.
@@ -102,7 +103,7 @@ class PlayerInfo final
          * \details 0 - loot knight's and dwarven bodies;
          * \details 1 - choosing option to interactive with GolemDark.
          */
-        std::vector<std::size_t> mChosenSolution;
+        std::vector<std::size_t>    mChosenSolution;
 
         /**
          * \brief   Array of the quests, which player can carry out.
@@ -113,27 +114,57 @@ class PlayerInfo final
          * \details 3 – killing first boss Shadow;
          * \details 4 – killing first mini-boss GolemDark.
          */
-        std::deque<bool>         mQuests;
+        std::deque<bool>            mQuests;
 
         /**
          * \brief Boolean flag for notification of completion downloading level and resources.
          */
-        bool                     mLoaded;
+        bool                        mLoaded;
 
         /**
          * \brief Lives counter of the player's hero.
          */
-        std::size_t              mLivesCount;
+        std::size_t                 mLivesCount;
 
         /**
          * \brief Last save point of the current game.
          */
-        SavePoint                mLastSavePoint;
+        SavePoint                   mLastSavePoint;
 
         /**
          * \brief Define we can ressurect player's hero or not.
          */
-        bool                     mCanRessurect;
+        bool                        mCanRessurect;
+
+        /**
+         * \brief Define we can transit player's hero or not.
+         */
+        bool                        mCanTransit;
+
+        /**
+         * \brief Define we should transit player's hero or not.
+         */
+        bool                        mNeedTransit;
+
+        /**
+         * \brief Define we transit player's hero or not.
+         */
+        bool                        mDoTransit;
+
+        /**
+         * \brief Define we start transiting player's hero or not.
+         */
+        bool                        mTransiting;
+
+        /**
+         * \brief Number of door to transit.
+         */
+        std::pair<int, std::string> mNumberOfDoor;
+
+        /**
+         * \brief Coordination to transit.
+         */
+        std::pair<float, float>     mTransitPos;
 
 
     private:

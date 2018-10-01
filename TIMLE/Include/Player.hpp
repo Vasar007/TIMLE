@@ -9,7 +9,7 @@
 class Player final : public Entity 
 {
     public:
-        enum State
+        enum class State
         {
             Left,
             Right,
@@ -33,12 +33,14 @@ class Player final : public Entity
         bool  _hadFirstMiniDelay;
 
 
+    // TODO: move additional support data to PlayerInfo class.
     public:
         float       mStayTimer;
         float       mOnPlatform;
         float       mShootTimer;
         float       mJumpTimer;
         float       mDelayTimer;
+        float       mTransitTimer;
 
         std::size_t mCounter;
         std::size_t mDialogNumber;
@@ -63,7 +65,7 @@ class Player final : public Entity
 
         State       mState;
     
-        PlayerInfo* mPlayerInfo;
+        PlayerInfo& mPlayerInfo;
 
 
     private:
@@ -76,7 +78,7 @@ class Player final : public Entity
              Player(const Type::ID id, const TextureHolder& textures, 
                     const FontHolder& fonts, const Level& lvl, const float X, 
                     const float Y, const int width, const int height, 
-                    PlayerInfo* playerInfo);
+                    PlayerInfo& playerInfo);
 
         void checkCollisionWithMap(const float Dx, const float Dy);
 

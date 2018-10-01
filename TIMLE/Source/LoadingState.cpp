@@ -11,7 +11,7 @@ LoadingState::LoadingState(StateStack& stack, Context context)
 , _loadingTask(*context.mTextures, *context.mSounds, *context.mPlayerInfo)
 {
     auto& window = *getContext().mWindow;
-    auto& font = context.mFonts->get(Fonts::ID::Main);
+    const auto& font = context.mFonts->get(Fonts::ID::Main);
     const auto viewSize = window.getView().getSize();
 
     _loadingText.setFont(font);

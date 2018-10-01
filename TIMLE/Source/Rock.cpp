@@ -22,24 +22,20 @@ void Rock::fall()
 void Rock::checkCollisionWithMap(const float, const float Dy)
 {
     for (auto& mLevelObject : mLevelObjects)
-
     {
         // Проверяем пересечение с объектом
         if (getRect().intersects(mLevelObject.mRect))
         {
-            if (mLevelObject.mName == "solid")
+            if (Dy > 0.f)
             {
-                if (Dy > 0.f)
-                {
-                    y = mLevelObject.mRect.top - mHeight;
-                    dy = 0.f;
-                    mIsEnd = true;
-                }
-                if (Dy < 0.f)
-                {
-                    y = mLevelObject.mRect.top + mLevelObject.mRect.height;
-                    dy = 0.f;
-                }
+                y = mLevelObject.mRect.top - mHeight;
+                dy = 0.f;
+                mIsEnd = true;
+            }
+            if (Dy < 0.f)
+            {
+                y = mLevelObject.mRect.top + mLevelObject.mRect.height;
+                dy = 0.f;
             }
         }
     }
@@ -49,7 +45,8 @@ void Rock::update(const float dt)
 {
     if (mIsAttacked)
     {
-        mCurrentFrame += 0.005f * dt;
+        // Not using now.
+        //mCurrentFrame += 0.005f * dt;
 
         // Притяжение к земле
         dy += 0.0005f * dt;

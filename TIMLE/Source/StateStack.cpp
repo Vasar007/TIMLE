@@ -80,7 +80,7 @@ void StateStack::applyPendingChanges()
         switch (change.mAction)
         {
             case Action::Push:
-                _stack.push_back(createState(change.mStateID));
+                _stack.emplace_back(createState(change.mStateID));
                 break;
 
             case Action::Pop:

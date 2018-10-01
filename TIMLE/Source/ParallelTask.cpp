@@ -49,7 +49,8 @@ void ParallelTask::runTask()
         }
     }
 
-    { // mFinished may be accessed from multiple threads, protect it.
+    // mFinished may be accessed from multiple threads, protect it.
+    {
         sf::Lock lock(_mutex);
         _finished = true;
     }    
@@ -91,7 +92,7 @@ void ParallelTask::loadTextures()
         _textures.load(Textures::ID::Bullet,          "Media/Textures/Projectiles/MageBullet.png");
         _textures.load(Textures::ID::Fire,            "Media/Textures/Projectiles/Fire01.png");
         _textures.load(Textures::ID::MagicArrow,      "Media/Textures/Projectiles/MagicArrow.png");
-        _textures.load(Textures::ID::MovingPlatform,  "Media/Textures/Objects/MovingPlatform.png");
+        _textures.load(Textures::ID::MovingPlatform,  "Media/Textures/Objects/MovingPlatformCastle.png");
         _textures.load(Textures::ID::Quest,           "Media/Textures/Interface/MissionBg.jpg");
 
         _textures.load(Textures::ID::HealthBar,       "Media/Textures/Interface/RedBar.png");

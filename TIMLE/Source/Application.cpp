@@ -13,6 +13,7 @@
 #include "../Include/ChoosingState.hpp"
 #include "../Include/TitreState.hpp"
 #include "../Include/ChangingState.hpp"
+#include "../Include/TransitionState.hpp"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
@@ -147,5 +148,6 @@ void Application::registerStates()
     _stateStack.registerState<DialogState>(States::ID::Dialog);
     _stateStack.registerState<ChoosingState>(States::ID::Choosing);
     _stateStack.registerState<TitreState>(States::ID::Titre);
-    _stateStack.registerState<ChanginState>(States::ID::Changing);
+    _stateStack.registerState<ChanginState>(States::ID::ChangingSettings);
+    _stateStack.registerState<TransitionState>(States::ID::Transit);
 }

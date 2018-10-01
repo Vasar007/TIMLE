@@ -9,7 +9,7 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 : State(stack, context)
 , _window(*context.mWindow)
 , _videoModes(sf::VideoMode::getFullscreenModes())
-, _labelsNames(SettingsState::SettingCount)
+, _labelsNames(SettingsState::Setting::SettingCount)
 , _currentSettings(context.mCurrentSettings)
 {
     // Define some variables for convenience.
@@ -17,19 +17,16 @@ SettingsState::SettingsState(StateStack& stack, Context context)
     const auto windowCenter(context.mWindow->getView().getCenter());
 
     // Reset array of default strings.
-    for (std::size_t i = 0; i < SettingsState::SettingCount; ++i)
-    {
-        _labelsNames[i] = "";
-    }
+    std::fill(_labelsNames.begin(), _labelsNames.end(), "");
 
     // Set default label names.
-    _labelsNames[SettingsState::WindowSize]        = toString(_window.getSize().x) + " x " 
-                                                    + toString(_window.getSize().y);
-    _labelsNames[SettingsState::WindowStyle]    = "Window Mode";
-    _labelsNames[SettingsState::MusicVolume]    = toString(_currentSettings->mMusicVolume);
-    _labelsNames[SettingsState::FontType]        = "Noto Serif";
-    _labelsNames[SettingsState::Language]        = "Russian";
-    _labelsNames[SettingsState::DebugMode]        = L"Выключен";
+    _labelsNames.at(SettingsState::Setting::WindowSize) = toString(_window.getSize().x) + " x " +
+                                                          toString(_window.getSize().y);
+    _labelsNames.at(SettingsState::Setting::WindowStyle) = "Window Mode";
+    _labelsNames.at(SettingsState::Setting::MusicVolume) = toString(_currentSettings->mMusicVolume);
+    _labelsNames.at(SettingsState::Setting::FontType) = "Noto Serif";
+    _labelsNames.at(SettingsState::Setting::Language) = "Russian";
+    _labelsNames.at(SettingsState::Setting::DebugMode) = L"Выключен";
 
     _backgroundSprite.setTexture(context.mTextures->get(Textures::ID::TitleScreen));
     _sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
@@ -37,19 +34,20 @@ SettingsState::SettingsState(StateStack& stack, Context context)
     const float border = windowCenter.y - (windowSize.y / 2.f);
     
     // Build key binding buttons and labels.
-    addButtonLabel(PlayerInfo::MoveLeft,        border + 100.f, L"Двигаться влево", context);
-    addButtonLabel(PlayerInfo::MoveRight,        border + 150.f, L"Двигаться вправо", context);
-    addButtonLabel(PlayerInfo::MoveUp,            border + 200.f, L"Прыжок", context);
-    addButtonLabel(PlayerInfo::MoveDown,        border + 250.f, L"Спуститься", context);
-    addButtonLabel(PlayerInfo::Fire,            border + 300.f, L"Атака", context);
-    addButtonLabel(PlayerInfo::LaunchMissile,    border + 350.f, L"Особая атака", context);
+    addButtonLabel(PlayerInfo::Action::MoveLeft,      border + 100.f, L"Двигаться влево", context);
+    addButtonLabel(PlayerInfo::Action::MoveRight,     border + 150.f, L"Двигаться вправо", context);
+    addButtonLabel(PlayerInfo::Action::MoveUp,        border + 200.f, L"Прыжок", context);
+    addButtonLabel(PlayerInfo::Action::MoveDown,      border + 250.f, L"Спуститься", context);
+    addButtonLabel(PlayerInfo::Action::Fire,          border + 300.f, L"Атака", context);
+    addButtonLabel(PlayerInfo::Action::LaunchMissile, border + 350.f, L"Особая атака", context);
+    addButtonLabel(PlayerInfo::Action::UseDoor,       border + 400.f, L"Взаимодействовать", context);
 
-    addButtonLabel(SettingsState::WindowSize,    border + 100.f, L"Разрешение экрана", context);
-    addButtonLabel(SettingsState::WindowStyle,    border + 150.f, L"Режим окна", context);
-    addButtonLabel(SettingsState::MusicVolume,    border + 200.f, L"Громкость музыки", context);
-    addButtonLabel(SettingsState::FontType,        border + 250.f, L"Шрифт", context);
-    addButtonLabel(SettingsState::Language,        border + 300.f, L"Язык", context);
-    addButtonLabel(SettingsState::DebugMode,    border + 350.f, L"Отладочный режим", context);
+    addButtonLabel(SettingsState::Setting::WindowSize,  border + 100.f, L"Разрешение экрана", context);
+    addButtonLabel(SettingsState::Setting::WindowStyle, border + 150.f, L"Режим окна", context);
+    addButtonLabel(SettingsState::Setting::MusicVolume, border + 200.f, L"Громкость музыки", context);
+    addButtonLabel(SettingsState::Setting::FontType,    border + 250.f, L"Шрифт", context);
+    addButtonLabel(SettingsState::Setting::Language,    border + 300.f, L"Язык", context);
+    addButtonLabel(SettingsState::Setting::DebugMode,   border + 350.f, L"Отладочный режим", context);
 
     updateLabels();
 
@@ -72,19 +70,19 @@ SettingsState::SettingsState(StateStack& stack, Context context)
             mAudioManager.setMusicVolume(_currentSettings->mMusicVolume);
             
             // Update all labels names.
-            _labelsNames[SettingsState::Setting::WindowSize] = toString(_window.getSize().x) 
+            _labelsNames.at(SettingsState::Setting::WindowSize) = toString(_window.getSize().x) 
                                                             + " x " + toString(_window.getSize().y);
 
             switch (_currentSettings->mWindowStyle)
             {
                 case State::WindowStyle::Fullscreen:
-                    _labelsNames[SettingsState::Setting::WindowStyle] = "Fullscreen";
+                    _labelsNames.at(SettingsState::Setting::WindowStyle) = "Fullscreen";
                     break;
                 case State::WindowStyle::Close:
-                    _labelsNames[SettingsState::Setting::WindowStyle] = "Window Mode";
+                    _labelsNames.at(SettingsState::Setting::WindowStyle) = "Window Mode";
                     break;
                 default:
-                    _labelsNames[SettingsState::Setting::WindowStyle] = "Unknown parameter";
+                    _labelsNames.at(SettingsState::Setting::WindowStyle) = "Unknown parameter";
                     break;
             }
             
@@ -94,36 +92,36 @@ SettingsState::SettingsState(StateStack& stack, Context context)
             switch (_currentSettings->mFontType)
             {
                 case Fonts::ID::Main:
-                    _labelsNames[SettingsState::Setting::FontType] = "Noto Serif";
+                    _labelsNames.at(SettingsState::Setting::FontType) = "Noto Serif";
                     break;
                 default:
-                    _labelsNames[SettingsState::Setting::FontType] = "Unknown parameter";
+                    _labelsNames.at(SettingsState::Setting::FontType) = "Unknown parameter";
                     break;
             }
             
             switch (_currentSettings->mLanguage)
             {
                 case State::ActualLanguage::Russian:
-                    _labelsNames[SettingsState::Setting::Language] = "Russian";
+                    _labelsNames.at(SettingsState::Setting::Language) = "Russian";
                     break;
                 case State::ActualLanguage::English:
-                    _labelsNames[SettingsState::Setting::Language] = "English";
+                    _labelsNames.at(SettingsState::Setting::Language) = "English";
                     break;
                 default:
-                    _labelsNames[SettingsState::Setting::Language] = "Unknown parameter";
+                    _labelsNames.at(SettingsState::Setting::Language) = "Unknown parameter";
                     break;
             }
 
             switch (_currentSettings->mDebugMode)
             {
                 case State::DebugMode::DebugOn:
-                    _labelsNames[SettingsState::Setting::DebugMode] = L"Включён";
+                    _labelsNames.at(SettingsState::Setting::DebugMode) = L"Включён";
                     break;
                 case State::DebugMode::DebugOff:
-                    _labelsNames[SettingsState::Setting::DebugMode] = L"Выключен";
+                    _labelsNames.at(SettingsState::Setting::DebugMode) = L"Выключен";
                     break;
                 default:
-                    _labelsNames[SettingsState::Setting::DebugMode] = "Unknown parameter";
+                    _labelsNames.at(SettingsState::Setting::DebugMode) = "Unknown parameter";
                     break;
             }
 
@@ -158,58 +156,58 @@ bool SettingsState::update(sf::Time)
     if (_currentSettings->mHasAnyChanges)
     {
         // Update all labels names.
-        _labelsNames[SettingsState::Setting::WindowSize] = toString(_currentSettings->mWindowSize.x) 
-                                                        + " x " 
-                                                        + toString(_currentSettings->mWindowSize.y);
+        _labelsNames.at(SettingsState::Setting::WindowSize) = 
+            toString(_currentSettings->mWindowSize.x) + " x " +
+            toString(_currentSettings->mWindowSize.y);
 
         switch (_currentSettings->mWindowStyle)
         {
             case State::WindowStyle::Fullscreen:
-                _labelsNames[SettingsState::Setting::WindowStyle] = "Fullscreen";
+                _labelsNames.at(SettingsState::Setting::WindowStyle) = "Fullscreen";
                 break;
             case State::WindowStyle::Close:
-                _labelsNames[SettingsState::Setting::WindowStyle] = "Window Mode";
+                _labelsNames.at(SettingsState::Setting::WindowStyle) = "Window Mode";
                 break;
             default:
-                _labelsNames[SettingsState::Setting::WindowStyle] = "Unknown parameter";
+                _labelsNames.at(SettingsState::Setting::WindowStyle) = "Unknown parameter";
                 break;
         }
 
-        _labelsNames[MusicVolume] = toString(_currentSettings->mMusicVolume);
+        _labelsNames.at(SettingsState::Setting::MusicVolume) = toString(_currentSettings->mMusicVolume);
 
         switch (_currentSettings->mFontType)
         {
             case Fonts::ID::Main:
-                _labelsNames[SettingsState::Setting::FontType] = "Noto Serif";
+                _labelsNames.at(SettingsState::Setting::FontType) = "Noto Serif";
                 break;
             default:
-                _labelsNames[SettingsState::Setting::FontType] = "Unknown parameter";
+                _labelsNames.at(SettingsState::Setting::FontType) = "Unknown parameter";
                 break;
         }
 
         switch (_currentSettings->mLanguage)
         {
             case State::ActualLanguage::Russian:
-                _labelsNames[SettingsState::Setting::Language] = "Russian";
+                _labelsNames.at(SettingsState::Setting::Language) = "Russian";
                 break;
             case State::ActualLanguage::English:
-                _labelsNames[SettingsState::Setting::Language] = "English";
+                _labelsNames.at(SettingsState::Setting::Language) = "English";
                 break;
             default:
-                _labelsNames[SettingsState::Setting::Language] = "Unknown parameter";
+                _labelsNames.at(SettingsState::Setting::Language) = "Unknown parameter";
                 break;
         }
 
         switch (_currentSettings->mDebugMode)
         {
             case State::DebugMode::DebugOn:
-                _labelsNames[SettingsState::Setting::DebugMode] = L"Включён";
+                _labelsNames.at(SettingsState::Setting::DebugMode) = L"Включён";
                 break;
             case State::DebugMode::DebugOff:
-                _labelsNames[SettingsState::Setting::DebugMode] = L"Выключен";
+                _labelsNames.at(SettingsState::Setting::DebugMode) = L"Выключен";
                 break;
             default:
-                _labelsNames[SettingsState::Setting::DebugMode] = "Unknown parameter";
+                _labelsNames.at(SettingsState::Setting::DebugMode) = "Unknown parameter";
                 break;
         }
 
@@ -230,16 +228,17 @@ bool SettingsState::handleEvent(const sf::Event& event)
     
     // Iterate through all key binding buttons to see if they are being pressed,
     // waiting for the user to enter a key.
-    for (std::size_t action = 0; action < PlayerInfo::ActionCount; ++action)
+    const auto actionCount = static_cast<std::size_t>(PlayerInfo::Action::ActionCount);
+    for (std::size_t action = 0; action < actionCount; ++action)
     {
-        if (_bindingButtons[action]->isActive())
+        if (_bindingButtons.at(action)->isActive())
         {
             isKeyBinding = true;
             if (event.type == sf::Event::KeyReleased)
             {
                 getContext().mPlayerInfo->assignKey(static_cast<PlayerInfo::Action>(action), 
                                                     event.key.code);
-                _bindingButtons[action]->deactivate();
+                _bindingButtons.at(action)->deactivate();
             }
             break;
         }
@@ -263,15 +262,16 @@ void SettingsState::updateLabels()
 {
     auto& player = *getContext().mPlayerInfo;
 
-    for (std::size_t i = 0; i < PlayerInfo::ActionCount; ++i)
+    const auto actionCount = static_cast<std::size_t>(PlayerInfo::Action::ActionCount);
+    for (std::size_t i = 0; i < actionCount; ++i)
     {
         const sf::Keyboard::Key key = player.getAssignedKey(static_cast<PlayerInfo::Action>(i));
-        _bindingLabels[i]->setText(toString(key));
+        _bindingLabels.at(i)->setText(toString(key));
     }
 
     for (std::size_t i = 0; i < SettingsState::Setting::SettingCount; ++i)
     {
-        _settingLabels[i]->setText(_labelsNames[i]);
+        _settingLabels.at(i)->setText(_labelsNames[i]);
     }
 }
 
@@ -282,39 +282,40 @@ void SettingsState::addButtonLabel(const PlayerInfo::Action action, const float 
     const auto windowSize(context.mWindow->getView().getSize());
     const auto windowCenter(context.mWindow->getView().getCenter());
 
-    _bindingButtons[action] = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
-                                                            *context.mSounds);
-    _bindingButtons[action]->setPosition(windowCenter.x - (windowSize.x / 2.f) + 100.f, y);
-    _bindingButtons[action]->setText(text);
-    _bindingButtons[action]->setToggle(true);
+    const auto index = static_cast<std::size_t>(action);
+    _bindingButtons.at(index) = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
+                                                              *context.mSounds);
+    _bindingButtons.at(index)->setPosition(windowCenter.x - (windowSize.x / 2.f) + 100.f, y);
+    _bindingButtons.at(index)->setText(text);
+    _bindingButtons.at(index)->setToggle(true);
 
-    _bindingLabels[action] = std::make_shared<GUI::Label>("", *context.mFonts);
-    _bindingLabels[action]->setPosition(windowCenter.x - (windowSize.x / 2.f) + 320.f, y + 15.f);
+    _bindingLabels.at(index) = std::make_shared<GUI::Label>("", *context.mFonts);
+    _bindingLabels.at(index)->setPosition(windowCenter.x - (windowSize.x / 2.f) + 320.f, y + 15.f);
 
-    _guiContainer.pack(_bindingButtons[action]);
-    _guiContainer.pack(_bindingLabels[action]);
+    _guiContainer.pack(_bindingButtons.at(index));
+    _guiContainer.pack(_bindingLabels.at(index));
 }
 
-void SettingsState::addButtonLabel(Setting setting, const float y,
+void SettingsState::addButtonLabel(const Setting setting, const float y,
                                    const sf::String& text, const Context context)
 {
     // Defines some variables for convenience.
     const auto windowSize(context.mWindow->getView().getSize());
     const auto windowCenter(context.mWindow->getView().getCenter());
 
-    _settingButtons[setting] = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
-                                                             *context.mSounds);
-    _settingButtons[setting]->setPosition(windowCenter.x - (windowSize.x / 2.f) + 500.f, y);
-    _settingButtons[setting]->setText(text);
-    _settingButtons[setting]->setCallback([this, setting]()
+    _settingButtons.at(setting) = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
+                                                                *context.mSounds);
+    _settingButtons.at(setting)->setPosition(windowCenter.x - (windowSize.x / 2.f) + 500.f, y);
+    _settingButtons.at(setting)->setText(text);
+    _settingButtons.at(setting)->setCallback([this, setting]()
     {
         _currentSettings->mPressedButton = setting;
-        requestStackPush(States::ID::Changing);
+        requestStackPush(States::ID::ChangingSettings);
     });
 
-    _settingLabels[setting] = std::make_shared<GUI::Label>("", *context.mFonts);
-    _settingLabels[setting]->setPosition(windowCenter.x - (windowSize.x / 2.f) + 720.f, y + 15.f);
+    _settingLabels.at(setting) = std::make_shared<GUI::Label>("", *context.mFonts);
+    _settingLabels.at(setting)->setPosition(windowCenter.x - (windowSize.x / 2.f) + 720.f, y + 15.f);
 
-    _guiContainer.pack(_settingButtons[setting]);
-    _guiContainer.pack(_settingLabels[setting]);
+    _guiContainer.pack(_settingButtons.at(setting));
+    _guiContainer.pack(_settingLabels.at(setting));
 }

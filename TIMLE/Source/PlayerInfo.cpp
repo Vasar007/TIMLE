@@ -2,7 +2,7 @@
 
 
 PlayerInfo::PlayerInfo()
-: _currentGameStatus(GameRunning)
+: _currentGameStatus(PlayerInfo::GameStatus::GameRunning)
 , _currentLevelNumber(1)
 , _player(nullptr)
 , mDialogNumber(0)
@@ -10,17 +10,22 @@ PlayerInfo::PlayerInfo()
 , mChosenSolution(2)
 , mQuests(5)
 , mLoaded(false)
-, mLivesCount(0)
+, mLivesCount(3)
 , mLastSavePoint(0.f, 0.f)
 , mCanRessurect(false)
+, mCanTransit(false)
+, mNeedTransit(false)
+, mDoTransit(false)
+, mNumberOfDoor()
 {
     // Set initial key bindings.
-    _keyBinding[sf::Keyboard::Left] = MoveLeft;
-    _keyBinding[sf::Keyboard::Right] = MoveRight;
-    _keyBinding[sf::Keyboard::Up] = MoveUp;
-    _keyBinding[sf::Keyboard::Down] = MoveDown;
-    _keyBinding[sf::Keyboard::Space] = Fire;
-    _keyBinding[sf::Keyboard::M] = LaunchMissile;
+    _keyBinding.emplace(sf::Keyboard::Left,  PlayerInfo::Action::MoveLeft);
+    _keyBinding.emplace(sf::Keyboard::Right, PlayerInfo::Action::MoveRight);
+    _keyBinding.emplace(sf::Keyboard::Up,    PlayerInfo::Action::MoveUp);
+    _keyBinding.emplace(sf::Keyboard::Down,  PlayerInfo::Action::MoveDown);
+    _keyBinding.emplace(sf::Keyboard::Space, PlayerInfo::Action::Fire);
+    _keyBinding.emplace(sf::Keyboard::M,     PlayerInfo::Action::LaunchMissile);
+    _keyBinding.emplace(sf::Keyboard::E,     PlayerInfo::Action::UseDoor);
 
     // Set initial action bindings.
     initializeActions();
@@ -51,7 +56,6 @@ void PlayerInfo::showDialog(const std::size_t number)
     }
 }
 
-
 void PlayerInfo::assignKey(const Action action, const sf::Keyboard::Key key)
 {
     // Remove all keys that already map to action.
@@ -68,7 +72,7 @@ void PlayerInfo::assignKey(const Action action, const sf::Keyboard::Key key)
     }
 
     // Insert new binding.
-    _keyBinding[key] = action;
+    _keyBinding.emplace(key, action);
 }
 
 sf::Keyboard::Key PlayerInfo::getAssignedKey(const Action action) const
@@ -103,8 +107,6 @@ std::size_t PlayerInfo::getLevelNumber() const
 {
     return _currentLevelNumber;
 }
-
-
 
 void PlayerInfo::initializeActions()
 {
@@ -146,7 +148,6 @@ Player* PlayerInfo::getPlayer() const
 {
     return _player;
 }
-
 
 void PlayerInfo::resetData()
 {

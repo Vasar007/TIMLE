@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <string>
 #include <string_view>
 
 #include <SFML/Graphics.hpp>
@@ -15,6 +16,11 @@
  */
 struct Object 
 {
+    /**
+     * \brief Object id.
+     */
+    int                                mId;
+
     /**
      * \brief Name of the object.
      */

@@ -4,7 +4,7 @@
 int Object::getPropertyInt(const std::string& name)
 {
     // Возвращаем номер свойства в списке
-    return atoi(mProperties[name].c_str());
+    return std::stoi(mProperties[name].c_str());
 }
 
 float Object::getPropertyFloat(const std::string& name)
@@ -47,14 +47,14 @@ bool Level::loadFromFile(const std::string& filename)
     // width="10" height="10" tilewidth="34" tileheight="34">
 
     // Извлекаем из нашей карты ее свойства, которые задавали при работе в Тайлмап редакторе
-    _width        = atoi(map->Attribute("width"));
-    _height        = atoi(map->Attribute("height"));
-    _tileWidth    = atoi(map->Attribute("tilewidth"));
-    _tileHeight = atoi(map->Attribute("tileheight"));
+    _width = std::stoi(map->Attribute("width"));
+    _height = std::stoi(map->Attribute("height"));
+    _tileWidth = std::stoi(map->Attribute("tilewidth"));
+    _tileHeight = std::stoi(map->Attribute("tileheight"));
 
     // Берем описание тайлсета и идентификатор первого тайла
     TiXmlElement *tilesetElement = map->FirstChildElement("tileset");
-    _firstTileID = atoi(tilesetElement->Attribute("firstgid"));
+    _firstTileID = std::stoi(tilesetElement->Attribute("firstgid"));
 
     // source - путь до картинки в контейнере image
     TiXmlElement *image            = tilesetElement->FirstChildElement("image");
@@ -107,12 +107,12 @@ bool Level::loadFromFile(const std::string& filename)
         // Если присутствует opacity, то задаем прозрачность слоя, иначе он полностью непрозрачен
         if (layerElement->Attribute("opacity") != nullptr)
         {
-            const auto opacity    = static_cast<float>(strtod(layerElement->Attribute("opacity"), nullptr));
-            layer.mOpacity        = 255 * static_cast<int>(opacity);
+            const auto opacity = static_cast<float>(strtod(layerElement->Attribute("opacity"), nullptr));
+            layer.mOpacity = 255 * static_cast<int>(opacity);
         }
         else
         {
-            layer.mOpacity    = 255;
+            layer.mOpacity = 255;
         }
 
         // Контейнер <data>
@@ -141,7 +141,7 @@ bool Level::loadFromFile(const std::string& filename)
             int tileGID = 0;
             if (attribute != nullptr)
             {
-                tileGID = atoi(attribute);
+                tileGID = std::stoi(attribute);
             }
             const int subRectToUse = tileGID - _firstTileID;
 
@@ -203,43 +203,41 @@ bool Level::loadFromFile(const std::string& filename)
                 {
                     objectName = objectElement->Attribute("name");
                 }
-                const int x = atoi(objectElement->Attribute("x"));
-                const int y = atoi(objectElement->Attribute("y"));
-
-                int width, height;
+                const int objectId = std::stoi(objectElement->Attribute("id"));
+                const int x = std::stoi(objectElement->Attribute("x"));
+                const int y = std::stoi(objectElement->Attribute("y"));
 
                 sf::Sprite sprite;
                 sprite.setTexture(_tilesetImage);
                 sprite.setTextureRect(sf::Rect<int>(0, 0, 0, 0));
                 sprite.setPosition(static_cast<float>(x), static_cast<float>(y));
 
+                int width, height;
                 if (objectElement->Attribute("width") != nullptr)
                 {
-                    width    = atoi(objectElement->Attribute("width"));
-                    height    = atoi(objectElement->Attribute("height"));
+                    width = std::stoi(objectElement->Attribute("width"));
+                    height = std::stoi(objectElement->Attribute("height"));
                 }
                 else
                 {
-                    width    = subRects.at(atoi(objectElement->Attribute("gid")) 
-                                          - _firstTileID).width;
-                    height    = subRects.at(atoi(objectElement->Attribute("gid")) 
-                                          - _firstTileID).height;
-                    sprite.setTextureRect(subRects.at(atoi(objectElement->Attribute("gid")) 
-                                          - _firstTileID));
+                    width = subRects.at(std::stoi(objectElement->Attribute("gid")) - _firstTileID).width;
+                    height = subRects.at(std::stoi(objectElement->Attribute("gid")) - _firstTileID).height;
+                    sprite.setTextureRect(subRects.at(std::stoi(objectElement->Attribute("gid")) - _firstTileID));
                 }
 
                 // Экземпляр объекта [
                 Object object;
-                object.mName    = objectName;
-                object.mType    = objectType;
-                object.mSprite    = sprite;
+                object.mId = objectId;
+                object.mName = objectName;
+                object.mType = objectType;
+                object.mSprite = sprite;
 
                 sf::FloatRect objectRect;
-                objectRect.top        = static_cast<float>(y);
-                objectRect.left        = static_cast<float>(x);
-                objectRect.height    = static_cast<float>(height);
-                objectRect.width    = static_cast<float>(width);
-                object.mRect        = objectRect;
+                objectRect.top = static_cast<float>(y);
+                objectRect.left = static_cast<float>(x);
+                objectRect.height = static_cast<float>(height);
+                objectRect.width = static_cast<float>(width);
+                object.mRect = objectRect;
 
                 // "Переменные" объекта [
                 TiXmlElement *properties = objectElement->FirstChildElement("properties");

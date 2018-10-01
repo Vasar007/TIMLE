@@ -39,13 +39,13 @@ class State
             Default    = Titlebar | Resize | Close ///< Default window style.
         };
 
-        enum ActualLanguage
+        enum class ActualLanguage
         {
             English,
             Russian
         };
 
-        enum DebugMode
+        enum class DebugMode
         {
             DebugOff,
             DebugOn

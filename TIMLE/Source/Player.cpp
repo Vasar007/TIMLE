@@ -8,7 +8,7 @@ namespace
 
 Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolder&, 
                const Level& lvl, const float X, const  float Y, const int width, const int height, 
-               PlayerInfo* playerInfo)
+               PlayerInfo& playerInfo)
 : Entity(id, X, Y, width, height, PLAYER_TABLE[id].mSpeed, PLAYER_TABLE[id].mHitpoints,
          PLAYER_TABLE[id].mDamage)
 , _beforeJump(0.f)
@@ -25,6 +25,7 @@ Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mShootTimer(0.f)
 , mJumpTimer(0.f)
 , mDelayTimer(0.f)
+, mTransitTimer(0.f)
 , mCounter(0)
 , mDialogNumber(0)
 , mMaxHitpoints(PLAYER_TABLE[id].mHitpoints)
@@ -82,8 +83,8 @@ void Player::control(const float dt)
             mCanShoted = true;
         }
     }
-    else if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::Fire)) &&
-        mCanShoted)
+    else if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::Fire)) &&
+             mCanShoted)
     {
         mIsShoot = true;
         mCanShoted = false;
@@ -113,11 +114,11 @@ void Player::control(const float dt)
         mJumpTimer = 0.f;
     }
 
-    if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveUp)))
+    if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::MoveUp)))
     {
         if (mOnGround)
         {
-            //mState = State::Jjump;
+            //mState = State::Jump;
             dy = -0.35f;
 
             // Прыжок != на земле
@@ -137,13 +138,13 @@ void Player::control(const float dt)
     }
 
 
-    if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveDown)))
+    if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::MoveDown)))
     {
         mState = State::Down;
         //mSpeed = 0.1f;
     }
 
-    if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveLeft)))
+    if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::MoveLeft)))
     {
         mState = State::Left;
         mSpeed = 0.09f;
@@ -160,7 +161,7 @@ void Player::control(const float dt)
         mMoveTimer = 0.f;
     }
 
-    if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveRight)))
+    if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::MoveRight)))
     {
         mState = State::Right;
         mSpeed = 0.09f;
@@ -177,10 +178,32 @@ void Player::control(const float dt)
         mMoveTimer = 0.f;
     }
 
-    if (sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveRight)) &&
-        sf::Keyboard::isKeyPressed(mPlayerInfo->getAssignedKey(PlayerInfo::MoveLeft)))
+    if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::MoveRight)) &&
+        sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::MoveLeft)))
     {
         mSpeed = 0.f;
+    }
+
+    if (sf::Keyboard::isKeyPressed(mPlayerInfo.getAssignedKey(PlayerInfo::Action::UseDoor)) &&
+        mPlayerInfo.mCanTransit)
+    {
+        if (!mPlayerInfo.mDoTransit)
+        {
+            mPlayerInfo.mNeedTransit = true;
+            mSpeed = 0.f;
+            dy = 0.f;
+        }
+        else
+        {
+            mTransitTimer += dt;
+        }
+
+        if (mTransitTimer > 100.f)
+        {
+            mTransitTimer = 0.f;
+            mPlayerInfo.mNeedTransit = true;
+            mPlayerInfo.mDoTransit = false;
+        }
     }
 }
 
@@ -195,7 +218,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
         {
             // Если встретили препятствие
             if (object.mName == "solid" || object.mName == "rock")
-            {    
+            {
                 if (Dy > 0.f)
                 {
                     y = object.mRect.top - mHeight;
@@ -237,7 +260,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
 
             // Если встретили смерть
             if (object.mName == "death")
-            {    
+            {
                 mHitpoints = 0;
             }
 
@@ -250,6 +273,17 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                     mActivatedGate = true;
                     mDialogNumber = 5;
                 }
+            }
+
+            // Если встретили переход. Оставил так, потому что внутри возможны условия
+            if (object.mName == "door")
+            {
+                mPlayerInfo.mCanTransit = true;
+                mPlayerInfo.mNumberOfDoor = { object.mId, object.mType };
+            }
+            else
+            {
+                mPlayerInfo.mCanTransit = false;
             }
 
             // Если встретили конец уровня
@@ -293,7 +327,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
 
 void Player::update(const float dt)
 {
-    if (mPlayerInfo->mQuests[1])
+    if (mPlayerInfo.mQuests.at(1))
     {
         mGotKey = true;
     }
@@ -438,7 +472,8 @@ void Player::update(const float dt)
                     }
                     else if (dx == 0.f)
                     {
-                        mSprite.setTextureRect(sf::IntRect(256 * (static_cast<int>(mCurrentAttack) + 4) + 77, (((mState == Right) || (mState == Stay)) ? 1104 : 77), 100, 110));
+                        mSprite.setTextureRect(sf::IntRect(256 * (static_cast<int>(mCurrentAttack) + 4) + 77,
+                                               (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
                         mCurrentFrame = 0.f;
                     }
                 }
@@ -453,7 +488,8 @@ void Player::update(const float dt)
                         }
                         else if (dx == 0.f)
                         {
-                            mSprite.setTextureRect(sf::IntRect(256 * 3 + 77, (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
+                            mSprite.setTextureRect(sf::IntRect(256 * 3 + 77,
+                                                   (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
                         }
                         else
                         {
@@ -470,7 +506,8 @@ void Player::update(const float dt)
                     }
                     else if ((dx == 0.f) && mIsJumped)
                     {
-                        mSprite.setTextureRect(sf::IntRect(256 * 0 + 77, (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
+                        mSprite.setTextureRect(sf::IntRect(256 * 0 + 77,
+                                               (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
                         mIsJumped = false;
                         mCurrentFrame = 0.f;
                     }
@@ -534,13 +571,13 @@ void Player::update(const float dt)
             break;
     }
 
-    if (!mLife && mPlayerInfo->mCanRessurect)
+    if (!mLife && mPlayerInfo.mCanRessurect)
     {
         mCurrentDeath = 0.f;
         mLife = true;
         mHitpoints = mMaxHitpoints;
-        x = mPlayerInfo->mLastSavePoint.x;
-        y = mPlayerInfo->mLastSavePoint.y;
-        mPlayerInfo->mCanRessurect = false;
+        x = mPlayerInfo.mLastSavePoint.x;
+        y = mPlayerInfo.mLastSavePoint.y;
+        mPlayerInfo.mCanRessurect = false;
     }
 }

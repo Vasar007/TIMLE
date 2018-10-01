@@ -3,6 +3,7 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -109,44 +110,45 @@ class World : private sf::NonCopyable
 
 
     private:
-        sf::RenderWindow&               _window;
-        sf::View                        _worldView;
-        TextureHolder&                  _textures;
-        FontHolder&                     _fonts;
-        SoundBufferHolder&              _sounds;
-        AudioManager&                   _audioManager;
-        std::unique_ptr<Level>          _level;
+        sf::RenderWindow&                  _window;
+        sf::View                           _worldView;
+        TextureHolder&                     _textures;
+        FontHolder&                        _fonts;
+        SoundBufferHolder&                 _sounds;
+        AudioManager&                      _audioManager;
+        std::unique_ptr<Level>             _level;
 
 
-        sf::FloatRect                   _worldBounds;
-        sf::Vector2f                    _spawnPosition;
-        std::size_t                     _currentLevelNumber;
-        sf::Vector2f                    _position;
-        float                           _scrollSpeed;
-        std::unique_ptr<Player>         _playerHero;
-        PlayerInfo*                     _playerInfo;
-        std::unique_ptr<LifeBar>        _lifeBar;
+        sf::FloatRect                      _worldBounds;
+        sf::Vector2f                       _spawnPosition;
+        std::size_t                        _currentLevelNumber;
+        sf::Vector2f                       _position;
+        float                              _scrollSpeed;
+        std::unique_ptr<Player>            _playerHero;
+        PlayerInfo*                        _playerInfo;
+        std::unique_ptr<LifeBar>           _lifeBar;
 
-        ShadowBoss                      _shadowBoss;
-        GolemBoss                       _golemBoss;
+        ShadowBoss                         _shadowBoss;
+        GolemBoss                          _golemBoss;
 
-        std::list<Entity*>              _entities;
-        std::list<Effect*>              _effects;
-        std::vector<SpawnPoint>         _enemySpawnPoints;    // Not using now.
-        std::vector<Projectile*>        _guidedProjectiles;
-        std::vector<Object>             _objects;
+        std::list<std::unique_ptr<Entity>> _entities;
+        std::list<std::unique_ptr<Effect>> _effects;
+        std::vector<SpawnPoint>            _enemySpawnPoints;    // Not using now.
+        std::vector<Projectile*>           _guidedProjectiles;
+        std::vector<Object>                _objects;
+        std::vector<Object>                _doors;
 
-        std::vector<sf::RectangleShape> _debugRectsToDraw;
+        std::vector<sf::RectangleShape>    _debugRectsToDraw;
 
         /**
          * \brief Need to loading different sounds in this variable and play them.
          */
-        sf::Sound                        _sound;
+        sf::Sound                          _sound;
 
         /**
          * \brief Boolean flag for enabling debug-mode.
          */
-        bool                            _debug;
+        bool                               _debug;
     
 
     private:
@@ -171,8 +173,7 @@ class World : private sf::NonCopyable
 
         sf::FloatRect getBattlefieldBounds() const;
 
-        bool          loadObjects(std::vector<Object>& objects, 
-                                  const std::string_view objectName);
+        bool          loadObjects(const std::string_view objectName);
 
 
     public:

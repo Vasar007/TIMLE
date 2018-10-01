@@ -3,21 +3,26 @@
 
 Dwarf::Dwarf(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
              const Level& lvl, const float X, const float Y, const int width, const int height,
-             const std::string& type, const  int dwarfType)
+             const std::string& type, const  DwarfType dwarfType)
 : Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 , _dwarfType(dwarfType)
+, _offset(static_cast<int>(_dwarfType))
 , _inaccuracy(0.f)
 {
     mTexture = textures.get(Textures::ID::Dwarf);
     mSprite.setTexture(mTexture);
     mSprite.setScale(0.5f, 0.5f);
-    mSprite.setTextureRect(sf::IntRect(0, 80 * _dwarfType, mWidth, mHeight));
+    mSprite.setTextureRect(sf::IntRect(0, 80 * _offset, mWidth, mHeight));
     dx = 0.075f;
     mSprite.scale(-1.f, 1.f);
     if (id == Type::ID::DwarvenCommander)
+    {
         mIsSpawn = false;
+    }
     else
+    {
         mIsSpawn = true;
+    }
 }
 
 void Dwarf::checkCollisionWithMap(const float Dx, const float Dy)
@@ -76,7 +81,7 @@ void Dwarf::update(const float dt)
             mCurrentDeath -= 4.f;
         }
         mSprite.setPosition(x + (mWidth / 2.f) + 16.f, y + (mHeight / 2.f) - 19.f);
-        mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + 16), 80 * _dwarfType, 100, 80));
+        mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + 16), 80 * _offset, 100, 80));
         mCurrentAttack = 3.f;
         return;
     }
@@ -103,7 +108,7 @@ void Dwarf::update(const float dt)
             temp = 13;
         }
         mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 19.f);
-        mSprite.setTextureRect(sf::IntRect(100 * temp, 80 * _dwarfType, 100, 80));
+        mSprite.setTextureRect(sf::IntRect(100 * temp, 80 * _offset, 100, 80));
         return;
     }
 
@@ -138,17 +143,17 @@ void Dwarf::update(const float dt)
         {
             switch (_dwarfType)
             {
-                case 0:
+                case DwarfType::Dwarf:
                     mCurrentAttack += 0.0055f * dt;
                     break;
-                case 1:
+                case DwarfType::DwarvenArcher:
                     mCurrentAttack += 0.004f * dt;
                     break;
-                case 2:
+                case DwarfType::DwarvenCommander:
                     mCurrentAttack += 0.0055f * dt;
                     break;
                 default:
-                    mCurrentAttack += 0.005f * dt;
+                    std::cout << "Not registered dwarf type!\n";
                     break;
             }
             
@@ -171,11 +176,11 @@ void Dwarf::update(const float dt)
 
             if (dx > 0.f)
             {
-                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * _dwarfType, 100, 80));
+                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * _offset, 100, 80));
             }
             else if (dx < 0.f)
             {
-                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * _dwarfType, 100, 80));
+                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentAttack) + 10), 80 * _offset, 100, 80));
             }
         }
         else
@@ -183,15 +188,15 @@ void Dwarf::update(const float dt)
             mCurrentAttack = 0.f;
             if (mIsTurned)
             {
-                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) % 4), 80 * _dwarfType, 100, 80));
+                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) % 4), 80 * _offset, 100, 80));
             }
             if (dx > 0.f && !mIsTurned)
             {
-                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * _dwarfType, 100, 80));
+                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * _offset, 100, 80));
             }
             else if (dx < 0.f && !mIsTurned)
             {
-                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * _dwarfType, 100, 80));
+                mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentFrame) + 4), 80 * _offset, 100, 80));
             }
         }
         _inaccuracy = dx;
@@ -217,6 +222,6 @@ void Dwarf::update(const float dt)
             }
         }
         mSprite.setPosition(x + (mWidth / 2.f) + (_inaccuracy > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 19.f);
-        mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + (static_cast<int>(mCurrentDeath) == 0? 0 : 13)), 80 * _dwarfType, 100, 80));
+        mSprite.setTextureRect(sf::IntRect(100 * (static_cast<int>(mCurrentDeath) + (static_cast<int>(mCurrentDeath) == 0? 0 : 13)), 80 * _offset, 100, 80));
     }
 }

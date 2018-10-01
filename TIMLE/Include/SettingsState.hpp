@@ -30,8 +30,12 @@ class SettingsState final : public State
     private:
         sf::Sprite                                                      _backgroundSprite;
         GUI::Container                                                  _guiContainer;
-        std::array<GUI::Button::shPtr, PlayerInfo::Action::ActionCount> _bindingButtons;
-        std::array<GUI::Label::shPtr, PlayerInfo::Action::ActionCount>  _bindingLabels;
+        std::array<GUI::Button::shPtr,
+            static_cast<std::size_t>(PlayerInfo::Action::ActionCount)>  _bindingButtons;
+
+        std::array<GUI::Label::shPtr,
+            static_cast<std::size_t>(PlayerInfo::Action::ActionCount)>  _bindingLabels;
+
         std::array<GUI::Button::shPtr, Setting::SettingCount>           _settingButtons;
         std::array<GUI::Label::shPtr, Setting::SettingCount>            _settingLabels;
         sf::Sound                                                       _sound;

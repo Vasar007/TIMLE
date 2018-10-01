@@ -17,7 +17,8 @@ namespace States
         Dialog,
         Choosing,
         Titre,
-        Changing
+        ChangingSettings,
+        Transit
     };
 }
 

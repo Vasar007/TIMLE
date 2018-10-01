@@ -59,6 +59,11 @@ sf::RectangleShape buildBorderLines(const sf::Vector2f position, const sf::Vecto
 sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fillColor,
                                     const sf::Color outlineColor, const float outlineThickness);
 
+// Copy for smart pointers.
+
+template <class T>
+std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source);
+
 #include "Utility.inl"
 
 #endif // UTILITY_HPP

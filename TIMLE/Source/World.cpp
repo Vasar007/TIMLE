@@ -42,7 +42,7 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , _playerHero(nullptr)
 , _playerInfo(playerInfo)
 , _lifeBar(nullptr)
-, _debug(debugMode == State::DebugOn)
+, _debug(debugMode == State::DebugMode::DebugOn)
 {
     _sound.setBuffer(sounds.get(Sounds::ID::Bullet));
 
@@ -72,11 +72,11 @@ void World::loadLevel(const std::size_t levelNumber)
             break;
         
         case 4:
-            _level->loadFromFile("test_map.tmx");    // Test level for Vasilyev.
+            _level->loadFromFile("test_map.tmx"); // Test level for Vasilyev.
             break;
         
         case 5:
-            _level->loadFromFile("supertest_map.tmx");    // Test level for Gusev.
+            _level->loadFromFile("supertest_map.tmx"); // Test level for Gusev.
             break;
         
         default:
@@ -135,11 +135,33 @@ void World::update(sf::Time dt)
     {
         _playerHero->mIsShooting = false;
         // If shot, it appears the bullet, pass the enum as an int.
-        _entities.push_back(new Bullet(Type::ID::AlliedBullet, _textures, _fonts, *_level, 
-                                       _playerHero->x + (_playerHero->mWidth / 2.f), 
-                                       _playerHero->y + 6.f, 7, 7, _playerHero->mState));
+        _entities.emplace_back(std::make_unique<Bullet>(
+            Type::ID::AlliedBullet, _textures, _fonts, *_level, 
+            _playerHero->x + (_playerHero->mWidth / 2.f), 
+            _playerHero->y + 6.f, 7, 7, static_cast<int>(_playerHero->mState))
+        );
         // Play bullet's sound.
         _sound.play();
+    }
+
+    if (_playerInfo->mNeedTransit)
+    {
+        _playerInfo->mDoTransit = true;
+        _playerInfo->mNeedTransit = false;
+
+        Object otherDoor;
+        for (const auto& door : _doors)
+        {
+            if (door.mId != _playerInfo->mNumberOfDoor.first &&
+                door.mType == _playerInfo->mNumberOfDoor.second)
+            {
+                otherDoor = door;
+                break;
+            }
+        }
+        _playerInfo->mTransitPos = { otherDoor.mRect.left + otherDoor.mRect.width / 2.f,
+                                     otherDoor.mRect.top + otherDoor.mRect.height / 2.f };
+        _playerInfo->mTransiting = true;
     }
 
     // Updates ShadowBoss actions.
@@ -223,14 +245,23 @@ void World::draw()
             switch (entity->mTypeID)
             {
                 case Type::ID::Ghost:
+                    [[fallthrough]];
                 case Type::ID::Golem:
+                    [[fallthrough]];
                 case Type::ID::DarkSoldier:
+                    [[fallthrough]];
                 case Type::ID::Goblin:
+                    [[fallthrough]];
                 case Type::ID::MinotaurMage:
+                    [[fallthrough]];
                 case Type::ID::Dwarf:
+                    [[fallthrough]];
                 case Type::ID::DwarfArcher:
+                    [[fallthrough]];
                 case Type::ID::DwarvenCommander:
+                    [[fallthrough]];
                 case Type::ID::Tentacle:
+                    [[fallthrough]];
                 case Type::ID::DarkArcher:
                 {
                     auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
@@ -244,8 +275,11 @@ void World::draw()
                 }
 
                 case Type::ID::Rock:
+                    [[fallthrough]];
                 case Type::ID::OpeningGate:
+                    [[fallthrough]];
                 case Type::ID::ClosingGate:
+                    [[fallthrough]];
                 case Type::ID::OpenClosingGate:
                 {
                     auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
@@ -255,9 +289,13 @@ void World::draw()
                 }
 
                 case Type::ID::Oswald:
+                    [[fallthrough]];
                 case Type::ID::Heinrich:
+                    [[fallthrough]];
                 case Type::ID::MovingPlatform:
+                    [[fallthrough]];
                 case Type::ID::DeadJuggernaut:
+                    [[fallthrough]];
                 case Type::ID::DeadDwarf:
                 {
                     auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
@@ -267,7 +305,9 @@ void World::draw()
                 }
 
                 case Type::ID::AlliedBullet:
+                    [[fallthrough]];
                 case Type::ID::EnemyBullet:
+                    [[fallthrough]];
                 case Type::ID::Flamestrike:
                 {
                     auto shape = buildBorderLines(entity->getRect(), sf::Color::Transparent,
@@ -390,6 +430,12 @@ void World::draw()
             {
                 auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
                                               sf::Color::Blue, 1.f);
+                _window.draw(shape);
+            }
+            else if (object.mName == "door")
+            {
+                auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
+                                              sf::Color::Cyan, 1.f);
                 _window.draw(shape);
             }
             else
@@ -543,11 +589,12 @@ void World::setPlayerCoordinateForView(const float x, const float y, const std::
                 _golemBoss.mIsShaked = false;
 
                 const int randomNum = randomInt(8);
-                Entity* rock = new Rock(Type::ID::Rock, _textures, _fonts, *_level,
-                                        _golemBoss.mRocks[randomNum].x,
-                                        _golemBoss.mRocks[randomNum].y, 16, "3");
+                std::unique_ptr<Entity> rock = std::make_unique<Rock>(
+                    Type::ID::Rock, _textures, _fonts, *_level,
+                    _golemBoss.mRocks.at(randomNum).x,
+                    _golemBoss.mRocks.at(randomNum).y, 16, "3");
                 rock->mIsAttacked = true;
-                _entities.push_back(std::move(rock));
+                _entities.emplace_back(std::move(rock));
 
                 break;
             }
@@ -563,21 +610,30 @@ void World::buildScene()
 
     // Add player.
     const auto playerObj = _level->getObject("player");
-    _playerHero = std::make_unique<Player>(Type::ID::Archer, _textures, _fonts, *_level,
-                             playerObj.mRect.left, playerObj.mRect.top, 20, 30, _playerInfo);
+    _playerHero = std::make_unique<Player>(
+        Type::ID::Archer, _textures, _fonts, *_level, playerObj.mRect.left, playerObj.mRect.top,
+        20, 30, *_playerInfo
+    );
+
     _playerInfo->setPlayer(_playerHero.get());
-    _lifeBar = std::make_unique<LifeBar>(Type::ID::HealthBar, _textures, _fonts, _playerHero->mHitpoints);
+
+    _lifeBar = std::make_unique<LifeBar>(
+        Type::ID::HealthBar, _textures, _fonts, _playerHero->mHitpoints
+    );
 
     _playerInfo->mLastSavePoint.x = _playerHero->x;
     _playerInfo->mLastSavePoint.y = _playerHero->y;
 
     // Create and initialize first boss Shadow.
     const auto shadowObj = _level->getObject("bossShadow");
-    _shadowBoss.mShadow = std::make_unique<Shadow>(Type::ID::Shadow, _textures, _fonts, *_level,
-                                                  shadowObj.mRect.left, shadowObj.mRect.top, 
-                                                  40, 35, shadowObj.mType);
-    _shadowBoss.mShadowLifeBar = std::make_unique<LifeBar>(Type::ID::ShadowBossBar, _textures, _fonts,
-                                                          _shadowBoss.mShadow->mHitpoints);
+    _shadowBoss.mShadow = std::make_unique<Shadow>(
+        Type::ID::Shadow, _textures, _fonts, *_level,
+        shadowObj.mRect.left, shadowObj.mRect.top,  40, 35, shadowObj.mType
+    );
+    _shadowBoss.mShadowLifeBar = std::make_unique<LifeBar>(
+        Type::ID::ShadowBossBar, _textures, _fonts, _shadowBoss.mShadow->mHitpoints
+    );
+
     for (std::size_t i = 0; i < _shadowBoss.mNumberOfTentacles; ++i)
     {
         _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
@@ -594,11 +650,13 @@ void World::buildScene()
 
     // Create and initialize first mini-boss GolemDark.
     const auto golemObj = _level->getObject("bossGolemDark");
-    _golemBoss.mGolem = std::make_unique<GolemDark>(Type::ID::GolemDark, _textures, _fonts, *_level,
-                                                   golemObj.mRect.left, golemObj.mRect.top, 70, 60, 
-                                                   golemObj.mType);
-    _golemBoss.mGolemLifeBar = std::make_unique<LifeBar>(Type::ID::GolemDarkBossBar, _textures, _fonts,
-                                                        _golemBoss.mGolem->mHitpoints);
+    _golemBoss.mGolem = std::make_unique<GolemDark>(
+        Type::ID::GolemDark, _textures, _fonts, *_level,
+        golemObj.mRect.left, golemObj.mRect.top, 70, 60, golemObj.mType
+    );
+    _golemBoss.mGolemLifeBar = std::make_unique<LifeBar>(
+        Type::ID::GolemDarkBossBar, _textures, _fonts, _golemBoss.mGolem->mHitpoints
+    );
 
     _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8192.f, 2272.f);
     _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8272.f, 2240.f);
@@ -616,193 +674,215 @@ void World::buildScene()
 void World::addObjects()
 {
     // All objects, which contains tmx-file, program read into temporary vector.
-    auto objects = _level->getObjects("enemyGhost");
-
     // Add all objects with current name to list of objects.
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("enemyGhost"))
     {
-        _entities.push_back(new Ghost(Type::ID::Ghost, _textures, _fonts, *_level,
-                                      object.mRect.left, object.mRect.top, 
-                                      static_cast<int>(object.mRect.width), 
-                                      static_cast<int>(object.mRect.height), object.mType));
+        _entities.emplace_back(
+            std::make_unique<Ghost>(Type::ID::Ghost, _textures, _fonts, *_level,
+                                    object.mRect.left, object.mRect.top, 
+                                    static_cast<int>(object.mRect.width), 
+                                    static_cast<int>(object.mRect.height), object.mType)
+        );
     }
 
-    objects = _level->getObjects("enemyGolem");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("enemyGolem"))
     {
-        _entities.push_back(new Golem(Type::ID::Golem, _textures, _fonts, *_level,
-                                      object.mRect.left, object.mRect.top, 
-                                      static_cast<int>(object.mRect.width),
-                                      static_cast<int>(object.mRect.height), object.mType));
+        _entities.emplace_back(
+            std::make_unique<Golem>(Type::ID::Golem, _textures, _fonts, *_level,
+                                    object.mRect.left, object.mRect.top, 
+                                    static_cast<int>(object.mRect.width),
+                                    static_cast<int>(object.mRect.height), object.mType)
+        );
     }
 
-    objects = _level->getObjects("enemyDarkSoldier");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("enemyDarkSoldier"))
     {
-        _entities.push_back(new DarkSoldier(Type::ID::DarkSoldier,  _textures, _fonts, *_level,
+        _entities.emplace_back(
+            std::make_unique<DarkSoldier>(Type::ID::DarkSoldier,  _textures, _fonts, *_level,
+                                          object.mRect.left, object.mRect.top, 
+                                          static_cast<int>(object.mRect.width),
+                                          static_cast<int>(object.mRect.height), object.mType)
+        );
+    }
+
+    for (const auto& object : _level->getObjects("enemyGoblin"))
+    {
+        _entities.emplace_back(
+            std::make_unique<Goblin>(Type::ID::Goblin,  _textures, _fonts, *_level,
+                                     object.mRect.left, object.mRect.top, 
+                                     static_cast<int>(object.mRect.width),
+                                     static_cast<int>(object.mRect.height), object.mType)
+        );
+    }
+
+    for (const auto& object : _level->getObjects("enemyMinotaurMage"))
+    {
+        _entities.emplace_back(
+            std::make_unique<MinotaurMage>(Type::ID::MinotaurMage, _textures, _fonts, *_level,
                                             object.mRect.left, object.mRect.top, 
                                             static_cast<int>(object.mRect.width),
-                                            static_cast<int>(object.mRect.height), object.mType));
+                                            static_cast<int>(object.mRect.height), object.mType)
+        );
     }
 
-    objects = _level->getObjects("enemyGoblin");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("enemyDwarf"))
     {
-        _entities.push_back(new Goblin(Type::ID::Goblin,  _textures, _fonts, *_level,
+        _entities.emplace_back(
+            std::make_unique<Dwarf>(Type::ID::Dwarf, _textures, _fonts, *_level,
+                                    object.mRect.left, object.mRect.top, 
+                                    static_cast<int>(object.mRect.width),
+                                    static_cast<int>(object.mRect.height), object.mType,
+                                    Dwarf::DwarfType::Dwarf)
+        );
+    }
+
+    for (const auto& object : _level->getObjects("enemyDwarvenArcher"))
+    {
+        _entities.emplace_back(
+            std::make_unique<Dwarf>(Type::ID::DwarfArcher, _textures, _fonts, *_level,
+                                    object.mRect.left, object.mRect.top, 
+                                    static_cast<int>(object.mRect.width),
+                                    static_cast<int>(object.mRect.height), object.mType,
+                                    Dwarf::DwarfType::DwarvenArcher)
+        );
+    }
+
+    for (const auto& object : _level->getObjects("enemyDwarvenCommander"))
+    {
+        _entities.emplace_back(
+            std::make_unique<Dwarf>(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
+                                    object.mRect.left, object.mRect.top, 
+                                    static_cast<int>(object.mRect.width),
+                                    static_cast<int>(object.mRect.height), object.mType,
+                                    Dwarf::DwarfType::DwarvenCommander)
+        );
+    }
+
+    for (const auto& object : _level->getObjects("enemyDwarfA"))
+    {
+        std::unique_ptr<Entity> dwarf = std::make_unique<Dwarf>(
+            Type::ID::Dwarf, _textures, _fonts, *_level,
+            object.mRect.left, object.mRect.top, 
+            static_cast<int>(object.mRect.width),
+            static_cast<int>(object.mRect.height), object.mType, Dwarf::DwarfType::Dwarf
+        );
+        dwarf->mIsStarted = true;
+        _entities.emplace_back(std::move(dwarf));
+    }
+
+    for (const auto& object : _level->getObjects("enemyDwarvenArcherA"))
+    {
+        std::unique_ptr<Entity> dwarf = std::make_unique<Dwarf>(
+            Type::ID::DwarfArcher, _textures, _fonts, *_level,
+            object.mRect.left, object.mRect.top, 
+            static_cast<int>(object.mRect.width),
+            static_cast<int>(object.mRect.height), object.mType, Dwarf::DwarfType::DwarvenArcher
+        );
+        dwarf->mIsStarted = true;
+        _entities.emplace_back(std::move(dwarf));
+    }
+
+    for (const auto& object : _level->getObjects("enemyDwarvenCommanderA"))
+    {
+        std::unique_ptr<Entity> dwarf = std::make_unique<Dwarf>(
+            Type::ID::DwarvenCommander, _textures, _fonts, *_level,
+            object.mRect.left, object.mRect.top, 
+            static_cast<int>(object.mRect.width),
+            static_cast<int>(object.mRect.height), object.mType, Dwarf::DwarfType::DwarvenCommander
+        );
+        dwarf->mIsStarted = true;
+        _entities.emplace_back(std::move(dwarf));
+    }
+
+    for (const auto& object : _level->getObjects("enemyDwarvenCommanderM"))
+    {
+        std::unique_ptr<Entity> dwarf = std::make_unique<Dwarf>(
+            Type::ID::DwarvenCommander, _textures, _fonts, *_level,
+            object.mRect.left, object.mRect.top, 
+            static_cast<int>(object.mRect.width),
+            static_cast<int>(object.mRect.height), object.mType, Dwarf::DwarfType::DwarvenCommander
+        );
+        dwarf->mIsEnabling = true;
+        _entities.emplace_back(std::move(dwarf));
+    }
+
+    for (const auto& object : _level->getObjects("enemyTentacle"))
+    {
+        _entities.emplace_back(
+            std::make_unique<Tentacle>(Type::ID::Tentacle, _textures, _fonts, *_level,
                                        object.mRect.left, object.mRect.top, 
                                        static_cast<int>(object.mRect.width),
-                                       static_cast<int>(object.mRect.height), object.mType));
+                                       static_cast<int>(object.mRect.height), object.mType)
+        );
     }
 
-    objects = _level->getObjects("enemyMinotaurMage");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("enemyDarkArcher"))
     {
-        _entities.push_back(new MinotaurMage(Type::ID::MinotaurMage, _textures, _fonts, *_level,
-                                             object.mRect.left, object.mRect.top, 
-                                             static_cast<int>(object.mRect.width),
-                                             static_cast<int>(object.mRect.height),
-                                             object.mType));
-    }
-
-    objects = _level->getObjects("enemyDwarf");
-    for (const auto& object : objects)
-    {
-        _entities.push_back(new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
-                                      object.mRect.left, object.mRect.top, 
-                                      static_cast<int>(object.mRect.width),
-                                      static_cast<int>(object.mRect.height), object.mType, 0));
-    }
-
-    objects = _level->getObjects("enemyDwarvenArcher");
-    for (const auto& object : objects)
-    {
-        _entities.push_back(new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
-                                      object.mRect.left, object.mRect.top, 
-                                      static_cast<int>(object.mRect.width),
-                                      static_cast<int>(object.mRect.height), object.mType, 1));
-    }
-
-    objects = _level->getObjects("enemyDwarvenCommander");
-    for (const auto& object : objects)
-    {
-        _entities.push_back(new Dwarf(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
-                                      object.mRect.left, object.mRect.top, 
-                                      static_cast<int>(object.mRect.width),
-                                      static_cast<int>(object.mRect.height), object.mType, 2));
-    }
-
-    objects = _level->getObjects("enemyDwarfA");
-    for (const auto& object : objects)
-    {
-        Entity* dwarf = new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
-                                  object.mRect.left, object.mRect.top, 
-                                  static_cast<int>(object.mRect.width),
-                                  static_cast<int>(object.mRect.height), object.mType, 0);
-        dwarf->mIsStarted = true;
-        _entities.push_back(dwarf);
-    }
-
-    objects = _level->getObjects("enemyDwarvenArcherA");
-    for (const auto& object : objects)
-    {
-        Entity* dwarf = new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
-                                  object.mRect.left, object.mRect.top, 
-                                  static_cast<int>(object.mRect.width),
-                                  static_cast<int>(object.mRect.height), object.mType, 1);
-        dwarf->mIsStarted = true;
-        _entities.push_back(dwarf);
-    }
-
-    objects = _level->getObjects("enemyDwarvenCommanderA");
-    for (const auto& object : objects)
-    {
-        Entity* dwarf = new Dwarf(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
-                                  object.mRect.left, object.mRect.top, 
-                                  static_cast<int>(object.mRect.width),
-                                  static_cast<int>(object.mRect.height), object.mType, 2);
-        dwarf->mIsStarted = true;
-        _entities.push_back(dwarf);
-    }
-
-    objects = _level->getObjects("enemyDwarvenCommanderM");
-    for (const auto& object : objects)
-    {
-        Entity* dwarf = new Dwarf(Type::ID::DwarvenCommander, _textures, _fonts, *_level,
-                                  object.mRect.left, object.mRect.top, 
-                                  static_cast<int>(object.mRect.width),
-                                  static_cast<int>(object.mRect.height), object.mType, 2);
-        dwarf->mIsEnabling = true;
-        _entities.push_back(dwarf);
-    }
-
-    objects = _level->getObjects("enemyTentacle");
-    for (const auto& object : objects)
-    {
-        _entities.push_back(new Tentacle(Type::ID::Tentacle, _textures, _fonts, *_level,
-                                         object.mRect.left, object.mRect.top, 
+        _entities.emplace_back(
+            std::make_unique<DarkArcher>(Type::ID::DarkArcher, _textures, _fonts, *_level,
+                                         object.mRect.left, object.mRect.top,
                                          static_cast<int>(object.mRect.width),
-                                         static_cast<int>(object.mRect.height), object.mType));
-    }
-
-    objects = _level->getObjects("enemyDarkArcher");
-    for (const auto& object : objects)
-    {
-        _entities.push_back(new DarkArcher(Type::ID::DarkArcher, _textures, _fonts, *_level,
-                                           object.mRect.left, object.mRect.top,
-                                           static_cast<int>(object.mRect.width),
-                                           static_cast<int>(object.mRect.height), object.mType));
+                                         static_cast<int>(object.mRect.height), object.mType)
+        );
     }
 
     // Add falling rocks, not enemy.
-    objects = _level->getObjects("rock");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("rock"))
     {
-        _entities.push_back(new Rock(Type::ID::Rock, _textures, _fonts, *_level,
-                                     object.mRect.left, object.mRect.top, 16, object.mType));
+        _entities.emplace_back(
+            std::make_unique<Rock>(Type::ID::Rock, _textures, _fonts, *_level,
+                                   object.mRect.left, object.mRect.top, 16, object.mType)
+        );
     }
 
     // Add opening gates, not enemy.
-    objects = _level->getObjects("gateO");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("gateO"))
     {
-        _entities.push_back(new Gate(Type::ID::OpeningGate, _textures, _fonts, *_level,
-                                     object.mRect.left, object.mRect.top, 16, object.mType));
+        _entities.emplace_back(
+            std::make_unique<Gate>(Type::ID::OpeningGate, _textures, _fonts, *_level,
+                                   object.mRect.left, object.mRect.top, 16, object.mType)
+        );
     }
 
     // Add closing gates, not enemy.
-    objects = _level->getObjects("gateC");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("gateC"))
     {
-        _entities.push_back(new Gate(Type::ID::ClosingGate, _textures, _fonts, *_level,
-                                     object.mRect.left, object.mRect.top, 16, object.mType));
+        _entities.emplace_back(
+            std::make_unique<Gate>(Type::ID::ClosingGate, _textures, _fonts, *_level,
+                                   object.mRect.left, object.mRect.top, 16, object.mType)
+        );
     }
 
     // Add open-closing gates, not enemy.
-    objects = _level->getObjects("gateOC");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("gateOC"))
     {
-        _entities.push_back(new Gate(Type::ID::OpenClosingGate, _textures, _fonts, *_level,
-                                     object.mRect.left, object.mRect.top, 16, object.mType));
+        _entities.emplace_back(
+            std::make_unique<Gate>(Type::ID::OpenClosingGate, _textures, _fonts, *_level,
+                                   object.mRect.left, object.mRect.top, 16, object.mType)
+        );
     }
 
     // Add dialog persons, not enemy.
-    objects = _level->getObjects("dialogPerson");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("dialogPerson"))
     {
         switch(std::stoi(object.mType))
         {
             case 1:
-                _entities.push_back(new DialogPerson(Type::ID::Oswald, _textures, _fonts, *_level,
-                                                     object.mRect.left, object.mRect.top, 
-                                                     static_cast<int>(object.mRect.width),
-                                                     static_cast<int>(object.mRect.height), "2"));
+                _entities.emplace_back(
+                    std::make_unique<DialogPerson>(Type::ID::Oswald, _textures, _fonts, *_level,
+                                                   object.mRect.left, object.mRect.top, 
+                                                   static_cast<int>(object.mRect.width),
+                                                   static_cast<int>(object.mRect.height), "2")
+                );
                 break;
             
             case 2:
-                _entities.push_back(new DialogPerson(Type::ID::Heinrich, _textures, _fonts, *_level,
-                                                     object.mRect.left, object.mRect.top, 
-                                                     static_cast<int>(object.mRect.width),
-                                                     static_cast<int>(object.mRect.height), "6"));
+                _entities.emplace_back(
+                    std::make_unique<DialogPerson>(Type::ID::Heinrich, _textures, _fonts, *_level,
+                                                   object.mRect.left, object.mRect.top, 
+                                                   static_cast<int>(object.mRect.width),
+                                                   static_cast<int>(object.mRect.height), "6")
+                );
                 break;
             
             default:
@@ -812,35 +892,39 @@ void World::addObjects()
     }
 
     // Add moving platforms, not enemy.
-    objects = _level->getObjects("movingPlatform");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("movingPlatform"))
     {
-        _entities.push_back(new MovingPlatform(Type::ID::MovingPlatform, _textures, _fonts, *_level,
-                                               object.mRect.left, object.mRect.top, 
-                                               static_cast<int>(object.mRect.width),
-                                               static_cast<int>(object.mRect.height)));
+        _entities.emplace_back(
+            std::make_unique<MovingPlatform>(Type::ID::MovingPlatform, _textures, _fonts, *_level,
+                                             object.mRect.left, object.mRect.top, 
+                                             static_cast<int>(object.mRect.width),
+                                             static_cast<int>(object.mRect.height), object.mType)
+        );
     }
 
     // Add dead men, not enemy.
-    objects = _level->getObjects("deadMan");
-    for (const auto& object : objects)
+    for (const auto& object : _level->getObjects("deadMan"))
     {
         switch (std::stoi(object.mType))
         {
             case 1:
-                _entities.push_back(new DeadMan(Type::ID::DeadJuggernaut, _textures, _fonts, 
-                                                *_level, object.mRect.left, object.mRect.top, 
-                                                static_cast<int>(object.mRect.width),
-                                                static_cast<int>(object.mRect.height),
-                                                object.mType));
+                _entities.emplace_back(
+                    std::make_unique<DeadMan>(Type::ID::DeadJuggernaut, _textures, _fonts, 
+                                              *_level, object.mRect.left, object.mRect.top, 
+                                              static_cast<int>(object.mRect.width),
+                                              static_cast<int>(object.mRect.height),
+                                              object.mType)
+                );
                 break;
             
             case 2:
-                _entities.push_back(new DeadMan(Type::ID::DeadDwarf, _textures, _fonts, *_level,
-                                                object.mRect.left, object.mRect.top, 
-                                                static_cast<int>(object.mRect.width),
-                                                static_cast<int>(object.mRect.height),
-                                                object.mType));
+                _entities.emplace_back(
+                    std::make_unique<DeadMan>(Type::ID::DeadDwarf, _textures, _fonts, *_level,
+                                              object.mRect.left, object.mRect.top, 
+                                              static_cast<int>(object.mRect.width),
+                                              static_cast<int>(object.mRect.height),
+                                              object.mType)
+                );
                 break;
             
             default:
@@ -850,22 +934,19 @@ void World::addObjects()
     }
 
     // Add interaction objects, not enemy.
-    loadObjects(objects, "solid");
-
-    loadObjects(objects, "enemyBorder");
-    
-    loadObjects(objects, "death");
-
-    loadObjects(objects, "end");
-
-    loadObjects(objects, "boss");
-
-    loadObjects(objects, "dialogMessage");
+    loadObjects("solid");
+    loadObjects("enemyBorder");  
+    loadObjects("death");
+    loadObjects("end");
+    loadObjects("boss");
+    loadObjects("dialogMessage");
+    loadObjects("door");
+    _doors = _level->getObjects("door");
 }
 
-bool World::loadObjects(std::vector<Object>& objects, const std::string_view objectName)
+bool World::loadObjects(const std::string_view objectName)
 {
-    objects = _level->getObjects(objectName);
+    const auto objects = _level->getObjects(objectName);
     if (objects.begin() != objects.end())
     {
         _objects.insert(_objects.end(), std::make_move_iterator(objects.begin()),
@@ -1062,7 +1143,7 @@ void World::handleCollisions(const float dt)
 
         if (_golemBoss.mGolem->mTypeID == Type::ID::GolemDark)
         {
-            if (!_golemBoss.mIsWeakened && (_playerInfo->mChosenSolution[1] == 1))
+            if (!_golemBoss.mIsWeakened && (_playerInfo->mChosenSolution.at(1) == 1))
             {
                 _golemBoss.mGolem->mHitpoints -= 100;
                 _golemBoss.mIsWeakened = true;
@@ -1205,13 +1286,14 @@ void World::handleCollisions(const float dt)
                 if ((*it)->mIsHitted)
                 {
                     // Нанесение урона
-                    Entity* flamestrike = new Flamestrike(Type::ID::Flamestrike, _textures, _fonts,
-                                                          *_level,
-                                                          _playerHero->x + static_cast<float>(_playerHero->mWidth) / 4.f,
-                                                          _playerHero->y - static_cast<float>(_playerHero->mHeight) / 2.f,
-                                                          13, 45);
+                    std::unique_ptr<Entity> flamestrike = std::make_unique<Flamestrike>(
+                        Type::ID::Flamestrike, _textures, _fonts, *_level,
+                        _playerHero->x + static_cast<float>(_playerHero->mWidth) / 4.f,
+                        _playerHero->y - static_cast<float>(_playerHero->mHeight) / 2.f,
+                        13, 45
+                    );
                     flamestrike->mIsStarted = true;
-                    _entities.push_back(std::move(flamestrike));
+                    _entities.emplace_back(std::move(flamestrike));
 
                     (*it)->mIsHitted = false;
                     std::cout << "Hit\n";
@@ -1244,7 +1326,7 @@ void World::handleCollisions(const float dt)
                     findPlayer.left -= 30.f;
                 }
 
-                // TODO: redo this loop.
+                // TODO: redo this loop because it's very ineffective.
                 std::for_each(_objects.begin(), _objects.end(),
                     [&findPlayer, &isNeedFind](Object& object)
                 {
@@ -1265,10 +1347,13 @@ void World::handleCollisions(const float dt)
                 (*it)->mCurrentFrame = 0.f;
                 if ((*it)->mIsHitted)
                 {
-                    _entities.push_back(new Bullet(Type::ID::EnemyBullet, _textures, _fonts,
-                                                   *_level, (*it)->x + ((*it)->mWidth / 2.f), 
-                                                   (*it)->y + ((*it)->mHeight / 2.f) - 3.f, 7, 7, 
-                                                   (*it)->dx > 0.f ? 1 : 0));
+                    _entities.emplace_back(
+                        std::make_unique<Bullet>(
+                            Type::ID::EnemyBullet, _textures, _fonts,
+                            *_level, (*it)->x + ((*it)->mWidth / 2.f),
+                            (*it)->y + ((*it)->mHeight / 2.f) - 3.f, 7, 7,
+                            (*it)->dx > 0.f ? 1 : 0)
+                    );
                     _sound.play();
                     (*it)->mIsHitted = false;
                     std::cout << "Shoot\n";
@@ -1309,7 +1394,7 @@ void World::handleCollisions(const float dt)
                     findPlayer.left -= 30.f;
                 }
 
-                // TODO: redo this loop.
+                // TODO: redo this loop because it's very ineffective.
                 //std::for_each(_objects.begin(), _objects.end(),
                 //    [&findPlayer, &isNeedFind](Object& object)
                 //{
@@ -1330,14 +1415,16 @@ void World::handleCollisions(const float dt)
                 (*it)->mCurrentFrame = 0.f;
                 if ((*it)->mIsHitted)
                 {
-                    Projectile* bullet = new MagicArrow(Type::ID::MagicArrow, _textures, _fonts,
-                                                        *_level,  (*it)->x + (*it)->mWidth / 2.f,
-                                                        (*it)->y + (*it)->mHeight / 2.f - 12.f, 
-                                                        13, 9,
-                                                        _playerHero->getCenter().x,
-                                                        _playerHero->getCenter().y);
-                    _entities.push_back(bullet);
-                    _guidedProjectiles.push_back(std::move(bullet));
+                    std::unique_ptr<Projectile> bullet = std::make_unique<MagicArrow>(
+                        Type::ID::MagicArrow, _textures, _fonts, *_level,
+                        (*it)->x + (*it)->mWidth / 2.f,
+                        (*it)->y + (*it)->mHeight / 2.f - 12.f, 
+                        13, 9,
+                        _playerHero->getCenter().x,
+                        _playerHero->getCenter().y
+                    );
+                    _guidedProjectiles.emplace_back(bullet.get());
+                    _entities.emplace_back(std::move(bullet));
                     _sound.play();
                     (*it)->mIsHitted = false;
                     std::cout << "Shoot\n";
@@ -1651,33 +1738,43 @@ void World::handleCollisions(const float dt)
                     {
                         if (_playerHero->dx >= 0.f)
                         {
-                            Entity* dwarf = new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
-                                                      (*it)->x - 30.f, (*it)->y, 40, 27, 
-                                                      (*it)->mType, 0);
-                            dwarf->mIsStarted = true;
-                            _entities.push_back(dwarf);
-                            dwarf = new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
-                                              (*it)->x + 30.f, (*it)->y, 40, 27, (*it)->mType, 1);
-                            dwarf->mIsStarted = true;
-                            dwarf->mIsEnabling = false;
-                            dwarf->dx *= -1.f;
-                            dwarf->mSprite.scale(-1.f, 1.f);
-                            _entities.push_back(std::move(dwarf));
+                            std::unique_ptr<Entity> first_dwarf = std::make_unique<Dwarf>(
+                                Type::ID::Dwarf, _textures, _fonts, *_level,
+                                (*it)->x - 30.f, (*it)->y, 40, 27, 
+                                (*it)->mType, Dwarf::DwarfType::Dwarf
+                            );
+                            first_dwarf->mIsStarted = true;
+                            _entities.emplace_back(std::move(first_dwarf));
+
+                            std::unique_ptr<Entity> second_dwarf = std::make_unique<Dwarf>(
+                                Type::ID::DwarfArcher, _textures, _fonts, *_level,
+                                (*it)->x + 30.f, (*it)->y, 40, 27,
+                                (*it)->mType, Dwarf::DwarfType::DwarvenArcher
+                            );
+                            second_dwarf->mIsStarted = true;
+                            second_dwarf->mIsEnabling = false;
+                            second_dwarf->dx *= -1.f;
+                            second_dwarf->mSprite.scale(-1.f, 1.f);
+                            _entities.emplace_back(std::move(second_dwarf));
                         }
                         else
                         {
-                            Entity* dwarf = new Dwarf(Type::ID::Dwarf, _textures, _fonts, *_level,
-                                                      (*it)->x - 30.f, (*it)->y, 40, 27, 
-                                                      (*it)->mType, 0);
-                            dwarf->mIsStarted = true;
-                            dwarf->dx *= -1.f;
-                            dwarf->mSprite.scale(-1.f, 1.f);
-                            _entities.push_back(std::move(dwarf));
-                            dwarf = new Dwarf(Type::ID::DwarfArcher, _textures, _fonts, *_level,
-                                              (*it)->x + 30.f, (*it)->y, 40, 27, (*it)->mType, 1);
-                            dwarf->mIsStarted = true;
-                            dwarf->mIsEnabling = false;
-                            _entities.push_back(std::move(dwarf));
+                            std::unique_ptr<Entity> first_dwarf = std::make_unique<Dwarf>(
+                                Type::ID::Dwarf, _textures, _fonts, *_level,
+                                (*it)->x - 30.f, (*it)->y, 40, 27, 
+                                (*it)->mType, Dwarf::DwarfType::Dwarf);
+                            first_dwarf->mIsStarted = true;
+                            first_dwarf->dx *= -1.f;
+                            first_dwarf->mSprite.scale(-1.f, 1.f);
+                            _entities.emplace_back(std::move(first_dwarf));
+
+                            std::unique_ptr<Entity> second_dwarf = std::make_unique<Dwarf>(
+                                Type::ID::DwarfArcher, _textures, _fonts, *_level,
+                                (*it)->x + 30.f, (*it)->y, 40, 27,
+                                (*it)->mType, Dwarf::DwarfType::DwarvenArcher);
+                            second_dwarf->mIsStarted = true;
+                            second_dwarf->mIsEnabling = false;
+                            _entities.emplace_back(std::move(second_dwarf));
                         }
                         (*it)->mIsSpawn = true;
                     }
@@ -1868,17 +1965,16 @@ void World::handleCollisions(const float dt)
 
             // Temporary object.
             Object tempObject;
-
-            tempObject.mName    = "solid";
-            tempObject.mType    = (*it)->mType;
-            tempObject.mSprite    = (*it)->mSprite;
+            tempObject.mName = "solid";
+            tempObject.mType = (*it)->mType;
+            tempObject.mSprite = (*it)->mSprite;
 
             sf::FloatRect objectRect;
-            objectRect.top        = (*it)->y;
-            objectRect.left        = (*it)->x;
-            objectRect.height    = static_cast<float>((*it)->mHeight);
-            objectRect.width    = static_cast<float>((*it)->mWidth);
-            tempObject.mRect    = objectRect;
+            objectRect.top = (*it)->y;
+            objectRect.left = (*it)->x;
+            objectRect.height = static_cast<float>((*it)->mHeight);
+            objectRect.width = static_cast<float>((*it)->mWidth);
+            tempObject.mRect = objectRect;
             _level->mObjects.push_back(tempObject);
             _playerHero->mLevelObjects.push_back(std::move(tempObject));
         }
@@ -1891,17 +1987,16 @@ void World::handleCollisions(const float dt)
 
             // Temporary object.
             Object tempObject;
-
-            tempObject.mName    = "solid";
-            tempObject.mType    = (*it)->mType;
-            tempObject.mSprite    = (*it)->mSprite;
+            tempObject.mName = "solid";
+            tempObject.mType = (*it)->mType;
+            tempObject.mSprite = (*it)->mSprite;
 
             sf::FloatRect objectRect;
-            objectRect.top        = (*it)->y;
-            objectRect.left        = (*it)->x;
-            objectRect.height    = static_cast<float>((*it)->mHeight);
-            objectRect.width    = static_cast<float>((*it)->mWidth);
-            tempObject.mRect    = objectRect;
+            objectRect.top = (*it)->y;
+            objectRect.left = (*it)->x;
+            objectRect.height = static_cast<float>((*it)->mHeight);
+            objectRect.width = static_cast<float>((*it)->mWidth);
+            tempObject.mRect = objectRect;
             _level->mObjects.push_back(tempObject);
             _playerHero->mLevelObjects.push_back(std::move(tempObject));
         }
@@ -1994,8 +2089,10 @@ void World::handleCollisions(const float dt)
                     (*it)->mHitpoints -= (*it2)->mDamage;
                     if ((*it)->mHitpoints <= 0)
                     {
-                        _effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
-                                                          (*it)->x, (*it)->y, 48, 24));
+                        _effects.emplace_back(
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                                                         (*it)->x, (*it)->y, 48, 24)
+                        );
                     }
 
                     (*it2)->mLife = false;
@@ -2009,8 +2106,10 @@ void World::handleCollisions(const float dt)
                     (*it)->mHitpoints -= (*it2)->mDamage;
                     if ((*it)->mHitpoints <= 0)
                     {
-                        _effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
-                                                          (*it)->x + 7.f, (*it)->y + 7.f, 48, 24));
+                        _effects.emplace_back(
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                                                         (*it)->x + 7.f, (*it)->y + 7.f, 48, 24)
+                        );
                     }
 
                     (*it2)->mLife = false;
@@ -2025,8 +2124,10 @@ void World::handleCollisions(const float dt)
                     (*it)->mHitpoints -= (*it2)->mDamage;
                     if ((*it)->mHitpoints <= 0)
                     {
-                        _effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
-                                                          (*it)->x + 7.f, (*it)->y, 48, 24));
+                        _effects.emplace_back(
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                                                         (*it)->x + 7.f, (*it)->y, 48, 24)
+                        );
                     }
                     
                     (*it2)->mLife = false;
@@ -2041,8 +2142,10 @@ void World::handleCollisions(const float dt)
                     (*it)->mHitpoints -= (*it2)->mDamage;
                     if ((*it)->mHitpoints <= 0)
                     {
-                        _effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
-                                                          (*it)->x, (*it)->y, 48, 24));
+                        _effects.emplace_back(
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                                                         (*it)->x, (*it)->y, 48, 24)
+                        );
                     }
 
                     (*it2)->mLife = false;
@@ -2057,8 +2160,10 @@ void World::handleCollisions(const float dt)
                     (*it)->mHitpoints -= (*it2)->mDamage;
                     if ((*it)->mHitpoints <= 0)
                     {
-                        _effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
-                                                          (*it)->x, (*it)->y, 48, 24));
+                        _effects.emplace_back(
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                                                         (*it)->x, (*it)->y, 48, 24)
+                        );
                     }
 
                     (*it2)->mLife = false;
@@ -2078,8 +2183,10 @@ void World::handleCollisions(const float dt)
                     (*it)->mHitpoints -= (*it2)->mDamage;
                     if ((*it)->mHitpoints <= 0)
                     {
-                        _effects.push_back(new Bloodsplat(Type::ID::Bloodsplat, _textures,
-                                                          (*it)->x + 11.f, (*it)->y + 22.f, 48, 24));
+                        _effects.emplace_back(
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                                                         (*it)->x + 11.f, (*it)->y + 22.f, 48, 24)
+                        );
                     }
 
                     (*it2)->mLife = false;
