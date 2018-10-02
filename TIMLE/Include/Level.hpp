@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include <SFML/Graphics.hpp>
-#include "../TinyXML/tinyxml.h"
+#include <tinyxml.h>
 
 
 /**

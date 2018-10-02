@@ -30,9 +30,9 @@ PlayerInfo::PlayerInfo()
     // Set initial action bindings.
     initializeActions();
 
-    // Assign all categories to player's aircraft
+    // Assign all categories to player's hero
     //FOREACH(auto& pair, mActionBinding)
-    //    pair.second.category = Category::PlayerAircraft;
+    //    pair.second.category = Category::PlayerHero;
 }
 
 void PlayerInfo::showDialog(const std::size_t number)

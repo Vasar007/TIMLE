@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="TinyXML">
-      <UniqueIdentifier>{b44df909-11d1-49c3-ab41-e26176bf6a63}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Заголовочные файлы\Enemies">
       <UniqueIdentifier>{74555ddd-6db1-4c02-8c94-184068530c8f}</UniqueIdentifier>
     </Filter>
@@ -76,20 +73,11 @@
     <Filter Include="Файлы исходного кода\Effects">
       <UniqueIdentifier>{835f75b1-c49a-4822-ac23-9a008acd4a0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TinyXML">
+      <UniqueIdentifier>{e9da6ce1-051d-4df3-8b91-b8d3a5e225c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TinyXML\tinystr.cpp">
-      <Filter>TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinyxml.cpp">
-      <Filter>TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinyxmlerror.cpp">
-      <Filter>TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinyxmlparser.cpp">
-      <Filter>TinyXML</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Utility.cpp">
       <Filter>Файлы исходного кода\Utils</Filter>
     </ClCompile>
@@ -246,14 +234,20 @@
     <ClCompile Include="Source\TransitionState.cpp">
       <Filter>Файлы исходного кода\States</Filter>
     </ClCompile>
+    <ClCompile Include="..\Dependencies\TinyXML\tinystr.cpp">
+      <Filter>TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\TinyXML\tinyxml.cpp">
+      <Filter>TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\TinyXML\tinyxmlerror.cpp">
+      <Filter>TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\TinyXML\tinyxmlparser.cpp">
+      <Filter>TinyXML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TinyXML\tinystr.h">
-      <Filter>TinyXML</Filter>
-    </ClInclude>
-    <ClInclude Include="TinyXML\tinyxml.h">
-      <Filter>TinyXML</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Enemy.hpp">
       <Filter>Заголовочные файлы\Enemies</Filter>
     </ClInclude>
@@ -415,6 +409,12 @@
     </ClInclude>
     <ClInclude Include="Include\TransitionState.hpp">
       <Filter>Заголовочные файлы\States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\TinyXML\tinyxml.h">
+      <Filter>TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\TinyXML\tinystr.h">
+      <Filter>TinyXML</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

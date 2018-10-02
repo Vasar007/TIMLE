@@ -2,16 +2,16 @@
 
 Enemy::Enemy(sf::Image &image, sf::String Name, Level &lvl, float X, float Y, int W, int H) : Entity(image, Name, X, Y, W, H)
 {
-	obj = lvl.GetObjects("solid");	//инициализируем.получаем нужные объекты для взаимодействия врага с картой
+	obj = lvl.GetObjects("solid");	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if (name == "EasyEnemy") {
 		sprite.setTextureRect(sf::IntRect(0, 0, w, h));
 		sprite.scale(-1, 1);
-		dx = 0.1;	//объект всегда имеет скорость
+		dx = 0.1;	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 
 	if (name == "MediumEnemy") {
 		sprite.setTextureRect(sf::IntRect(0, 64, 64, 64));
-		dx = 0.05;	//объект всегда имеет скорость
+		dx = 0.05;	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 	CurrentAttack = 0;
 	isTurned = false;
@@ -19,16 +19,16 @@ Enemy::Enemy(sf::Image &image, sf::String Name, Level &lvl, float X, float Y, in
 
 Enemy::Enemy(sf::Image &image, sf::Image &imageAttack, sf::String Name, Level &lvl, float X, float Y, int W, int H) : Entity(image, imageAttack, Name, X, Y, W, H)
 {
-	obj = lvl.GetObjects("solid");	//инициализируем.получаем нужные объекты для взаимодействия врага с картой
+	obj = lvl.GetObjects("solid");	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if (name == "EasyEnemy") {
 		sprite.setTextureRect(sf::IntRect(0, 0, w, h));
 		sprite.scale(-1, 1);
-		dx = 0.1;	//объект всегда имеет скорость
+		dx = 0.1;	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 
 	if (name == "MediumEnemy") {
 		sprite.setTextureRect(sf::IntRect(0, 192, 64, 64));
-		dx = 0.05;	//объект всегда имеет скорость
+		dx = 0.05;	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 	CurrentAttack = 0; CurrentDeath = 0; counter = 0;
 	isTurned = false;
@@ -36,16 +36,16 @@ Enemy::Enemy(sf::Image &image, sf::Image &imageAttack, sf::String Name, Level &l
 
 Enemy::Enemy(sf::Image &image, sf::Image &imageAttack, sf::Image &imageDeath, sf::String Name, Level &lvl, float X, float Y, int W, int H) : Entity(image, imageAttack, imageDeath, Name, X, Y, W, H)
 {
-	obj = lvl.GetObjects("solid");	//инициализируем.получаем нужные объекты для взаимодействия врага с картой
+	obj = lvl.GetObjects("solid");	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if (name == "EasyEnemy") {
 		sprite.setTextureRect(sf::IntRect(0, 0, w, h));
 		sprite.scale(-1, 1);
-		dx = 0.1;	//объект всегда имеет скорость
+		dx = 0.1;	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 
 	if (name == "MediumEnemy") {
 		sprite.setTextureRect(sf::IntRect(0, 192, 64, 64));
-		dx = 0.05;	//объект всегда имеет скорость
+		dx = 0.05;	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 	CurrentAttack = 0; CurrentDeath = 0; counter = 0;
 	isTurned = false;
@@ -53,9 +53,9 @@ Enemy::Enemy(sf::Image &image, sf::Image &imageAttack, sf::Image &imageDeath, sf
 
 void Enemy::checkCollisionWithMap(float Dx, float Dy)
 {
-	for (int i = 0; i<obj.size(); i++)	//проходимся по объектам
-		if (getRect().intersects(obj[i].rect)) {	//проверяем пересечение игрока с объектом
-			if (obj[i].name == "solid") {	//если встретили препятствие
+	for (int i = 0; i<obj.size(); i++)	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		if (getRect().intersects(obj[i].rect)) {	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			if (obj[i].name == "solid") {	//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				if (Dy>0) {
 					y = obj[i].rect.top - h;
 					dy = 0;

@@ -262,7 +262,9 @@ __pycache__/
 
 # User defined block
 Dependencies/
+TIMLE/Extra/
+TIMLE/ReleaseWithoutConsole/
+.vscode/
 *.tlog
 *.vcxproj
 *.vcxproj.filters
-Extra/
