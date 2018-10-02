@@ -211,6 +211,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
 {
     mDialogNumber = 0;
 
+    bool transitFound = false;
     for (const auto& object : mLevelObjects)
     {
         // Проверяем пересечение с объектом
@@ -275,15 +276,12 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 }
             }
 
-            // Если встретили переход. Оставил так, потому что внутри возможны условия
+            // Если встретили переход
             if (object.mName == "door")
             {
+                transitFound = true;
                 mPlayerInfo.mCanTransit = true;
                 mPlayerInfo.mNumberOfDoor = { object.mId, object.mType };
-            }
-            else
-            {
-                mPlayerInfo.mCanTransit = false;
             }
 
             // Если встретили конец уровня
@@ -322,6 +320,11 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 _beforeJump = y;
             }
         }
+    }
+
+    if (!transitFound)
+    {
+        mPlayerInfo.mCanTransit = false;
     }
 }
 

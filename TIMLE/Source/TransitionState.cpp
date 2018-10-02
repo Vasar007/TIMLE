@@ -21,6 +21,11 @@ void TransitionState::draw()
 {
     auto& window = *getContext().mWindow;
 
+    if (!_appearence)
+    {
+        window.setView(window.getDefaultView());
+    }
+
     if (!_appearence && _opacity < 255)
     {
         _opacity += 5;
@@ -49,13 +54,14 @@ bool TransitionState::update(const sf::Time dt)
         _playerInfo.getPlayer()->x = _playerInfo.mTransitPos.first;
         _playerInfo.getPlayer()->y = _playerInfo.mTransitPos.second;
         _playerInfo.getPlayer()->update(static_cast<float>(_elapsedTime.asMilliseconds()));
+
     }
     else if (_appearence)
     {
         requestStackPop();
     }
 
-    return false;
+    return true;
 }
 
 bool TransitionState::handleEvent(const sf::Event&)

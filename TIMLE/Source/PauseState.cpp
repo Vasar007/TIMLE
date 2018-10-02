@@ -50,7 +50,7 @@ PauseState::PauseState(StateStack& stack, Context context)
 
 void PauseState::draw()
 {
-    sf::RenderWindow& window = *getContext().mWindow;
+    auto& window = *getContext().mWindow;
     window.setView(window.getDefaultView());
 
     sf::RectangleShape backgroundShape;

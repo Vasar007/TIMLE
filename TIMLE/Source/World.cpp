@@ -159,8 +159,7 @@ void World::update(sf::Time dt)
                 break;
             }
         }
-        _playerInfo->mTransitPos = { otherDoor.mRect.left + otherDoor.mRect.width / 2.f,
-                                     otherDoor.mRect.top + otherDoor.mRect.height / 2.f };
+        _playerInfo->mTransitPos = { otherDoor.mRect.left, otherDoor.mRect.top };
         _playerInfo->mTransiting = true;
     }
 

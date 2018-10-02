@@ -16,7 +16,7 @@
 #include "../Include/TransitionState.hpp"
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 const std::vector<sf::Color> Application::mColorConstants = { sf::Color(85, 170, 255), 
                                                               sf::Color(86, 97, 104) };
@@ -101,16 +101,16 @@ void Application::render()
     switch (_playerInfo.getLevelNumber())
     {
         case 1:
-            _window.clear(mColorConstants[0]);
+            _window.clear(mColorConstants.at(0));
             break;
         case 2:
-            _window.clear(mColorConstants[1]);
+            _window.clear(mColorConstants.at(1));
             break;
         case 3:
-            _window.clear(mColorConstants[0]);
+            _window.clear(mColorConstants.at(0));
             break;
         default:
-            _window.clear(mColorConstants[0]);
+            _window.clear(mColorConstants.at(0));
             break;
     }
     //mWindow.clear(sf::Color(85, 170, 255));
