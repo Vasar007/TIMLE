@@ -20,7 +20,7 @@ class Effect
         float       mCurrentDeath{};
         float       mMoveTimer{};
 
-        bool        mLife{};
+        bool        mLife;
         bool        mIsStarted;
         bool        mIsEnd;
         bool        mIsAttacked{};

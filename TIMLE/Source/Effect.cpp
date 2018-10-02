@@ -9,6 +9,7 @@ Effect::Effect(const Type::ID id, const float X, const float Y, const int width,
 , mWidth(width)
 , mHeight(height)
 , mCurrentFrame(0.f)
+, mLife(true)
 , mIsStarted(false)
 , mIsEnd(false)
 , mType(std::move(type))
