@@ -219,7 +219,7 @@ bool SettingsState::update(sf::Time)
 
 bool SettingsState::handleEvent(const sf::Event& event)
 {
-    if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+    if (event.key.code == sf::Keyboard::Return)
     {
         _sound.play();
     }

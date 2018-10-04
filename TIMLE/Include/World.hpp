@@ -118,12 +118,8 @@ class World : private sf::NonCopyable
         AudioManager&                      _audioManager;
         std::unique_ptr<Level>             _level;
 
-
-        sf::FloatRect                      _worldBounds;
-        sf::Vector2f                       _spawnPosition;
         std::size_t                        _currentLevelNumber;
         sf::Vector2f                       _position;
-        float                              _scrollSpeed;
         std::unique_ptr<Player>            _playerHero;
         PlayerInfo*                        _playerInfo;
         std::unique_ptr<LifeBar>           _lifeBar;

@@ -18,7 +18,7 @@ MenuState::MenuState(StateStack& stack, Context context)
     {
         mAudioManager.stopAllMusics();
     }
-    mAudioManager.setMusic(AudioManager::MusicType::MainMenuTheme);
+    mAudioManager.setMusic(Music::ID::MainMenuTheme);
     
     _backgroundSprite.setTexture(context.mTextures->get(Textures::ID::TitleScreen));
 
@@ -94,7 +94,7 @@ bool MenuState::update(const sf::Time)
 
 bool MenuState::handleEvent(const sf::Event& event)
 {
-    if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+    if (event.key.code == sf::Keyboard::Return)
     {
         _sound.play();
     }

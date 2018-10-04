@@ -35,10 +35,7 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , _sounds(sounds)
 , _audioManager(audioManager)
 , _level(nullptr)
-, _worldBounds(0.f, 0.f, 13072.f, 3200.f)
-, _spawnPosition(_worldView.getSize().x / 2.f, _worldBounds.height - _worldView.getSize().y / 2.f)
 , _currentLevelNumber(levelNumber)
-, _scrollSpeed(0.f)
 , _playerHero(nullptr)
 , _playerInfo(playerInfo)
 , _lifeBar(nullptr)
@@ -46,7 +43,7 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 {
     _sound.setBuffer(sounds.get(Sounds::ID::Bullet));
 
-    audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
+    audioManager.setMusic(Music::ID::FirstMainMusic);
 
     buildScene();
     _worldView.reset(sf::FloatRect(0, 0, 1280, 720));
@@ -1017,7 +1014,7 @@ void World::handleCollisions(const float dt)
             if (!_shadowBoss.mShadow->mIsStarted)
             {
                 _shadowBoss.mShadow->mIsStarted = true;
-                _audioManager.setMusic(AudioManager::MusicType::FirstBossMusic);
+                _audioManager.setMusic(Music::ID::FirstBossMusic);
             }
             else if (_playerHero->mHitpoints > 0)
             {
@@ -1130,8 +1127,8 @@ void World::handleCollisions(const float dt)
     else if (_shadowBoss.mIsFinished && !_shadowBoss.mShadow->mLife)
     {
         _shadowBoss.mIsActive = false;
-        _playerInfo->mQuests.at(3) = true;
-        _audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
+        _playerInfo->mQuests.at(PlayerInfo::Quest::KillShadow) = true;
+        _audioManager.setMusic(Music::ID::FirstMainMusic);
     }
 
 
@@ -1142,7 +1139,8 @@ void World::handleCollisions(const float dt)
 
         if (_golemBoss.mGolem->mTypeID == Type::ID::GolemDark)
         {
-            if (!_golemBoss.mIsWeakened && (_playerInfo->mChosenSolution.at(1) == 1))
+            if (!_golemBoss.mIsWeakened &&
+                (_playerInfo->mChosenSolution.at(PlayerInfo::Solution::InteractWithGolem) == 1))
             {
                 _golemBoss.mGolem->mHitpoints -= 100;
                 _golemBoss.mIsWeakened = true;
@@ -1153,7 +1151,7 @@ void World::handleCollisions(const float dt)
             {
                 _golemBoss.mGolem->mIsStarted = true;
                 _golemBoss.mGolem->mCurrentDeath = 5.f;
-                _audioManager.setMusic(AudioManager::MusicType::FirstBossMusic);
+                _audioManager.setMusic(Music::ID::FirstMiniBossMusic);
             }
             else if (_golemBoss.mGolem->getRect().intersects(playerRect))
             {
@@ -1189,7 +1187,7 @@ void World::handleCollisions(const float dt)
     else if (_golemBoss.mIsFinished && !_golemBoss.mGolem->mLife)
     {
         _golemBoss.mIsActive = false;
-        _playerInfo->mQuests.at(4) = true;
+        _playerInfo->mQuests.at(PlayerInfo::Quest::KillGolemDark) = true;
 
         // Temporary object.
         Object tempObject;
@@ -1198,15 +1196,15 @@ void World::handleCollisions(const float dt)
         tempObject.mType = "9";
 
         sf::FloatRect objectRect;
-        objectRect.top        = 2388;
-        objectRect.left        = 8352;
-        objectRect.height    = 60;
-        objectRect.width    = 80;
-        tempObject.mRect    = std::move(objectRect);
+        objectRect.top    = 2388;
+        objectRect.left   = 8352;
+        objectRect.height = 60;
+        objectRect.width  = 80;
+        tempObject.mRect  = std::move(objectRect);
         _level->mObjects.push_back(tempObject);
         _playerHero->mLevelObjects.push_back(std::move(tempObject));
 
-        _audioManager.setMusic(AudioManager::MusicType::FirstMainMusic);
+        _audioManager.setMusic(Music::ID::FirstMainMusic);
     }
 
     for (auto it = _entities.begin(); it != _entities.end(); ++it)
@@ -1262,7 +1260,7 @@ void World::handleCollisions(const float dt)
                     findPlayer.left -= 30.f;
                 }
 
-                // TODO: redo this loop.
+                // TODO: redo this loop because it's very ineffective.
                 std::for_each(_objects.begin(), _objects.end(),
                     [&findPlayer, &isNeedFind](Object& object)
                 {
@@ -1480,7 +1478,7 @@ void World::handleCollisions(const float dt)
         /// Opening of the gates.
         if ((*it)->mTypeID == Type::ID::OpeningGate && !(*it)->mIsStarted)
         {
-            if ((*it)->mType == "3" && _playerInfo->mQuests.at(0))
+            if ((*it)->mType == "3" && _playerInfo->mQuests.at(PlayerInfo::Quest::TalkWithHeinrich))
             {
                 (*it)->mIsStarted = true;
             }
@@ -1490,7 +1488,7 @@ void World::handleCollisions(const float dt)
                 (*it)->mIsStarted = true;
             }
 
-            if ((*it)->mType == "5" && _playerInfo->mQuests.at(3))
+            if ((*it)->mType == "5" && _playerInfo->mQuests.at(PlayerInfo::Quest::KillShadow))
             {
                 (*it)->mIsStarted = true;
             }
@@ -1943,11 +1941,11 @@ void World::handleCollisions(const float dt)
             switch ((*it)->mTypeID)
             {
                 case Type::ID::Oswald:
-                    _playerInfo->mQuests.at(0) = true;
+                    _playerInfo->mQuests.at(PlayerInfo::Quest::TalkWithOswald) = true;
                     break;
                 
                 case Type::ID::Heinrich:
-                    _playerInfo->mQuests.at(2) = true;
+                    _playerInfo->mQuests.at(PlayerInfo::Quest::TalkWithHeinrich) = true;
                     break;
                 
                 default:
@@ -2169,7 +2167,7 @@ void World::handleCollisions(const float dt)
 
                     if ((*it)->mIsEnabling && (*it)->mHitpoints <= 0)
                     {
-                        _playerInfo->mQuests.at(1) = true;
+                        _playerInfo->mQuests.at(PlayerInfo::Quest::KillDwarvenCommanderM) = true;
                         _playerHero->mDialogNumber = 4;
                     }
                 }

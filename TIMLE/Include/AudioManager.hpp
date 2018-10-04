@@ -1,10 +1,14 @@
 #ifndef AUDIOMANAGER_HPP
 #define AUDIOMANAGER_HPP
 
-#include <vector>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include <SFML/Audio/Music.hpp>
+
+#include "ResourceIdentifiers.hpp"
+#include "ResourceHolder.hpp"
 
 
 /**
@@ -21,44 +25,29 @@ class AudioManager
             Play,
             Pause,
             Stop
-        };
-
-
-    public:
-        /**
-         * \brief Contains all music types for playing.
-         */
-        enum class MusicType
-        {
-            MainMenuTheme,
-            FirstMainMusic,
-            FirstBossMusic,
-            FirstMiniBossMusic,
-            SecondMusic,
-            SecondBossMusic,
-            SecondMiniBossMusic,
-            ThirdMusic,
-            ThirdBossMusic,
-            ThirdMiniBossMusic,
-            None
-        };
+        };      
 
 
     private:
         /**
-         * \brief Current playing music type.
+         * \brief Current playing music types array.
          */
-        MusicType               _currentMusic;
+        std::vector<Music::ID> _currentMusicID;
+
+        /**
+         * \brief Current loaded music types array.
+         */
+        std::vector<Music::ID> _availableMusicID;
 
         /**
          * \brief Current music's state.
          */
-        CurrentState            _currentState;
+        CurrentState           _currentState;
 
         /**
         * \brief Main array with all musics.
         */
-        std::vector<sf::Music*> _musics;
+        MusicHolder            _musics;
 
 
     private:
@@ -66,6 +55,13 @@ class AudioManager
          * \brief Initialization available musics.
          */
         void buildMusic();
+
+        /**
+         * \brief               Load music file from disk.
+         * \param[in] musicType New music type to load.
+         * \param[in] path      File name to load.
+         */
+        void loadMusic(const Music::ID musicType, const std::string& path);
 
 
     public:
@@ -78,7 +74,7 @@ class AudioManager
          * \brief               Changes playing music for another.
          * \param[in] musicType New music type to play.
          */
-        void      setMusic(const MusicType musicType);
+        void      setMusic(const Music::ID musicType);
 
         /**
          * \brief Stops all tracks even they aren't playing now.
@@ -89,7 +85,7 @@ class AudioManager
          * \brief  Gets current music type.
          * \return Current playing music type.
          */
-        MusicType getMusicType() const;
+        std::vector<Music::ID> getPlayingMusicType() const;
 
         /**
          * \brief  Gets information about current state.

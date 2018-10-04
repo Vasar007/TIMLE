@@ -45,7 +45,7 @@ void Container::handleEvent(const sf::Event& event)
         {
             selectNext();
         }
-        else if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+        else if (event.key.code == sf::Keyboard::Return)
         {
             if (hasSelection())
             {

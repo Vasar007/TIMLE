@@ -274,6 +274,11 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                     mActivatedGate = true;
                     mDialogNumber = 5;
                 }
+                
+                if (std::stoi(object.mType) == 8 && !_hadFirstMiniDelay)
+                {
+                    mDialogNumber = 0;
+                }
             }
 
             // Если встретили переход
@@ -297,10 +302,12 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 {
                     case 1:
                         mHasStartedFirstMainBoss = true;
+                        mPlayerInfo.mQuests.at(PlayerInfo::Quest::FightShadow) = true;
                         _needFirstMainDelay = !_hadFirstMainDelay;
                         break;
                     case 2:
                         mHasStartedFirstMiniBoss = true;
+                        mPlayerInfo.mQuests.at(PlayerInfo::Quest::FightGolemDark) = true;
                         _needFirstMiniDelay = !_hadFirstMiniDelay;
                         break;
                     default:
@@ -330,7 +337,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
 
 void Player::update(const float dt)
 {
-    if (mPlayerInfo.mQuests.at(1))
+    if (mPlayerInfo.mQuests.at(PlayerInfo::Quest::KillDwarvenCommanderM))
     {
         mGotKey = true;
     }
@@ -576,11 +583,11 @@ void Player::update(const float dt)
 
     if (!mLife && mPlayerInfo.mCanRessurect)
     {
-        mCurrentDeath = 0.f;
         mLife = true;
         mHitpoints = mMaxHitpoints;
         x = mPlayerInfo.mLastSavePoint.x;
         y = mPlayerInfo.mLastSavePoint.y;
+        mCurrentDeath = 0.f;
         mPlayerInfo.mCanRessurect = false;
     }
 }

@@ -2,74 +2,56 @@
 
 
 AudioManager::AudioManager()
-: _currentMusic(MusicType::None)
-, _currentState(CurrentState::Stop)
+: _currentState(CurrentState::Stop)
 {
     buildMusic();
 }
 
+void AudioManager::loadMusic(const Music::ID musicType, const std::string& path)
+{
+    auto music = std::make_unique<sf::Music>();
+
+    music->openFromFile(path);
+    music->setLoop(true);
+    _musics.insertResource(musicType, std::move(music));
+    _availableMusicID.push_back(musicType);
+}
+
 void AudioManager::buildMusic()
 {
-    auto music = new sf::Music;
-
-    music->openFromFile("Media/Sounds/MainMenuTheme.ogg");
-    music->setLoop(true);
-    _musics.push_back(std::move(music));
-
-    music = new sf::Music;
-    music->openFromFile("Media/Sounds/FirstMainMusic.ogg");
-    music->setLoop(true);
-    _musics.push_back(std::move(music));
-
-    music = new sf::Music;
-    music->openFromFile("Media/Sounds/FirstBossMusic.ogg");
-    music->setLoop(true);
-    _musics.push_back(std::move(music));
+    loadMusic(Music::ID::MainMenuTheme,      "Media/Sounds/MainMenuTheme.ogg");
+    loadMusic(Music::ID::FirstMainMusic,     "Media/Sounds/FirstMainMusic.ogg");
+    loadMusic(Music::ID::FirstBossMusic,     "Media/Sounds/FirstBossMusic.ogg");
+    loadMusic(Music::ID::FirstMiniBossMusic, "Media/Sounds/FirstMiniBossMusic.ogg");
 }
 
 void AudioManager::stopAllMusics()
 {
-    for (const auto it : _musics)
+    for (const auto& music_id : _currentMusicID)
     {
-        it->stop();
+        _musics.get(music_id).stop();
     }
+    _currentMusicID.clear();
+    _currentState = CurrentState::Stop;
 }
 
-void AudioManager::setMusic(const MusicType musicType)
+void AudioManager::setMusic(const Music::ID musicType)
 {
-    if (_currentMusic == musicType)
+    if (std::find(_currentMusicID.begin(), _currentMusicID.end(), musicType) !=
+        _currentMusicID.end())
     {
         return;
     }
 
-    const auto numMusic = static_cast<std::size_t>(musicType);
-
-    switch (musicType)
-    {
-        case MusicType::MainMenuTheme:
-            _currentMusic = musicType;
-            stopAllMusics();
-            _musics[numMusic]->play();
-            break;
-        case MusicType::FirstMainMusic:
-            _currentMusic = musicType;
-            stopAllMusics();
-            _musics[numMusic]->play();
-            break;
-        case MusicType::FirstBossMusic:
-            _currentMusic = musicType;
-            stopAllMusics();
-            _musics[numMusic]->play();
-            break;
-        default:
-            std::cout << "Error! Invalid type of music.\n";
-            break;
-    }
+    stopAllMusics();
+    _currentMusicID.push_back(musicType);
+    _musics.get(musicType).play();
+    _currentState = CurrentState::Play;
 }
 
-AudioManager::MusicType AudioManager::getMusicType() const
+std::vector<Music::ID> AudioManager::getPlayingMusicType() const
 {
-    return _currentMusic;
+    return _currentMusicID;
 }
 
 bool AudioManager::isPlaying() const
@@ -79,9 +61,9 @@ bool AudioManager::isPlaying() const
 
 void AudioManager::setMusicVolume(const float volume)
 {
-    for (const auto it : _musics)
+    for (const auto& music_id : _availableMusicID)
     {
-        it->setVolume(volume);
+        _musics.get(music_id).setVolume(volume);
     }
 }
 

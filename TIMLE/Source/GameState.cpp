@@ -31,7 +31,7 @@ bool GameState::update(const sf::Time dt)
             mAudioManager.stopAllMusics();
         }
 
-        if (_playerInfo.mLivesCount == 0)
+        if (_playerInfo.mLivesCount == 0 || _playerInfo.isFigthWithBoss())
         {
             _playerInfo.setGameStatus(PlayerInfo::GameStatus::GameOver);
             _playerInfo.resetData();

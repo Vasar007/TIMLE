@@ -9,6 +9,7 @@ namespace sf
     class Texture;
     class Font;
     class SoundBuffer;
+    class Music;
 }
 
 /**
@@ -109,19 +110,41 @@ namespace Sounds
     };
 }
 
+/**
+* \brief Additional namespace for keeping id of the musics.
+*/
+namespace Music
+{
+    /**
+     * \brief Contains all music types for playing.
+     */
+    enum class ID
+    {
+        MainMenuTheme,
+
+        FirstMainMusic,
+        FirstBossMusic,
+        FirstMiniBossMusic,
+
+        SecondMusic,
+        SecondBossMusic,
+        SecondMiniBossMusic,
+
+        ThirdMusic,
+        ThirdBossMusic,
+        ThirdMiniBossMusic
+    };
+}
+
 
 // Forward declaration.
 
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
-// Syntactic sugar.
 using TextureHolder     = ResourceHolder<sf::Texture, Textures::ID>;
-
-// Syntactic sugar.
 using FontHolder        = ResourceHolder<sf::Font, Fonts::ID>;
-
-// Syntactic sugar.
 using SoundBufferHolder = ResourceHolder<sf::SoundBuffer, Sounds::ID>;
+using MusicHolder       = ResourceHolder<sf::Music, Music::ID>;
 
 #endif // RESOURCEIDENTIFIERS_HPP

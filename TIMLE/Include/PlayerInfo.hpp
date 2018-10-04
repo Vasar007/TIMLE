@@ -2,7 +2,6 @@
 #define PLAYERINFO_HPP
 
 #include <map>
-#include <deque>
 
 #include <SFML/Window/Event.hpp>
 
@@ -38,6 +37,40 @@ class PlayerInfo final
             GameRunning,
             LevelComplete,
             GameOver
+        };
+
+        /**
+         * \brief Array of the player status, according to the player's actions in game.
+         * \details Set of the quests:
+         * \details 0 – talking with Oswald;
+         * \details 1 – killing DwarvenCommanderM and getting key;
+         * \details 2 – talking with Heinrich;
+         * \details 3 – fighting with first mini-boss;
+         * \details 4 – killing first mini-boss GolemDark;
+         * \details 5 – fighting with first boss;
+         * \details 6 – killing first boss Shadow.
+         */
+        enum class Quest
+        {
+            TalkWithOswald,
+            KillDwarvenCommanderM,
+            TalkWithHeinrich,
+            FightGolemDark,
+            KillGolemDark,
+            FightShadow,
+            KillShadow
+        };
+
+        /**
+         * \brief Array of the player solutions.
+         * \details List of the made choices:
+         * \details 0 - loot knight's and dwarven bodies;
+         * \details 1 - choosing option to interactive with GolemDark.
+         */
+        enum class Solution
+        {
+            LootKnightAndDwarven,
+            InteractWithGolem
         };
 
 
@@ -80,6 +113,16 @@ class PlayerInfo final
          */
         Player*                             _player;
 
+        /**
+         * \brief Default values for quests array.
+         */
+        const std::map<Quest, bool>        _defaultQuestValues;
+
+        /**
+         * \brief Default values for solutions array.
+         */
+        const std::map<Solution, std::size_t>        _defaultSolutionValues;
+
 
     public:
         /**
@@ -98,23 +141,14 @@ class PlayerInfo final
         std::size_t                 mChoosingNumber;
 
         /**
-         * \brief   All choices, which player has done yet.
-         * \details List of the made choices:
-         * \details 0 - loot knight's and dwarven bodies;
-         * \details 1 - choosing option to interactive with GolemDark.
+         * \brief All choices, which player has done yet.
          */
-        std::vector<std::size_t>    mChosenSolution;
+        std::map<Solution, std::size_t>    mChosenSolution;
 
         /**
-         * \brief   Array of the quests, which player can carry out.
-         * \details Set of the quests:
-         * \details 0 – talking with Oswald;
-         * \details 1 – killing DwarvenCommanderM and getting key;
-         * \details 2 – talking with Heinrich;
-         * \details 3 – killing first boss Shadow;
-         * \details 4 – killing first mini-boss GolemDark.
+         * \brief Array of the quests, which player can carry out.
          */
-        std::deque<bool>            mQuests;
+        std::map<Quest, bool>       mQuests;
 
         /**
          * \brief Boolean flag for notification of completion downloading level and resources.
@@ -253,6 +287,12 @@ class PlayerInfo final
          * \brief Reset some player's data (not reset ALL data) and ressurect at last save point.
          */
         void              ressurectPlayer();
+
+        /**
+         * \brief  Check if player fight with some of the bosses.
+         * \return True if player fighting with boss, false otherwise.
+         */
+        bool              isFigthWithBoss() const;
 };
 
 #endif // PLAYERINFO_HPP

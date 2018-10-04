@@ -23,7 +23,7 @@ class ResourceHolder
         std::map<Identifier, std::unique_ptr<Resource>> _resourceMap;
 
 
-    private:
+    public:
         /**
          * \brief               Insert new resource (moving pointer to this resource map) and check
          *                      success.
@@ -31,10 +31,8 @@ class ResourceHolder
          * \param[out] resource Smart pointer that contains type of new resource. Function move
          *                      resource into own container.
          */
-        void insertResource(Identifier id, std::unique_ptr<Resource> resource);
+        void           insertResource(Identifier id, std::unique_ptr<Resource> resource);
 
-
-    public:
         /**
          * \brief            Load resource from file.
          * \param id        Type identifier of current resources.

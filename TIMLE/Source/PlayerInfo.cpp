@@ -5,10 +5,22 @@ PlayerInfo::PlayerInfo()
 : _currentGameStatus(PlayerInfo::GameStatus::GameRunning)
 , _currentLevelNumber(1)
 , _player(nullptr)
+, _defaultQuestValues{ { Quest::TalkWithOswald,        false },
+                       { Quest::KillDwarvenCommanderM, false },
+                       { Quest::TalkWithHeinrich,      false },
+                       { Quest::FightGolemDark,        false },
+                       { Quest::KillGolemDark,         false },
+                       { Quest::FightShadow,           false },
+                       { Quest::KillShadow,            false }
+}
+, _defaultSolutionValues{
+    { Solution::LootKnightAndDwarven, 0 },
+    { Solution::InteractWithGolem,    0 }
+}
 , mDialogNumber(0)
 , mChoosingNumber(0)
-, mChosenSolution(2)
-, mQuests(5)
+, mChosenSolution(_defaultSolutionValues)
+, mQuests(_defaultQuestValues)
 , mLoaded(false)
 , mLivesCount(3)
 , mLastSavePoint(0.f, 0.f)
@@ -151,9 +163,8 @@ Player* PlayerInfo::getPlayer() const
 
 void PlayerInfo::resetData()
 {
-    std::fill(mQuests.begin(), mQuests.end(), false);
-
-    std::fill(mChosenSolution.begin(), mChosenSolution.end(), 0);
+    mQuests = _defaultQuestValues;
+    mChosenSolution = _defaultSolutionValues;
 
     mLivesCount = 3;
 
@@ -172,15 +183,27 @@ void PlayerInfo::ressurectPlayer()
     mLivesCount--;
     mCanRessurect = true;
 
-    if (mQuests.at(2))
+    // Save after finishing first quest with knights.
+    if (mQuests.at(Quest::TalkWithHeinrich))
     {
         mLastSavePoint.x = 5056.f;
         mLastSavePoint.y = 1264.f;
     }
-    if (mQuests.at(3))
+    // Save after fighting with first mini-boss.
+    if (mQuests.at(Quest::KillGolemDark))
     {
         mLastSavePoint.x = 8060.f;
         mLastSavePoint.y = 1184.f;
     }
+}
+
+bool PlayerInfo::isFigthWithBoss() const
+{
+    const bool first_mini_boss = mQuests.at(Quest::FightGolemDark) &
+                                 !mQuests.at(Quest::KillGolemDark);
+
+    const bool first_boss = mQuests.at(Quest::FightShadow) & !mQuests.at(Quest::KillShadow);
+
+    return first_mini_boss || first_boss;
 }
 
