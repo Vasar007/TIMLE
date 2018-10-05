@@ -68,10 +68,10 @@ class LifeBar
         void update(int points);
 
         /**
-         * \brief            Draws this object on the window.
-         * \param[in] window Active window to drawing.
+         * \brief             Draws this object on the window.
+         * \param[out] target Active window to drawing.
          */
-        void draw(sf::RenderWindow& window);
+        void draw(sf::RenderTarget& target);
 };
 
 #endif // LIFEBAR_HPP

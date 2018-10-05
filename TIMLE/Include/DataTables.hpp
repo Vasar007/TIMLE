@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <map>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -21,24 +22,9 @@ class Enemy;
 namespace Type
 {
     /**
-     * \brief Constant for counting hero types.
-     */
-    const std::size_t HERO_COUNT = 3;
-
-    /**
-     * \brief Constant for counting enemy types.
-     */
-    const std::size_t ENEMY_COUNT = 12;
-
-    /**
-     * \brief Constant for counting projectiles types.
-     */
-    const std::size_t PROJECTILES_COUNT = 5;
-
-    /**
      * \brief Identifiers of all entities.
      */
-    enum ID
+    enum class ID
     {
         Archer,
         Swordsman,
@@ -177,11 +163,11 @@ struct PickupData
 
 // Initialization block.
 
-std::vector<EntityData>     initializeHeroData();
-std::vector<EntityData>     initializeEnemyData();
-ShadowData                  initializeShadowData();
-GolemDarkData               initializeGolemDarkData();
-std::vector<ProjectileData> initializeProjectileData();
-std::vector<PickupData>     initializePickupData();
+std::map<Type::ID, EntityData>     initializeHeroData();
+std::map<Type::ID, EntityData>     initializeEnemyData();
+ShadowData                         initializeShadowData();
+GolemDarkData                      initializeGolemDarkData();
+std::map<Type::ID, ProjectileData> initializeProjectileData();
+std::map<Type::ID, PickupData>     initializePickupData();
 
 #endif // DATATABLES_HPP

@@ -8,7 +8,7 @@ DialogPerson::DialogPerson(const Type::ID id, const TextureHolder& textures, con
 : Entity(id, X, Y, width, height, 50.f, 100, 0, type)
 , mDialogNumber(std::stoi(type))
 {
-    if (id == Type::Oswald || id == Type::Heinrich)
+    if (id == Type::ID::Oswald || id == Type::ID::Heinrich)
     {
         mTexture = textures.get(Textures::ID::Knight);
     }
@@ -16,12 +16,12 @@ DialogPerson::DialogPerson(const Type::ID id, const TextureHolder& textures, con
 
     switch(id)
     {
-        case Type::Oswald:
+        case Type::ID::Oswald:
             mSprite.setTextureRect(sf::IntRect(68, 78, 26, 32));
             mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f) - 5.f);
             mSprite.setScale(0.75f, 0.75f);
             break;
-        case Type::Heinrich:
+        case Type::ID::Heinrich:
             mSprite.setTextureRect(sf::IntRect(0, 120, 57, 63));
             mSprite.setPosition(x + (mWidth / 2.f), y + (mHeight / 2.f) - 20.f);
             mSprite.setScale(0.75f, 0.75f);

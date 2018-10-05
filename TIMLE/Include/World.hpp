@@ -5,24 +5,25 @@
 #include <memory>
 #include <vector>
 
-#include <SFML/System/NonCopyable.hpp>
-#include <SFML/Graphics/View.hpp>
-#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Graphics/View.hpp>
+#include <SFML/System/NonCopyable.hpp>
 
+#include "AudioManager.hpp"
+#include "Effect.hpp"
+#include "GolemDark.hpp"
+#include "Level.hpp"
+#include "Lifebar.hpp"
+#include "Player.hpp"
+#include "PlayerInfo.hpp"
+#include "Projectile.hpp"
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
-#include "Level.hpp"
-#include "Player.hpp"
-#include "Lifebar.hpp"
-#include "PlayerInfo.hpp"
 #include "Shadow.hpp"
-#include "Tentacle.hpp"
-#include "GolemDark.hpp"
-#include "AudioManager.hpp"
-#include "Projectile.hpp"
-#include "Effect.hpp"
 #include "State.hpp"
+#include "Tentacle.hpp"
+#include "WorldContext.hpp"
 
 
 // Forward declaration.
@@ -36,79 +37,8 @@ namespace sf
  * \brief One of the main classes of this app. 
  *        Contains all data about this level and context of the app.
  */
-class World : private sf::NonCopyable
+class World final : private sf::NonCopyable
 {
-    private:
-        /**
-         * \brief Data-structure that keeping coordinate for spawning entities with current type.
-         */
-        struct SpawnPoint
-        {
-            SpawnPoint(const Type::ID type, const float x, const float y)
-            : mType(type)
-            , x(x)
-            , y(y)
-            {
-            }
-
-            Type::ID mType;
-            float    x;
-            float    y;
-        };
-
-        /**
-          * \brief Additional data-structure that contains info about boss of the first level.
-         */
-        struct ShadowBoss
-        {
-            ShadowBoss()
-            : mNumberOfTentacles(4)
-            , mIsActive(false)
-            , mIsFinished(false)
-            , mShadow(nullptr)
-            , mShadowLifeBar(nullptr)
-            {
-            }
-
-            const std::size_t        mNumberOfTentacles;
-
-            bool                     mIsActive;
-            bool                     mIsFinished;
-
-            std::unique_ptr<Shadow>  mShadow;
-            std::unique_ptr<LifeBar> mShadowLifeBar;
-            std::list<Tentacle>      mTentacles;
-            std::list<Tentacle>      mTentaclesStatic;
-        };
-
-        /**
-         * \brief Additional data-structure that contains info about mini-boss of the first level.
-         */
-        struct GolemBoss
-        {
-            GolemBoss()
-            : mIsActive(false)
-            , mIsFinished(false)
-            , mIsShaked(false)
-            , mIsWeakened(false)
-            , mCameraCounter(0)
-            , mGolem(nullptr)
-            , mGolemLifeBar(nullptr)
-            {
-            }
-
-            bool                       mIsActive;
-            bool                       mIsFinished;
-            bool                       mIsShaked;
-            bool                       mIsWeakened;
-            int                        mCameraCounter;
-
-            std::unique_ptr<GolemDark> mGolem;
-            std::unique_ptr<LifeBar>   mGolemLifeBar;
-            std::vector<SpawnPoint>    mRocks;
-        };
-
-
     private:
         sf::RenderWindow&                  _window;
         sf::View                           _worldView;
@@ -121,18 +51,15 @@ class World : private sf::NonCopyable
         std::size_t                        _currentLevelNumber;
         sf::Vector2f                       _position;
         std::unique_ptr<Player>            _playerHero;
-        PlayerInfo*                        _playerInfo;
+        PlayerInfo&                        _playerInfo;
         std::unique_ptr<LifeBar>           _lifeBar;
-
-        ShadowBoss                         _shadowBoss;
-        GolemBoss                          _golemBoss;
 
         std::list<std::unique_ptr<Entity>> _entities;
         std::list<std::unique_ptr<Effect>> _effects;
-        std::vector<SpawnPoint>            _enemySpawnPoints;    // Not using now.
-        std::vector<Projectile*>           _guidedProjectiles;
+        std::list<std::unique_ptr<Projectile>> _guidedProjectiles;
         std::vector<Object>                _objects;
         std::vector<Object>                _doors;
+        std::vector<WorldContext::SpawnPoint> _enemySpawnPoints; // Not using now.
 
         std::vector<sf::RectangleShape>    _debugRectsToDraw;
 
@@ -145,11 +72,15 @@ class World : private sf::NonCopyable
          * \brief Boolean flag for enabling debug-mode.
          */
         bool                               _debug;
+
+        /**
+         * \brief World context which contains level-specific data.
+         */
+        WorldContext                       _worldContext;
     
 
     private:
-        void          setPlayerCoordinateForView(const float x, const float y, 
-                                                 const std::size_t levelNumber);
+        void          setPlayerCoordinateForView(const float x, const float y);
 
         void          handleCollisions(const float dt);
 
@@ -186,11 +117,11 @@ class World : private sf::NonCopyable
          */
         explicit    World(sf::RenderWindow& window, TextureHolder& textures,
                           FontHolder& fonts, SoundBufferHolder& sounds,
-                          PlayerInfo* playerInfo, AudioManager& audioManager,
+                          PlayerInfo& playerInfo, AudioManager& audioManager,
                           const State::DebugMode debugMode,
                           const std::size_t levelNumber);
 
-        void        loadLevel(const std::size_t levelNumber);
+        void        loadLevel();
 
         void        update(sf::Time dt);
 

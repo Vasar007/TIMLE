@@ -66,7 +66,7 @@ void Gate::update(const float dt)
 {
     switch (mTypeID)
     {
-        case Type::OpeningGate:
+        case Type::ID::OpeningGate:
             if (mIsStarted)
             {
                 mCurrentFrame += 0.005f * dt;
@@ -83,7 +83,7 @@ void Gate::update(const float dt)
             }
             break;
 
-        case Type::ClosingGate:
+        case Type::ID::ClosingGate:
             if (mIsAttacked)
             {
                 mCurrentFrame += 0.005f * dt;
@@ -100,7 +100,7 @@ void Gate::update(const float dt)
             }
             break;
 
-        case Type::OpenClosingGate:
+        case Type::ID::OpenClosingGate:
             mCurrentFrame += 0.005f * dt;
 
             y += dy * dt;

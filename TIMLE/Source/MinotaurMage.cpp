@@ -65,7 +65,7 @@ void MinotaurMage::update(const float dt)
     {
         mMoveTimer += dt;
     }
-    if (mMoveTimer > 2000.f && mIsTurned)
+    if (mMoveTimer > 500.f && mIsTurned)
     {
         dx = -dx;
         mMoveTimer = 0.f;

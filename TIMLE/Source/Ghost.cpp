@@ -68,7 +68,7 @@ void Ghost::update(const float dt)
     {
         mMoveTimer += dt;
     }
-    if (mMoveTimer > 500.f && mIsTurned)
+    if (mMoveTimer > 250.f && mIsTurned)
     {
         dx = -dx;
         mMoveTimer = 0.f;

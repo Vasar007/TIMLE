@@ -63,10 +63,10 @@ void LifeBar::update(int points)
     }
 }
 
-void LifeBar::draw(sf::RenderWindow& window)
+void LifeBar::draw(sf::RenderTarget& target)
 {
-    const sf::Vector2f center = window.getView().getCenter();
-    const sf::Vector2f size = window.getView().getSize();
+    const sf::Vector2f center = target.getView().getCenter();
+    const sf::Vector2f size = target.getView().getSize();
 
     if ((_type == Type::ID::ShadowBossBar) || (_type == Type::ID::GolemDarkBossBar))
     {
@@ -82,9 +82,9 @@ void LifeBar::draw(sf::RenderWindow& window)
 
     if ((_type == Type::ID::ShadowBossBar) || (_type == Type::ID::GolemDarkBossBar))
     {
-        window.draw(_bossName);
+        target.draw(_bossName);
     }
 
-    window.draw(_spriteEmpty);
-    window.draw(_sprite);
+    target.draw(_spriteEmpty);
+    target.draw(_sprite);
 }

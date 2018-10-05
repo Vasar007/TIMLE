@@ -20,7 +20,6 @@ class Shadow final : public Entity
          */
         int                        _numTelPoint;
 
-
         /**
          * \brief An additional counter for helping with teleporting this object.
          */
@@ -45,7 +44,6 @@ class Shadow final : public Entity
          * \brief Fixing some graphics issues when object dying.
          */
         float                      _inaccuracy;
-
 
         /**
          * \brief Flag for the state "After teleporting".
@@ -76,7 +74,6 @@ class Shadow final : public Entity
          * \brief Additional flag for the intermediate state before teleporting.
          */
         bool                       _isNeedDelay;
-
 
         /**
          * \brief Special vector for keeping all teleport points of this object.

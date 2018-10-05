@@ -43,11 +43,12 @@ void MagicArrow::update(const float dt)
         y = -mSprite.getLocalBounds().height;
     }
 
-    for (const auto& object : mLevelObjects)    // Проход по объектам solid
+    for (const auto& object : mLevelObjects)
     {
         if (getRect().intersects(object.mRect))
         {
             mLife = false;
+            break;
         }
     }
     if (mMoveTimer > 5000.f)

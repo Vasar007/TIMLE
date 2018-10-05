@@ -1,4 +1,5 @@
 #include <limits>
+#include <string>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -26,7 +27,7 @@
 
 
 World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-             SoundBufferHolder& sounds, PlayerInfo* playerInfo, AudioManager& audioManager, 
+             SoundBufferHolder& sounds, PlayerInfo& playerInfo, AudioManager& audioManager, 
              const State::DebugMode debugMode, const std::size_t levelNumber)
 : _window(window)
 , _worldView(window.getDefaultView())
@@ -34,12 +35,13 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , _fonts(fonts)
 , _sounds(sounds)
 , _audioManager(audioManager)
-, _level(nullptr)
+, _level(std::make_unique<Level>())
 , _currentLevelNumber(levelNumber)
 , _playerHero(nullptr)
 , _playerInfo(playerInfo)
 , _lifeBar(nullptr)
-, _debug(debugMode == State::DebugMode::DebugOn)
+, _debug(debugMode != State::DebugMode::DebugOn)
+, _worldContext(textures, fonts, levelNumber, *_level, _debug)
 {
     _sound.setBuffer(sounds.get(Sounds::ID::Bullet));
 
@@ -50,36 +52,33 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
     _worldView.zoom(0.5f);
 }
 
-void World::loadLevel(const std::size_t levelNumber)
+void World::loadLevel()
 {
-    _currentLevelNumber = levelNumber;
-
-    switch (levelNumber)
+    switch (_currentLevelNumber)
     {
         case 1:
             _level->loadFromFile("Level1.tmx");
             break;
-        
+
         case 2:
             _level->loadFromFile("Level2.tmx");
             break;
-        
+
         case 3:
             _level->loadFromFile("Level3.tmx");
             break;
-        
+
         case 4:
             _level->loadFromFile("test_map.tmx"); // Test level for Vasilyev.
             break;
-        
+
         case 5:
             _level->loadFromFile("supertest_map.tmx"); // Test level for Gusev.
             break;
-        
+
         default:
             std::cout << "Error! Out of range level.\n";
-            _currentLevelNumber = 1;
-            break;
+            throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 }
 
@@ -91,10 +90,8 @@ std::size_t World::getLevelNumber() const
 void World::update(sf::Time dt)
 {
     // Pass the coordinates of the player in the camera control feature.
-    setPlayerCoordinateForView(_playerHero->x, _playerHero->y, _currentLevelNumber);
+    setPlayerCoordinateForView(_playerHero->x, _playerHero->y);
 
-    guideMissiles();
-    
     for (auto it = _entities.begin(); it != _entities.end();)
     {
         // Call the update function for objects.
@@ -103,7 +100,6 @@ void World::update(sf::Time dt)
         {
             ++it;
         }
-        // If the object is "dead".
         else
         {
             it = _entities.erase(it);
@@ -120,6 +116,19 @@ void World::update(sf::Time dt)
         else
         {
             it = _effects.erase(it);
+        }
+    }
+
+    for (auto it = _guidedProjectiles.begin(); it != _guidedProjectiles.end();)
+    {
+        (*it)->update(static_cast<float>(dt.asMilliseconds()));
+        if ((*it)->mLife)
+        {
+            ++it;
+        }
+        else
+        {
+            it = _guidedProjectiles.erase(it);
         }
     }
 
@@ -141,65 +150,27 @@ void World::update(sf::Time dt)
         _sound.play();
     }
 
-    if (_playerInfo->mNeedTransit)
+    // Process player's transition.
+    if (_playerInfo.mNeedTransit)
     {
-        _playerInfo->mDoTransit = true;
-        _playerInfo->mNeedTransit = false;
+        _playerInfo.mDoTransit = true;
+        _playerInfo.mNeedTransit = false;
 
         Object otherDoor;
         for (const auto& door : _doors)
         {
-            if (door.mId != _playerInfo->mNumberOfDoor.first &&
-                door.mType == _playerInfo->mNumberOfDoor.second)
+            if (door.mId != _playerInfo.mNumberOfDoor.first &&
+                door.mType == _playerInfo.mNumberOfDoor.second)
             {
                 otherDoor = door;
                 break;
             }
         }
-        _playerInfo->mTransitPos = { otherDoor.mRect.left, otherDoor.mRect.top };
-        _playerInfo->mTransiting = true;
+        _playerInfo.mTransitPos = { otherDoor.mRect.left, otherDoor.mRect.top };
+        _playerInfo.mTransiting = true;
     }
 
-    // Updates ShadowBoss actions.
-    if (_shadowBoss.mIsActive)
-    {
-        for (auto it = _shadowBoss.mTentaclesStatic.begin(); 
-             it != _shadowBoss.mTentaclesStatic.end();)
-        {
-            (*it).update(static_cast<float>(dt.asMilliseconds()));
-            if ((*it).mLife)
-            {
-                ++it;
-            }
-            else
-            {
-                it = _shadowBoss.mTentaclesStatic.erase(it);
-            }
-        }
-
-        for (auto it = _shadowBoss.mTentacles.begin(); it != _shadowBoss.mTentacles.end();)
-        {
-            (*it).update(static_cast<float>(dt.asMilliseconds()));
-            if ((*it).mLife)
-            {
-                ++it;
-            }
-            else
-            {
-                it = _shadowBoss.mTentacles.erase(it);
-            }
-        }
-
-        _shadowBoss.mShadowLifeBar->update(_shadowBoss.mShadow->mHitpoints);
-        _shadowBoss.mShadow->update(static_cast<float>(dt.asMilliseconds()));
-    }
-
-    // Updates GolemDark actions.
-    if (_golemBoss.mIsActive)
-    {
-        _golemBoss.mGolemLifeBar->update(_golemBoss.mGolem->mHitpoints);
-        _golemBoss.mGolem->update(static_cast<float>(dt.asMilliseconds()));
-    }
+    _worldContext.update(dt);
 
     // Updates player's lifebar.
     _lifeBar->update(_playerHero->mHitpoints);
@@ -208,15 +179,16 @@ void World::update(sf::Time dt)
 
     // Checks collision between different objects.
     handleCollisions(static_cast<float>(dt.asMilliseconds()));
+    guideMissiles();
 
-    _playerInfo->mDialogNumber = 0;
+    _playerInfo.mDialogNumber = 0;
     if (_playerHero->mDialogNumber == 0)
     {
-        _playerInfo->mDialogNumber = 0;
+        _playerInfo.mDialogNumber = 0;
     }
     else
     {
-        _playerInfo->showDialog(_playerHero->mDialogNumber);
+        _playerInfo.showDialog(_playerHero->mDialogNumber);
     }
 }
 
@@ -330,63 +302,35 @@ void World::draw()
 
     for (const auto& effect : _effects)
     {
+        if (_debug)
+        {
+            auto shape = buildBorderLines(effect->getRect(), sf::Color::Transparent,
+                                          sf::Color::White, 1.f);
+            _window.draw(shape);
+        }
+
         if (viewRect.contains(effect->x, effect->y))
         {
             effect->draw(_window);
         }
     }
 
-    if (_shadowBoss.mIsActive)
+    for (const auto& missile : _guidedProjectiles)
     {
-        for (const auto& tentacle : _shadowBoss.mTentaclesStatic)
-        {
-            if (_debug)
-            {
-                auto shape = buildBorderLines(tentacle.getRect(), sf::Color::Transparent,
-                                              sf::Color::Red, 1.f);
-                _window.draw(shape);
-            }
-            
-            tentacle.draw(_window);
-        }
-
-        for (const auto& tentacle : _shadowBoss.mTentacles)
-        {
-            if (_debug)
-            {
-                auto shape = buildBorderLines(tentacle.getRect(), sf::Color::Transparent,
-                                              sf::Color::Red, 1.f);
-                _window.draw(shape);
-            }
-            
-            tentacle.draw(_window);
-        }
-        
         if (_debug)
         {
-            auto shape = buildBorderLines(_shadowBoss.mShadow->getRect(), sf::Color::Transparent,
+            auto shape = buildBorderLines(missile->getRect(), sf::Color::Transparent,
                                           sf::Color::Red, 1.f);
             _window.draw(shape);
         }
 
-        _shadowBoss.mShadowLifeBar->draw(_window);
-
-        _shadowBoss.mShadow->draw(_window);
-    }
-
-    if (_golemBoss.mIsActive)
-    {
-        if (_debug)
+        if (viewRect.contains(missile->x, missile->y))
         {
-            auto shape = buildBorderLines(_golemBoss.mGolem->getRect(), sf::Color::Transparent,
-                                          sf::Color::Red, 1.f);
-            _window.draw(shape);
+            missile->draw(_window);
         }
-
-        _golemBoss.mGolemLifeBar->draw(_window);
-
-        _golemBoss.mGolem->draw(_window);
     }
+
+    _worldContext.draw(_window);
     
     if (_debug)
     {
@@ -434,12 +378,6 @@ void World::draw()
                                               sf::Color::Cyan, 1.f);
                 _window.draw(shape);
             }
-            else
-            {
-                auto shape = buildBorderLines(object.mRect, sf::Color::Transparent,
-                                              sf::Color::White, 1.f);
-                _window.draw(shape);
-            }
         }
 
         auto shape = buildBorderLines(_playerHero->getRect(), sf::Color::Transparent, 
@@ -447,9 +385,9 @@ void World::draw()
         _window.draw(shape);
     }
 
-    for (const auto& rect : _debugRectsToDraw)
+    if (_debug)
     {
-        if (_debug)
+        for (const auto& rect : _debugRectsToDraw)
         {
             _window.draw(rect);
         }
@@ -471,12 +409,12 @@ bool World::hasPlayerReachedEnd() const
     return _playerHero->mIsRichedEnd;
 }
 
-void World::setPlayerCoordinateForView(const float x, const float y, const std::size_t levelNumber)
+void World::setPlayerCoordinateForView(const float x, const float y)
 {
     float tempX = x;
     float tempY = y;
 
-    switch (levelNumber)
+    switch (_currentLevelNumber)
     {
         case 1:
             if (x < 400.f)
@@ -552,116 +490,37 @@ void World::setPlayerCoordinateForView(const float x, const float y, const std::
         
         default:
             std::cout << "Error! Out of range level.\n";
-            break;
+            throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 
     _worldView.setCenter(tempX, tempY);
 
-    if (_golemBoss.mIsActive && _golemBoss.mIsShaked)
+    if (_currentLevelNumber == 1)
     {
-        ++_golemBoss.mCameraCounter;
-        switch (_golemBoss.mCameraCounter)
-        {
-            case 1:
-                _worldView.move(10, 10);
-                break;
-            
-            case 2:
-                _worldView.move(-20, 0);
-                break;
-            
-            case 3:
-                _worldView.move(0, -20);
-                break;
-            
-            case 4:
-                _worldView.move(0, 20);
-                break;
-            
-            default:
-            {
-                _worldView.move(10, -10);
-                _golemBoss.mCameraCounter = 0;
-                _golemBoss.mIsShaked = false;
-
-                const int randomNum = randomInt(8);
-                std::unique_ptr<Entity> rock = std::make_unique<Rock>(
-                    Type::ID::Rock, _textures, _fonts, *_level,
-                    _golemBoss.mRocks.at(randomNum).x,
-                    _golemBoss.mRocks.at(randomNum).y, 16, "3");
-                rock->mIsAttacked = true;
-                _entities.emplace_back(std::move(rock));
-
-                break;
-            }
-        }
+        _worldContext.processGolemDarkEvents(_worldView, _entities);
     }
 }
 
 void World::buildScene()
 {
     // Initialization of level.
-    _level = std::make_unique<Level>();
-    loadLevel(_currentLevelNumber);
+    loadLevel();
 
     // Add player.
     const auto playerObj = _level->getObject("player");
     _playerHero = std::make_unique<Player>(
         Type::ID::Archer, _textures, _fonts, *_level, playerObj.mRect.left, playerObj.mRect.top,
-        20, 30, *_playerInfo
+        20, 30, _playerInfo
     );
 
-    _playerInfo->setPlayer(_playerHero.get());
+    _playerInfo.setPlayer(_playerHero.get());
 
     _lifeBar = std::make_unique<LifeBar>(
         Type::ID::HealthBar, _textures, _fonts, _playerHero->mHitpoints
     );
 
-    _playerInfo->mLastSavePoint.x = _playerHero->x;
-    _playerInfo->mLastSavePoint.y = _playerHero->y;
-
-    // Create and initialize first boss Shadow.
-    const auto shadowObj = _level->getObject("bossShadow");
-    _shadowBoss.mShadow = std::make_unique<Shadow>(
-        Type::ID::Shadow, _textures, _fonts, *_level,
-        shadowObj.mRect.left, shadowObj.mRect.top,  40, 35, shadowObj.mType
-    );
-    _shadowBoss.mShadowLifeBar = std::make_unique<LifeBar>(
-        Type::ID::ShadowBossBar, _textures, _fonts, _shadowBoss.mShadow->mHitpoints
-    );
-
-    for (std::size_t i = 0; i < _shadowBoss.mNumberOfTentacles; ++i)
-    {
-        _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
-                                                  *_level, 12013.f + 13.f * i, 994.f, 13, 45, "0");
-        _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
-                                                  *_level, 12061.f + 13.f * i, 1073.f, 13, 45, "0");
-        _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
-                                                  *_level, 12285.f + 13.f * i, 1073.f, 13, 45, "0");
-        _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
-                                                  *_level, 12333.f + 13.f * i, 994.f, 13, 45, "0");
-        _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
-                                                  *_level, 12173.f + 13.f * i, 946.f, 13, 45, "0");
-    }
-
-    // Create and initialize first mini-boss GolemDark.
-    const auto golemObj = _level->getObject("bossGolemDark");
-    _golemBoss.mGolem = std::make_unique<GolemDark>(
-        Type::ID::GolemDark, _textures, _fonts, *_level,
-        golemObj.mRect.left, golemObj.mRect.top, 70, 60, golemObj.mType
-    );
-    _golemBoss.mGolemLifeBar = std::make_unique<LifeBar>(
-        Type::ID::GolemDarkBossBar, _textures, _fonts, _golemBoss.mGolem->mHitpoints
-    );
-
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8192.f, 2272.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8272.f, 2240.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8336.f, 2192.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8384.f, 2160.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8464.f, 2160.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8560.f, 2144.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8656.f, 2144.f);
-    _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8736.f, 2160.f);
+    _playerInfo.mLastSavePoint.x = _playerHero->x;
+    _playerInfo.mLastSavePoint.y = _playerHero->y;
 
     // Add objects and enemies.
     addObjects();
@@ -871,7 +730,7 @@ void World::addObjects()
                                                    static_cast<int>(object.mRect.height), "2")
                 );
                 break;
-            
+
             case 2:
                 _entities.emplace_back(
                     std::make_unique<DialogPerson>(Type::ID::Heinrich, _textures, _fonts, *_level,
@@ -970,12 +829,10 @@ void World::guideMissiles()
 
 void World::spawnEnemies()
 {
-
 }
 
 void World::destroyEntitiesOutsideView()
 {
-
 }
 
 sf::FloatRect World::getViewBounds() const
@@ -1000,212 +857,9 @@ void World::handleCollisions(const float dt)
     _playerHero->mOnPlatform = 0.f;
 
     auto playerRect = _playerHero->getRect();
-
     auto battleRect = getBattlefieldBounds();
 
-    /// If we activated first boss Shadow...
-    if (_playerHero->mHasStartedFirstMainBoss && !_shadowBoss.mIsFinished)
-    {
-        _shadowBoss.mIsActive = true;
-
-        if (_shadowBoss.mShadow->mTypeID == Type::ID::Shadow)
-        {
-            // If Shadow was activated first time...
-            if (!_shadowBoss.mShadow->mIsStarted)
-            {
-                _shadowBoss.mShadow->mIsStarted = true;
-                _audioManager.setMusic(Music::ID::FirstBossMusic);
-            }
-            else if (_playerHero->mHitpoints > 0)
-            {
-                if (!_shadowBoss.mShadow->mIsBack &&
-                    ((_playerHero->x - _shadowBoss.mShadow->x > 0.f &&
-                        _shadowBoss.mShadow->dx < 0.f) ||
-                        (_playerHero->x - _shadowBoss.mShadow->x < 0.f &&
-                            _shadowBoss.mShadow->dx > 0.f)))
-                {
-                    _shadowBoss.mShadow->mIsBack = true;
-                    _shadowBoss.mShadow->dx = -_shadowBoss.mShadow->dx;
-                    _shadowBoss.mShadow->mSprite.scale(-1.f, 1.f);
-                }
-                else
-                {
-                    _shadowBoss.mShadow->mIsBack = false;
-                }
-                _shadowBoss.mShadow->mIsAttacked = true;
-                if (_shadowBoss.mShadow->mIsHitted && !_shadowBoss.mShadow->mIsStay)
-                {
-                    _playerHero->mHitpoints -= _shadowBoss.mShadow->mDamage;
-                    _shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
-                                                        _fonts, *_level, _playerHero->x - 50.f, 
-                                                        _shadowBoss.mShadow->y - 10.f, 13, 45, "1");
-                    _shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
-                                                        _fonts, *_level, _playerHero->x - 25.f, 
-                                                        _shadowBoss.mShadow->y - 10.f, 13, 45, "1");
-                    _shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
-                                                        _fonts, *_level, _playerHero->x, 
-                                                        _shadowBoss.mShadow->y - 10.f, 13, 45, "1");
-                    _shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
-                                                        _fonts, *_level, _playerHero->x + 25.f, 
-                                                        _shadowBoss.mShadow->y - 10.f, 13, 45, "1");
-                    _shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
-                                                        _fonts, *_level, _playerHero->x + 50.f, 
-                                                        _shadowBoss.mShadow->y - 10.f, 13, 45, "1");
-                    _shadowBoss.mShadow->mIsHitted = false;
-                    std::cout << "Shadow ATTACK\n";
-                }
-            }
-        }
-
-        if (_shadowBoss.mShadow->getRect().intersects(playerRect) &&
-            _shadowBoss.mShadow->mIsDelay)
-        {
-            _playerHero->mHitpoints = 0;
-        }
-
-        for (auto& tentacle : _shadowBoss.mTentaclesStatic)
-        {
-            if (_shadowBoss.mShadow->mIsCalling)
-            {
-                if (!tentacle.mIsStarted)
-                {
-                    tentacle.mIsStarted = true;
-                }
-                else
-                {
-                    tentacle.mIsEnabled = true;
-                }
-                tentacle.mIsEnabling = true;
-            }
-            else if (_shadowBoss.mShadow->mIsWithdrawing)
-            {
-                tentacle.mIsDisabled = true;
-                tentacle.mIsEnabling = false;
-            }
-
-            if (_shadowBoss.mIsFinished)
-            {
-                tentacle.mHitpoints = 0;
-            }
-
-            if (tentacle.getRect().intersects(playerRect) && _playerHero->mHitpoints > 0)
-            {
-                tentacle.mIsAttacked = true;
-                if (tentacle.mIsHitted)
-                {
-                    _playerHero->mHitpoints -= tentacle.mDamage;
-                    tentacle.mIsHitted = false;
-                    std::cout << "Hit\n";
-                }
-            }
-        }
-
-        for (auto& tentacle : _shadowBoss.mTentacles)
-        {
-            if (_shadowBoss.mShadow->mIsWithdrawing)
-            {
-                tentacle.mHitpoints = 0;
-            }
-            else
-            {
-                tentacle.mIsStarted = true;
-                tentacle.mIsEnabling = true;
-
-                if (tentacle.getRect().intersects(playerRect) && _playerHero->mHitpoints > 0)
-                {
-                    tentacle.mIsAttacked = true;
-                    if (tentacle.mIsHitted)
-                    {
-                        _playerHero->mHitpoints -= tentacle.mDamage;
-                        tentacle.mIsHitted = false;
-                        std::cout << "Hit\n";
-                    }
-                }
-            }
-        }
-    }
-    else if (_shadowBoss.mIsFinished && !_shadowBoss.mShadow->mLife)
-    {
-        _shadowBoss.mIsActive = false;
-        _playerInfo->mQuests.at(PlayerInfo::Quest::KillShadow) = true;
-        _audioManager.setMusic(Music::ID::FirstMainMusic);
-    }
-
-
-    /// If we activated firs mini-boss GolemDark...
-    if (_playerHero->mHasStartedFirstMiniBoss && !_golemBoss.mIsFinished)
-    {
-        _golemBoss.mIsActive = true;
-
-        if (_golemBoss.mGolem->mTypeID == Type::ID::GolemDark)
-        {
-            if (!_golemBoss.mIsWeakened &&
-                (_playerInfo->mChosenSolution.at(PlayerInfo::Solution::InteractWithGolem) == 1))
-            {
-                _golemBoss.mGolem->mHitpoints -= 100;
-                _golemBoss.mIsWeakened = true;
-            }
-
-            // If GolemDark was activated first time.
-            if (!_golemBoss.mGolem->mIsStarted)
-            {
-                _golemBoss.mGolem->mIsStarted = true;
-                _golemBoss.mGolem->mCurrentDeath = 5.f;
-                _audioManager.setMusic(Music::ID::FirstMiniBossMusic);
-            }
-            else if (_golemBoss.mGolem->getRect().intersects(playerRect))
-            {
-                if (_playerHero->mHitpoints > 0)
-                {
-                    if (!_golemBoss.mGolem->mIsBack &&
-                        ((_playerHero->x - _golemBoss.mGolem->x > 0.f &&
-                        (_golemBoss.mGolem->dx < 0.f)) ||
-                         ((_playerHero->x - _golemBoss.mGolem->x) < 0.f &&
-                            _golemBoss.mGolem->dx > 0.f)))
-                    {
-                        _golemBoss.mGolem->mIsBack = true;
-                        _golemBoss.mGolem->dx = -_golemBoss.mGolem->dx;
-                    }
-                    _golemBoss.mGolem->mIsAttacked = true;
-                    _golemBoss.mGolem->mCurrentFrame = 0.f;
-                    if (_golemBoss.mGolem->mIsHitted)
-                    {
-                        _playerHero->mHitpoints -= _golemBoss.mGolem->mDamage;
-                        _golemBoss.mGolem->mIsHitted = false;
-                        _golemBoss.mIsShaked = true;
-                        std::cout << "GolemDark ATTACK\n";
-                    }
-                }
-            }
-
-            if (_golemBoss.mGolem->mIsHitted)
-            {
-                _golemBoss.mIsShaked = true;
-            }
-        }
-    }
-    else if (_golemBoss.mIsFinished && !_golemBoss.mGolem->mLife)
-    {
-        _golemBoss.mIsActive = false;
-        _playerInfo->mQuests.at(PlayerInfo::Quest::KillGolemDark) = true;
-
-        // Temporary object.
-        Object tempObject;
-        
-        tempObject.mName = "dialogMessage";
-        tempObject.mType = "9";
-
-        sf::FloatRect objectRect;
-        objectRect.top    = 2388;
-        objectRect.left   = 8352;
-        objectRect.height = 60;
-        objectRect.width  = 80;
-        tempObject.mRect  = std::move(objectRect);
-        _level->mObjects.push_back(tempObject);
-        _playerHero->mLevelObjects.push_back(std::move(tempObject));
-
-        _audioManager.setMusic(Music::ID::FirstMainMusic);
-    }
+    _worldContext.processMainEvents(_playerInfo, _audioManager);
 
     for (auto it = _entities.begin(); it != _entities.end(); ++it)
     {
@@ -1420,8 +1074,7 @@ void World::handleCollisions(const float dt)
                         _playerHero->getCenter().x,
                         _playerHero->getCenter().y
                     );
-                    _guidedProjectiles.emplace_back(bullet.get());
-                    _entities.emplace_back(std::move(bullet));
+                    _guidedProjectiles.emplace_back(std::move(bullet));
                     _sound.play();
                     (*it)->mIsHitted = false;
                     std::cout << "Shoot\n";
@@ -1461,7 +1114,7 @@ void World::handleCollisions(const float dt)
                                      static_cast<float>((*it)->mHeight));
             
             size_t distance = 0;
-            while (distance < 10) 
+            while (distance < 10)
             {
                 if (findPlayer.intersects(playerRect) && _playerHero->mLife)
                 {
@@ -1478,7 +1131,7 @@ void World::handleCollisions(const float dt)
         /// Opening of the gates.
         if ((*it)->mTypeID == Type::ID::OpeningGate && !(*it)->mIsStarted)
         {
-            if ((*it)->mType == "3" && _playerInfo->mQuests.at(PlayerInfo::Quest::TalkWithHeinrich))
+            if ((*it)->mType == "3" && _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithHeinrich))
             {
                 (*it)->mIsStarted = true;
             }
@@ -1488,37 +1141,22 @@ void World::handleCollisions(const float dt)
                 (*it)->mIsStarted = true;
             }
 
-            if ((*it)->mType == "5" && _playerInfo->mQuests.at(PlayerInfo::Quest::KillShadow))
+            if ((*it)->mType == "5" && _playerInfo.mQuests.at(PlayerInfo::Quest::KillShadow))
             {
                 (*it)->mIsStarted = true;
             }
         }
 
-        ///    Damage on the first boss Shadow.
-        if (_shadowBoss.mShadow->getRect().intersects((*it)->getRect()) &&
-            (*it)->mTypeID == Type::ID::AlliedBullet && _shadowBoss.mShadow->mLife &&
-            _shadowBoss.mShadow->mHitpoints > 0 && _shadowBoss.mIsActive &&
-            _shadowBoss.mShadow->mIsStay)
+        /// Damage on the first boss Shadow.
+        if ((*it)->mTypeID == Type::ID::AlliedBullet)
         {
-            _shadowBoss.mShadow->mHitpoints -= (*it)->mDamage;
-            if (_shadowBoss.mShadow->mHitpoints <= 0)
-            {
-                _shadowBoss.mIsFinished = true;
-            }
-            (*it)->mLife = false;
+            _worldContext.handleCollisions(**it);
         }
 
         /// Damage on the first mini-boss GolemDark.
-        if (_golemBoss.mGolem->getRect().intersects((*it)->getRect()) &&
-            (*it)->mTypeID == Type::ID::AlliedBullet && _golemBoss.mGolem->mLife &&
-            _golemBoss.mGolem->mHitpoints > 0 && _golemBoss.mIsActive)
+        if ((*it)->mTypeID == Type::ID::AlliedBullet)
         {
-            _golemBoss.mGolem->mHitpoints -= (*it)->mDamage;
-            if (_golemBoss.mGolem->mHitpoints <= 0)
-            {
-                _golemBoss.mIsFinished = true;
-            }
-            (*it)->mLife = false;
+            _worldContext.handleCollisions(**it);
         }
 
         /// If the rectangle of the sprite of the object intersects with the player...
@@ -1785,7 +1423,7 @@ void World::handleCollisions(const float dt)
                         (*it)->dx = -(*it)->dx;
                         (*it)->mSprite.scale(-1.f, 1.f);
                     }
-                    
+
                     (*it)->mIsAttacked = true;
                     (*it)->mCurrentFrame = 0.f;
                     
@@ -1862,11 +1500,8 @@ void World::handleCollisions(const float dt)
             {
                 if (_playerHero->mHitpoints > 0)
                 {
-                    //mPlayerHero->mHitpoints -= (*it)->mDamage;
-                    //std::cout << "Hit\n";
-
                     (*it)->mIsAttacked = true;
-                    
+
                     if ((*it)->mIsHitted)
                     {
                         _playerHero->mHitpoints -= (*it)->mDamage;
@@ -1885,14 +1520,6 @@ void World::handleCollisions(const float dt)
             (*it)->mLife = false;
         }
 
-        /// If faced two objects: Player and MagicArrow...
-        if (playerRect.intersects((*it)->getRect()) &&
-            (*it)->mTypeID == Type::ID::MagicArrow && _playerHero->mHitpoints > 0)
-        {
-            _playerHero->mHitpoints -= (*it)->mDamage;
-            (*it)->mLife = false;
-        }
-
         /// If faced two objects: Player and Rock...
         if (playerRect.intersects((*it)->getRect()) && (*it)->mTypeID == Type::ID::Rock &&
             (*it)->mIsAttacked && !(*it)->mIsEnd && _playerHero->mHitpoints > 0)
@@ -1905,7 +1532,7 @@ void World::handleCollisions(const float dt)
             ((*it)->mTypeID == Type::ID::OpeningGate || (*it)->mTypeID == Type::ID::ClosingGate ||
             (*it)->mTypeID == Type::ID::OpenClosingGate)  && _playerHero->mHitpoints > 0)
         {
-            if (((*it)->mTypeID == Type::ClosingGate || (*it)->mTypeID == Type::OpenClosingGate) &&
+            if (((*it)->mTypeID == Type::ID::ClosingGate || (*it)->mTypeID == Type::ID::OpenClosingGate) &&
                 (_playerHero->y <= (*it)->y + (*it)->mHeight) &&
                 (_playerHero->y + _playerHero->mWidth >= (*it)->y + (*it)->mHeight))
             {
@@ -1941,11 +1568,11 @@ void World::handleCollisions(const float dt)
             switch ((*it)->mTypeID)
             {
                 case Type::ID::Oswald:
-                    _playerInfo->mQuests.at(PlayerInfo::Quest::TalkWithOswald) = true;
+                    _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithOswald) = true;
                     break;
                 
                 case Type::ID::Heinrich:
-                    _playerInfo->mQuests.at(PlayerInfo::Quest::TalkWithHeinrich) = true;
+                    _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithHeinrich) = true;
                     break;
                 
                 default:
@@ -1956,7 +1583,7 @@ void World::handleCollisions(const float dt)
 
         /// Add a fallen stone in solid objects to check collisions.
         if ((*it)->mTypeID == Type::ID::Rock && (*it)->mIsEnd && !(*it)->mIsSpawn &&
-            _playerHero->mHitpoints > 0 && !_golemBoss.mIsActive)
+            _playerHero->mHitpoints > 0 && !_worldContext.isGolemDarkActive())
         {
             (*it)->mIsSpawn = true;
 
@@ -1973,7 +1600,7 @@ void World::handleCollisions(const float dt)
             objectRect.width = static_cast<float>((*it)->mWidth);
             tempObject.mRect = objectRect;
             _level->mObjects.push_back(tempObject);
-            _playerHero->mLevelObjects.push_back(std::move(tempObject));
+            _playerHero->mLevelObjects.emplace_back(std::move(tempObject));
         }
 
         /// Add the closed gate in the solid objects to check collisions.
@@ -1995,7 +1622,7 @@ void World::handleCollisions(const float dt)
             objectRect.width = static_cast<float>((*it)->mWidth);
             tempObject.mRect = objectRect;
             _level->mObjects.push_back(tempObject);
-            _playerHero->mLevelObjects.push_back(std::move(tempObject));
+            _playerHero->mLevelObjects.emplace_back(std::move(tempObject));
         }
 
         /// Collision detection between objects.
@@ -2023,10 +1650,10 @@ void World::handleCollisions(const float dt)
                 /// If faced two objects: Bullet and Gate...
                 if (entityRect.intersects(objectRect) &&
                     ((*it2)->mTypeID == Type::ID::AlliedBullet ||
-                    (*it2)->mTypeID == Type::ID::EnemyBullet) &&
-                        ((*it)->mTypeID == Type::ID::OpeningGate ||
-                    (*it)->mTypeID == Type::ID::ClosingGate ||
-                            (*it)->mTypeID == Type::ID::OpenClosingGate))
+                        (*it2)->mTypeID == Type::ID::EnemyBullet) &&
+                    ((*it)->mTypeID == Type::ID::OpeningGate ||
+                        (*it)->mTypeID == Type::ID::ClosingGate ||
+                        (*it)->mTypeID == Type::ID::OpenClosingGate))
                 {
                     (*it2)->mLife = false;
                 }
@@ -2034,8 +1661,8 @@ void World::handleCollisions(const float dt)
                 /// If faced two objects: Bullet and Rock...
                 if (entityRect.intersects(objectRect) &&
                     ((*it2)->mTypeID == Type::ID::AlliedBullet ||
-                    (*it2)->mTypeID == Type::ID::EnemyBullet) &&
-                        (*it)->mTypeID == Type::ID::Rock && !_golemBoss.mIsActive)
+                        (*it2)->mTypeID == Type::ID::EnemyBullet) &&
+                    (*it)->mTypeID == Type::ID::Rock && !_worldContext.isGolemDarkActive())
                 {
                     (*it2)->mLife = false;
                 }
@@ -2167,7 +1794,7 @@ void World::handleCollisions(const float dt)
 
                     if ((*it)->mIsEnabling && (*it)->mHitpoints <= 0)
                     {
-                        _playerInfo->mQuests.at(PlayerInfo::Quest::KillDwarvenCommanderM) = true;
+                        _playerInfo.mQuests.at(PlayerInfo::Quest::KillDwarvenCommanderM) = true;
                         _playerHero->mDialogNumber = 4;
                     }
                 }
@@ -2191,9 +1818,19 @@ void World::handleCollisions(const float dt)
             }
         }
     }
+
+    for (const auto& missile : _guidedProjectiles)
+    {
+        /// If faced two objects: Player and MagicArrow...
+        if (playerRect.intersects(missile->getRect()) &&
+            missile->mTypeID == Type::ID::MagicArrow && _playerHero->mHitpoints > 0)
+        {
+            _playerHero->mHitpoints -= missile->mDamage;
+            missile->mLife = false;
+        }
+    }
 }
 
 void World::handleEvent()
 {
-        
 }

@@ -9,7 +9,6 @@ Bloodsplat::Bloodsplat(const Type::ID id, const TextureHolder& textures, const f
 
     mSprite.setTexture(mTexture);
     mSprite.setTextureRect(sf::IntRect(0, 0, 48, 24));
-    //mSprite.setScale(0.5f, 0.5f);
     const auto color = sf::Color(mSprite.getColor().r, mSprite.getColor().g,
                                  mSprite.getColor().b, 0);
     mSprite.setColor(color);

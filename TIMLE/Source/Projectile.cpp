@@ -7,14 +7,13 @@
 
 namespace
 {
-    const std::vector<ProjectileData> PROJECTILE_TABLE = initializeProjectileData();
+    const std::map<Type::ID, ProjectileData> PROJECTILE_TABLE = initializeProjectileData();
 }
 
 Projectile::Projectile(const Type::ID id, const TextureHolder&, const FontHolder&,
                        const Level&, const float X, const float Y, const int width, const int height)
-: Entity(id, X, Y, width, height, 
-         PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed, 100,
-         PROJECTILE_TABLE[id - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage)
+: Entity(id, X, Y, width, height, PROJECTILE_TABLE.at(id).mSpeed, 100,
+         PROJECTILE_TABLE.at(id).mDamage)
 , _guided(false)
 {
     if (id == Type::ID::MagicArrow)
@@ -69,10 +68,10 @@ sf::FloatRect Projectile::getBoundingRect() const
 
 float Projectile::getMaxSpeed() const
 {
-    return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mSpeed;
+    return PROJECTILE_TABLE.at(mTypeID).mSpeed;
 }
 
 int Projectile::getDamage() const
 {
-    return PROJECTILE_TABLE[mTypeID - Type::HERO_COUNT - Type::ENEMY_COUNT].mDamage;
+    return PROJECTILE_TABLE.at(mTypeID).mDamage;
 }

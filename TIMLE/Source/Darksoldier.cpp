@@ -56,14 +56,14 @@ void DarkSoldier::checkCollisionWithMap(const float Dx, const float Dy)
 
 void DarkSoldier::update(const float dt)
 {
+    // Притяжение к земле
+    dy += 0.0015f * dt;
+    y += dy * dt;
+    checkCollisionWithMap(0.f, dy);
+
     if (mIsTurned)
     {
-        mMoveTimer += dt;
-    }
-    if (mMoveTimer > 2000.f && mIsTurned)
-    {
         dx = -dx;
-        mMoveTimer = 0.f;
         mIsTurned = false;
     }
 
@@ -83,11 +83,6 @@ void DarkSoldier::update(const float dt)
             mSprite.setPosition(x + (mWidth / 2.f) - 4.f, y + (mHeight / 2.f) - 6.f);
         }
         checkCollisionWithMap(dx, 0.f);
-
-        // Притяжение к земле
-        dy += 0.0015f * dt;
-        y += dy * dt;
-        checkCollisionWithMap(0.f, dy);
 
         mCurrentFrame += 0.005f * dt;
         if (mCurrentFrame > 5.f)

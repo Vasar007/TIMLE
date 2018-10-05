@@ -116,10 +116,10 @@ void Dwarf::update(const float dt)
     {
         mMoveTimer += dt;
     }
-    if (mMoveTimer > 2000.f && mIsTurned)
+    if (mMoveTimer > 500.f && mIsTurned)
     {
         dx = -dx;
-        mMoveTimer = 0;
+        mMoveTimer = 0.f;
         mIsTurned = false;
         mSprite.scale(-1.f, 1.f);
     }
@@ -156,7 +156,7 @@ void Dwarf::update(const float dt)
                     std::cout << "Not registered dwarf type!\n";
                     break;
             }
-            
+
             if (mCurrentAttack > 4.f)
             {
                 mCurrentAttack -= 4.f;

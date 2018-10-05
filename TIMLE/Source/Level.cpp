@@ -4,18 +4,18 @@
 int Object::getPropertyInt(const std::string& name)
 {
     // Возвращаем номер свойства в списке
-    return std::stoi(mProperties[name].c_str());
+    return std::stoi(mProperties.at(name).c_str());
 }
 
 float Object::getPropertyFloat(const std::string& name)
 {
-    return static_cast<float>(strtod(mProperties[name].c_str(), nullptr));
+    return static_cast<float>(strtod(mProperties.at(name).c_str(), nullptr));
 }
 
 std::string Object::getPropertyString(const std::string& name)
 {
     // Получаем имя в виде строки
-    return mProperties[name];
+    return mProperties.at(name);
 }
 
 
@@ -57,7 +57,7 @@ bool Level::loadFromFile(const std::string& filename)
     _firstTileID = std::stoi(tilesetElement->Attribute("firstgid"));
 
     // source - путь до картинки в контейнере image
-    TiXmlElement *image            = tilesetElement->FirstChildElement("image");
+    TiXmlElement *image = tilesetElement->FirstChildElement("image");
     const std::string imagepath = image->Attribute("source");
 
     // Пытаемся загрузить тайлсет
@@ -77,8 +77,8 @@ bool Level::loadFromFile(const std::string& filename)
     _tilesetImage.setSmooth(false);
 
     // Получаем количество столбцов и строк тайлсета
-    const int columns    = _tilesetImage.getSize().x / _tileWidth;
-    const int rows        = _tilesetImage.getSize().y / _tileHeight;
+    const int columns = _tilesetImage.getSize().x / _tileWidth;
+    const int rows = _tilesetImage.getSize().y / _tileHeight;
 
     // Вектор из прямоугольников изображений (TextureRect)
     std::vector<sf::IntRect> subRects;
@@ -89,10 +89,10 @@ bool Level::loadFromFile(const std::string& filename)
         {
             sf::IntRect rect;
 
-            rect.top    = y * _tileHeight;
+            rect.top = y * _tileHeight;
             rect.height = _tileHeight;
-            rect.left    = x * _tileWidth;
-            rect.width    = _tileWidth;
+            rect.left = x * _tileWidth;
+            rect.width = _tileWidth;
 
             subRects.push_back(rect);
         }
@@ -248,8 +248,8 @@ bool Level::loadFromFile(const std::string& filename)
                     {
                         while (prop)
                         {
-                            const std::string propertyName        = prop->Attribute("name");
-                            const std::string propertyValue        = prop->Attribute("value");
+                            const std::string propertyName = prop->Attribute("name");
+                            const std::string propertyValue = prop->Attribute("value");
 
                             object.mProperties.at(propertyName) = propertyValue;
 
@@ -276,19 +276,17 @@ bool Level::loadFromFile(const std::string& filename)
 
 Object Level::getObject(const std::string_view name) const
 {
-    Object result;
     // Только первый объект с заданным именем
     for (const auto& object : mObjects)
     {
         if (object.mName == name)
         {
-            result = object;
-            return result;
+            return object;
         }
     }
 
-    std::cout << "Error! Couldn't find object with this name!\n";
-    return result;
+    std::cout << "Error! Couldn't find object with '"<< name << "' name!\n";
+    throw std::invalid_argument(name.data());
 }
 
 std::vector<Object> Level::getObjects(const std::string_view name) const
@@ -332,8 +330,8 @@ void Level::drawAll(sf::RenderWindow& window) const
 
 void Level::draw(sf::RenderWindow& window)
 {
-    const auto center    = window.getView().getCenter();
-    const auto size        = window.getView().getSize();
+    const auto center = window.getView().getCenter();
+    const auto size = window.getView().getSize();
 
     _drawingBounds = sf::FloatRect(center.x - (size.x / 2.f) - 25.f,
                                    center.y - (size.y / 2.f) - 25.f, size.x + 25.f, size.y + 25.f);

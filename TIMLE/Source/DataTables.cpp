@@ -27,34 +27,38 @@
 // For std::bind() placeholders _1, _2, ...
 using namespace std::placeholders;
 
-std::vector<EntityData> initializeHeroData()
+std::map<Type::ID, EntityData> initializeHeroData()
 {
-    std::vector<EntityData> data(Type::HERO_COUNT);
+    std::map<Type::ID, EntityData> data;
 
-    data.at(Type::ID::Archer).mHitpoints = 1000;
-    data.at(Type::ID::Archer).mDamage = 0;
-    data.at(Type::ID::Archer).mSpeed = 200.f;
-    data.at(Type::ID::Archer).mFireInterval = sf::seconds(1);
-    data.at(Type::ID::Archer).mTexture = Textures::ID::Archer;
-    data.at(Type::ID::Archer).mCalcBodyRect = 
+    EntityData hero;
+    hero.mHitpoints = 1000;
+    hero.mDamage = 0;
+    hero.mSpeed = 200.f;
+    hero.mFireInterval = sf::seconds(1);
+    hero.mTexture = Textures::ID::Archer;
+    hero.mCalcBodyRect = 
         [](float left, float top, float width, float height, float)
     {
         return sf::FloatRect(left, top, width, height);
     };
 
+    data.emplace(Type::ID::Archer, std::move(hero));
     return data;
 }
 
-std::vector<EntityData> initializeEnemyData()
+std::map<Type::ID, EntityData> initializeEnemyData()
 {
-    std::vector<EntityData> data(Type::ENEMY_COUNT);
+    std::map<Type::ID, EntityData> data;
 
-    data.at(Type::ID::Ghost - Type::HERO_COUNT).mHitpoints = 50;
-    data.at(Type::ID::Ghost - Type::HERO_COUNT).mDamage = 50;
-    data.at(Type::ID::Ghost - Type::HERO_COUNT).mSpeed = 80.f;
-    data.at(Type::ID::Ghost - Type::HERO_COUNT).mTexture = Textures::ID::Ghost;
-    data.at(Type::ID::Ghost - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::Ghost - Type::HERO_COUNT).mCalcBodyRect = 
+    EntityData enemy;
+
+    enemy.mHitpoints = 50;
+    enemy.mDamage = 50;
+    enemy.mSpeed = 80.f;
+    enemy.mTexture = Textures::ID::Ghost;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float direction)
     {
         if (direction > 0.f)
@@ -66,13 +70,15 @@ std::vector<EntityData> initializeEnemyData()
             return sf::FloatRect(left + 25.f, top + 7.f, width - 32.f, height - 10.f);
         }
     };
+    data.emplace(Type::ID::Ghost, std::move(enemy));
 
-    data.at(Type::ID::Golem - Type::HERO_COUNT).mHitpoints = 125;
-    data.at(Type::ID::Golem - Type::HERO_COUNT).mDamage = 50;
-    data.at(Type::ID::Golem - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::Golem - Type::HERO_COUNT).mTexture = Textures::ID::Golem;
-    data.at(Type::ID::Golem - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::Golem - Type::HERO_COUNT).mCalcBodyRect = 
+
+    enemy.mHitpoints = 125;
+    enemy.mDamage = 50;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::Golem;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float direction)
     {
         if (direction > 0.f)
@@ -84,26 +90,28 @@ std::vector<EntityData> initializeEnemyData()
             return sf::FloatRect(left + 15.f, top + 4.f, width - 28.f, height - 4.f);
         }
     };
+    data.emplace(Type::ID::Golem, std::move(enemy));
 
 
-    data.at(Type::ID::DarkSoldier - Type::HERO_COUNT).mHitpoints = 1000;
-    data.at(Type::ID::DarkSoldier - Type::HERO_COUNT).mDamage = 0;
-    data.at(Type::ID::DarkSoldier - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::DarkSoldier - Type::HERO_COUNT).mTexture = Textures::ID::DarkSoldier;
-    data.at(Type::ID::DarkSoldier - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::DarkSoldier - Type::HERO_COUNT).mCalcBodyRect = 
+    enemy.mHitpoints = 1000;
+    enemy.mDamage = 0;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::DarkSoldier;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float)
     {
         return sf::FloatRect(left + 5.f, top + 5.f, width - 10.f, height - 5.f);
     };
+    data.emplace(Type::ID::DarkSoldier, std::move(enemy));
 
 
-    data.at(Type::ID::Goblin - Type::HERO_COUNT).mHitpoints = 50;
-    data.at(Type::ID::Goblin - Type::HERO_COUNT).mDamage = 30;
-    data.at(Type::ID::Goblin - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::Goblin - Type::HERO_COUNT).mTexture = Textures::ID::Goblin;
-    data.at(Type::ID::Goblin - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::Goblin - Type::HERO_COUNT).mCalcBodyRect = 
+    enemy.mHitpoints = 50;
+    enemy.mDamage = 30;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::Goblin;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float direction)
     {
         if (direction > 0.f)
@@ -116,26 +124,28 @@ std::vector<EntityData> initializeEnemyData()
         }
 
     };
+    data.emplace(Type::ID::Goblin, std::move(enemy));
 
 
-    data.at(Type::ID::MinotaurMage - Type::HERO_COUNT).mHitpoints = 150;
-    data.at(Type::ID::MinotaurMage - Type::HERO_COUNT).mDamage = 50;
-    data.at(Type::ID::MinotaurMage - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::MinotaurMage - Type::HERO_COUNT).mTexture = Textures::ID::MinotaurMage;
-    data.at(Type::ID::MinotaurMage - Type::HERO_COUNT).mFireInterval = sf::seconds(2);
-    data.at(Type::ID::MinotaurMage - Type::HERO_COUNT).mCalcBodyRect = 
+    enemy.mHitpoints = 150;
+    enemy.mDamage = 50;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::MinotaurMage;
+    enemy.mFireInterval = sf::seconds(2);
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float)
     {
         return sf::FloatRect(left + 10.f, top + 10.f, width - 20.f, height - 10.f);
     };
+    data.emplace(Type::ID::MinotaurMage, std::move(enemy));
 
 
-    data.at(Type::ID::Dwarf - Type::HERO_COUNT).mHitpoints = 75;
-    data.at(Type::ID::Dwarf - Type::HERO_COUNT).mDamage = 20;
-    data.at(Type::ID::Dwarf - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::Dwarf - Type::HERO_COUNT).mTexture = Textures::ID::Dwarf;
-    data.at(Type::ID::Dwarf - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::Dwarf - Type::HERO_COUNT).mCalcBodyRect = 
+    enemy.mHitpoints = 75;
+    enemy.mDamage = 20;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::Dwarf;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float direction)
     {
         if (direction > 0.f)
@@ -147,14 +157,15 @@ std::vector<EntityData> initializeEnemyData()
             return sf::FloatRect(left + 17.f, top + 1.f, width - 20.f, height - 1.f);
         }
     };
+    data.emplace(Type::ID::Dwarf, std::move(enemy));
 
 
-    data.at(Type::ID::DwarfArcher - Type::HERO_COUNT).mHitpoints = 75;
-    data.at(Type::ID::DwarfArcher - Type::HERO_COUNT).mDamage = 10;
-    data.at(Type::ID::DwarfArcher - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::DwarfArcher - Type::HERO_COUNT).mTexture = Textures::ID::Dwarf;
-    data.at(Type::ID::DwarfArcher - Type::HERO_COUNT).mFireInterval = sf::seconds(2);
-    data.at(Type::ID::DwarfArcher - Type::HERO_COUNT).mCalcBodyRect = 
+    enemy.mHitpoints = 75;
+    enemy.mDamage = 10;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::Dwarf;
+    enemy.mFireInterval = sf::seconds(2);
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float direction)
     {
         if (direction > 0.f)
@@ -166,14 +177,15 @@ std::vector<EntityData> initializeEnemyData()
             return sf::FloatRect(left + 17.f, top + 1.f, width - 20.f, height - 1.f);
         }
     };
+    data.emplace(Type::ID::DwarfArcher, std::move(enemy));
 
 
-    data.at(Type::ID::DwarvenCommander - Type::HERO_COUNT).mHitpoints = 100;
-    data.at(Type::ID::DwarvenCommander - Type::HERO_COUNT).mDamage = 30;
-    data.at(Type::ID::DwarvenCommander - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::DwarvenCommander - Type::HERO_COUNT).mTexture = Textures::ID::Dwarf;
-    data.at(Type::ID::DwarvenCommander - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::DwarvenCommander - Type::HERO_COUNT).mCalcBodyRect = 
+    enemy.mHitpoints = 100;
+    enemy.mDamage = 30;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::Dwarf;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float direction)
     {
         if (direction > 0.f)
@@ -185,68 +197,76 @@ std::vector<EntityData> initializeEnemyData()
             return sf::FloatRect(left + 17.f, top + 1.f, width - 20.f, height - 1.f);
         }
     };
+    data.emplace(Type::ID::DwarvenCommander, std::move(enemy));
 
-    data.at(Type::ID::Tentacle - Type::HERO_COUNT).mHitpoints = 100;
-    data.at(Type::ID::Tentacle - Type::HERO_COUNT).mDamage = 10;
-    data.at(Type::ID::Tentacle - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::Tentacle - Type::HERO_COUNT).mTexture = Textures::ID::Tentacle;
-    data.at(Type::ID::Tentacle - Type::HERO_COUNT).mFireInterval = sf::Time::Zero;
-    data.at(Type::ID::Tentacle - Type::HERO_COUNT).mCalcBodyRect = 
+
+    enemy.mHitpoints = 100;
+    enemy.mDamage = 10;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::Tentacle;
+    enemy.mFireInterval = sf::Time::Zero;
+    enemy.mCalcBodyRect = 
         [](float left, float top, float width, float height, float)
     {
         return sf::FloatRect(left, top, width, height);
     };
+    data.emplace(Type::ID::Tentacle, std::move(enemy));
 
-    data.at(Type::ID::DarkArcher - Type::HERO_COUNT).mHitpoints = 150;
-    data.at(Type::ID::DarkArcher - Type::HERO_COUNT).mDamage = 25;
-    data.at(Type::ID::DarkArcher - Type::HERO_COUNT).mSpeed = 50.f;
-    data.at(Type::ID::DarkArcher - Type::HERO_COUNT).mTexture = Textures::ID::DarkArcher;
-    data.at(Type::ID::DarkArcher - Type::HERO_COUNT).mFireInterval = sf::seconds(2.f);
-    data.at(Type::ID::DarkArcher - Type::HERO_COUNT).mCalcBodyRect =
+
+    enemy.mHitpoints = 150;
+    enemy.mDamage = 25;
+    enemy.mSpeed = 50.f;
+    enemy.mTexture = Textures::ID::DarkArcher;
+    enemy.mFireInterval = sf::seconds(2.f);
+    enemy.mCalcBodyRect =
         [](float left, float top, float width, float height, float)
     {
         return sf::FloatRect(left + 15.f, top + 5.f, width - 30.f, height - 5.f);
     };
+    data.emplace(Type::ID::DarkArcher, std::move(enemy));
 
 
     return data;
 }
 
-std::vector<ProjectileData> initializeProjectileData()
+std::map<Type::ID, ProjectileData> initializeProjectileData()
 {
-    std::vector<ProjectileData> data(Type::PROJECTILES_COUNT);
+    std::map<Type::ID, ProjectileData> data;
 
-    data.at(Type::ID::AlliedBullet - Type::HERO_COUNT - Type::ENEMY_COUNT).mDamage = 25;
-    data.at(Type::ID::AlliedBullet - Type::HERO_COUNT - Type::ENEMY_COUNT).mSpeed = 10.f;
-    data.at(Type::ID::AlliedBullet - Type::HERO_COUNT - Type::ENEMY_COUNT).mTexture = 
-        Textures::ID::Bullet;
+    ProjectileData projectile;
 
-    data.at(Type::ID::EnemyBullet - Type::HERO_COUNT - Type::ENEMY_COUNT).mDamage = 10;
-    data.at(Type::ID::EnemyBullet - Type::HERO_COUNT - Type::ENEMY_COUNT).mSpeed = 10.f;
-    data.at(Type::ID::EnemyBullet - Type::HERO_COUNT - Type::ENEMY_COUNT).mTexture = 
-        Textures::ID::Bullet;
+    projectile.mDamage = 25;
+    projectile.mSpeed = 10.f;
+    projectile.mTexture = Textures::ID::Bullet;
+    data.emplace(Type::ID::AlliedBullet, std::move(projectile));
 
-    data.at(Type::ID::Flamestrike - Type::HERO_COUNT - Type::ENEMY_COUNT).mDamage = 15;
-    data.at(Type::ID::Flamestrike - Type::HERO_COUNT - Type::ENEMY_COUNT).mSpeed = 0.f;
-    data.at(Type::ID::Flamestrike - Type::HERO_COUNT - Type::ENEMY_COUNT).mTexture = 
-        Textures::ID::Fire;
+    projectile.mDamage = 10;
+    projectile.mSpeed = 10.f;
+    projectile.mTexture = Textures::ID::Bullet;
+    data.emplace(Type::ID::EnemyBullet, std::move(projectile));
 
-    data.at(Type::ID::Fireball - Type::HERO_COUNT - Type::ENEMY_COUNT).mDamage = 25;
-    data.at(Type::ID::Fireball - Type::HERO_COUNT - Type::ENEMY_COUNT).mSpeed = 5.f;
-    data.at(Type::ID::Fireball - Type::HERO_COUNT - Type::ENEMY_COUNT).mTexture = Textures::ID::Fire;
+    projectile.mDamage = 15;
+    projectile.mSpeed = 0.f;
+    projectile.mTexture = Textures::ID::Fire;
+    data.emplace(Type::ID::Flamestrike, std::move(projectile));
 
-    data.at(Type::ID::MagicArrow - Type::HERO_COUNT - Type::ENEMY_COUNT).mDamage = 15;
-    data.at(Type::ID::MagicArrow - Type::HERO_COUNT - Type::ENEMY_COUNT).mSpeed = 4.f;
-    data.at(Type::ID::MagicArrow - Type::HERO_COUNT - Type::ENEMY_COUNT).mTexture = 
-        Textures::ID::MagicArrow;
+    projectile.mDamage = 25;
+    projectile.mSpeed = 5.f;
+    projectile.mTexture = Textures::ID::Fire;
+    data.emplace(Type::ID::Fireball, std::move(projectile));
+
+    projectile.mDamage = 15;
+    projectile.mSpeed = 4.f;
+    projectile.mTexture = Textures::ID::MagicArrow;
+    data.emplace(Type::ID::MagicArrow, std::move(projectile));
 
     return data;
 }
 
-std::vector<PickupData> initializePickupData()
+std::map<Type::ID, PickupData> initializePickupData()
 {
     /*
-    std::vector<PickupData> data(Pickup::Type::TypeCount); 
+    std::map<Type::ID, ProjectileData> data; 
     
     data[Pickup::HealthRefill].texture = Textures::HealthRefill;
     data[Pickup::HealthRefill].action = [](Player& a) { a.repair(25); };

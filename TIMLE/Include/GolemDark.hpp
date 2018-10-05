@@ -15,7 +15,6 @@ class GolemDark final : public Entity
          */
         int  _counter;
 
-
         /**
          * \brief The variable for turning the object.
          */

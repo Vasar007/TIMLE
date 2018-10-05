@@ -8,7 +8,7 @@ AudioManager State::mAudioManager;
 GameState::GameState(StateStack& stack, const Context context)
 : State(stack, context)
 , _world(*context.mWindow, *context.mTextures, *context.mFonts, *context.mSounds, 
-         context.mPlayerInfo, mAudioManager, context.mCurrentSettings->mDebugMode,
+         *context.mPlayerInfo, mAudioManager, context.mCurrentSettings->mDebugMode,
          context.mPlayerInfo->getLevelNumber())
 , _playerInfo(*context.mPlayerInfo)
 {

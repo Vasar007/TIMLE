@@ -3,14 +3,14 @@
 
 namespace
 {
-    const std::vector<EntityData> PLAYER_TABLE = initializeHeroData();
+    const std::map<Type::ID, EntityData> PLAYER_TABLE = initializeHeroData();
 }
 
 Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolder&, 
                const Level& lvl, const float X, const  float Y, const int width, const int height, 
                PlayerInfo& playerInfo)
-: Entity(id, X, Y, width, height, PLAYER_TABLE[id].mSpeed, PLAYER_TABLE[id].mHitpoints,
-         PLAYER_TABLE[id].mDamage)
+: Entity(id, X, Y, width, height, PLAYER_TABLE.at(id).mSpeed, PLAYER_TABLE.at(id).mHitpoints,
+         PLAYER_TABLE.at(id).mDamage)
 , _beforeJump(0.f)
 , _afterJump(0.f)
 , _fallingHeight(0.f)
@@ -28,7 +28,7 @@ Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mTransitTimer(0.f)
 , mCounter(0)
 , mDialogNumber(0)
-, mMaxHitpoints(PLAYER_TABLE[id].mHitpoints)
+, mMaxHitpoints(PLAYER_TABLE.at(id).mHitpoints)
 , mIsShoot(false)
 , mCanShoted(true)
 , mIsJumped(false)

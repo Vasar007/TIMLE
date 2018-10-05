@@ -10104,7 +10104,7 @@
   <object id="102" name="solid" x="992" y="512" width="16" height="32"/>
  </objectgroup>
  <objectgroup id="5" name="Player">
-  <object id="80" name="player" x="80" y="320" width="20" height="30"/>
+  <object id="80" name="player" x="692" y="320" width="20" height="30"/>
   <object id="9" name="playerO" x="20" y="640" width="20" height="30"/>
  </objectgroup>
  <objectgroup id="7" name="Platform">
