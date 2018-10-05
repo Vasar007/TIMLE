@@ -268,3 +268,4 @@ TIMLE/ReleaseWithoutConsole/
 *.tlog
 *.vcxproj
 *.vcxproj.filters
+*.vcxproj.user
