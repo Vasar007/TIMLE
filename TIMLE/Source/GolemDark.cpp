@@ -7,15 +7,15 @@ namespace
 }
 
 GolemDark::GolemDark(const Type::ID id, const TextureHolder& textures, const FontHolder&,
-                     const Level& lvl, const float X, const float Y, const int width,
+                     const Level& level, const float x_coord, const float y_coord, const int width,
                      const int height, const std::string& type)
-: Entity(id, X, Y, width, height, GOLEM_TABLE.mSpeed, GOLEM_TABLE.mHitpoints, GOLEM_TABLE.mDamage)
-, _counter(0)
-, _isTurned(false)
+: Entity(id, x_coord, y_coord, width, height, GOLEM_TABLE.mSpeed, GOLEM_TABLE.mHitpoints,
+         GOLEM_TABLE.mDamage)
+, counter_(0)
+, turned_around_(false)
 {
     // Initialize basic objects for interaction golem with it.
-    auto levelObjects = lvl.getObjects("enemyBorder");
-    for (const auto& object : levelObjects)
+    for (const auto& object : level.getObjects("enemyBorder"))
     {
         if (object.mType == type)
         {
@@ -23,9 +23,10 @@ GolemDark::GolemDark(const Type::ID id, const TextureHolder& textures, const Fon
         }
     }
 
-    levelObjects = lvl.getObjects("death");
-    for (const auto& object : levelObjects)
+    for (const auto& object : level.getObjects("death"))
+    {
         mLevelObjects.push_back(object);
+    } 
 
     mTexture = textures.get(Textures::ID::GolemDark);
     mTextureAttack = textures.get(Textures::ID::GolemDarkAttack);
@@ -37,7 +38,7 @@ GolemDark::GolemDark(const Type::ID id, const TextureHolder& textures, const Fon
     mIsEnd = false;
 }
 
-void GolemDark::checkCollisionWithMap(const float Dx, const float Dy)
+void GolemDark::check_collision_with_map(const float dX, const float dY)
 {
     for (const auto& object : mLevelObjects)
     {
@@ -46,26 +47,26 @@ void GolemDark::checkCollisionWithMap(const float Dx, const float Dy)
         {
             if (object.mName == "enemyBorder")
             {
-                if (Dy > 0.f)
+                if (dY > 0.f)
                 {
                     y = object.mRect.top - mHeight;
                     dy = 0.f;
                     mOnGround = true;
                 }
-                if (Dy < 0.f)
+                if (dY < 0.f)
                 {
                     y = object.mRect.top + object.mRect.height;
                     dy = 0.f;
                 }
-                if (Dx > 0.f)
+                if (dX > 0.f)
                 {
                     x = object.mRect.left - mWidth;
-                    _isTurned = true;
+                    turned_around_ = true;
                 }
-                if (Dx < 0.f)
+                if (dX < 0.f)
                 {
                     x = object.mRect.left + object.mRect.width;
-                    _isTurned = true;;
+                    turned_around_ = true;;
                 }
             }
 
@@ -83,7 +84,7 @@ void GolemDark::update(const float dt)
     // The attraction to the earth.
     dy += 0.0015f * dt;
     y += dy * dt;
-    checkCollisionWithMap(0.f, dy);
+    check_collision_with_map(0.f, dy);
 
     /// Complicated and tangled logic for setting right position of the sprite.
     // Inactive phase.
@@ -110,29 +111,29 @@ void GolemDark::update(const float dt)
     }
 
     mMoveTimer += dt;
-    if (mMoveTimer > 2000.f && _isTurned)
+    if (mMoveTimer > 2000.f && turned_around_)
     {
         dx = -dx;
         mMoveTimer = 0.f;
-        _isTurned = false;
+        turned_around_ = false;
     }
-    else if (mMoveTimer > 1000.f && !_isTurned)
+    else if (mMoveTimer > 1000.f && !turned_around_)
     {
         mMoveTimer = 0.f;
         if (mHitpoints <= 0)
         {
-            ++_counter;
+            ++counter_;
         }
     }
 
     if (mLife && (mHitpoints > 0))
     {
         // Moving phase.
-        if (!mIsAttacked && !_isTurned)
+        if (!mIsAttacked && !turned_around_)
         {
             x += dx * dt;
         }
-        checkCollisionWithMap(dx, 0.f);
+        check_collision_with_map(dx, 0.f);
 
         mSprite.setPosition(x + (mWidth / 2.f) + 11.f, y + (mHeight / 2.f) - 2.f);
 
@@ -175,16 +176,16 @@ void GolemDark::update(const float dt)
         {
             mSprite.setTexture(mTexture);
             mCurrentAttack = 0.f;
-            if (_isTurned)
+            if (turned_around_)
             {
                 mCurrentFrame = 0.f;
                 mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentFrame) + (dx > 0 ? 0 : 17), (dx > 0 ? 192 : 64), 48, 64));
             }
-            if (dx > 0.f && !_isTurned)
+            if (dx > 0.f && !turned_around_)
             {
                 mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentFrame), 192, 48, 64));
             }
-            else if (dx < 0.f && !_isTurned)
+            else if (dx < 0.f && !turned_around_)
             {
                 mSprite.setTextureRect(sf::IntRect(64 * static_cast<int>(mCurrentFrame) + 17, 64, 48, 64));
             }
@@ -200,7 +201,7 @@ void GolemDark::update(const float dt)
         if (mCurrentDeath > 6.f)
         {
             mCurrentDeath = 6.f;
-            if (_counter == 6)
+            if (counter_ == 6)
             {
                 mLife = false;
             }

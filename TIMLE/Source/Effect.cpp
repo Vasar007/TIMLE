@@ -6,44 +6,50 @@ Effect::Effect(const Type::ID id, const float X, const float Y, const int width,
                std::string type)
 : x(X)
 , y(Y)
-, mWidth(width)
-, mHeight(height)
-, mCurrentFrame(0.f)
-, mLife(true)
-, mIsStarted(false)
-, mIsEnd(false)
-, mType(std::move(type))
-, mTypeID(id)
+, width(width)
+, height(height)
+, current_frame(0.f)
+, current_attack_frame(0.f)
+, current_death_frame(0.f)
+, move_timer(0.f)
+, alive(true)
+, started(false)
+, finished(false)
+, attacked(false)
+, hit(false)
+, hit_once(false)
+, type(std::move(type))
+, type_ID(id)
 {
-    mSprite.setOrigin(static_cast<float>(mWidth) / 2.f, static_cast<float>(mHeight) / 2.f);
+    sprite.setOrigin(static_cast<float>(width) / 2.f, static_cast<float>(height) / 2.f);
 }
 
-sf::FloatRect Effect::getRect() const
+sf::FloatRect Effect::get_rect() const
 {
-    return sf::FloatRect(x, y, static_cast<float>(mWidth), static_cast<float>(mHeight));
+    return sf::FloatRect(x, y, static_cast<float>(width), static_cast<float>(height));
 }
 
-sf::Vector2f Effect::getCenter() const
+sf::Vector2f Effect::get_center() const
 {
-    return sf::Vector2f(x + static_cast<float>(mWidth) / 2.f,
-                        y + static_cast<float>(mHeight) / 2.f);
+    return sf::Vector2f(x + static_cast<float>(width) / 2.f,
+                        y + static_cast<float>(height) / 2.f);
 }
 
-sf::Vector2f Effect::getWorldPosition() const
+sf::Vector2f Effect::get_world_position() const
 {
-    return getWorldTransform() * sf::Vector2f();
+    return get_world_transform() * sf::Vector2f();
 }
 
-sf::Transform Effect::getWorldTransform() const
+sf::Transform Effect::get_world_transform() const
 {
     sf::Transform transform = sf::Transform::Identity;
 
-    transform *= mSprite.getTransform();
+    transform *= sprite.getTransform();
 
     return transform;
 }
 
 void Effect::draw(sf::RenderTarget& target) const
 {
-    target.draw(mSprite);
+    target.draw(sprite);
 }

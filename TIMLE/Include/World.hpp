@@ -105,7 +105,7 @@ class World final : private sf::NonCopyable
 
     public:
         /**
-         * \brief                   Default explicit constructor.
+         * \brief                   Default constructor.
          * \param[out] window       Active window for rendering all stuff.
          * \param[out] textures     Textures holder for extracting necessary textures.
          * \param[out] fonts        Fonts holder for extracting necessary textures.
@@ -115,7 +115,7 @@ class World final : private sf::NonCopyable
          * \param[in] debugMode     Parameter used to define debug mode.
          * \param[in] levelNumer    Define number of loaded level.
          */
-        explicit    World(sf::RenderWindow& window, TextureHolder& textures,
+                    World(sf::RenderWindow& window, TextureHolder& textures,
                           FontHolder& fonts, SoundBufferHolder& sounds,
                           PlayerInfo& playerInfo, AudioManager& audioManager,
                           const State::DebugMode debugMode,

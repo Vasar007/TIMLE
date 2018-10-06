@@ -14,7 +14,6 @@ WorldContext::WorldContext(TextureHolder& textures, FontHolder& fonts,
 , _fonts(fonts)
 , _debug(debug)
 {
-    buildBossData();
 }
 
 void WorldContext::buildBossData()
@@ -309,7 +308,7 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
                             _shadowBoss.mShadow->mIsBack = false;
                         }
                         _shadowBoss.mShadow->mIsAttacked = true;
-                        if (_shadowBoss.mShadow->mIsHitted && !_shadowBoss.mShadow->mIsStay)
+                        if (_shadowBoss.mShadow->mIsHitted && !_shadowBoss.mShadow->idling)
                         {
                             playerHero->mHitpoints -= _shadowBoss.mShadow->mDamage;
                             _shadowBoss.mTentacles.emplace_back(Type::ID::Tentacle, _textures,
@@ -334,14 +333,14 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
                 }
 
                 if (_shadowBoss.mShadow->getRect().intersects(playerRect) &&
-                    _shadowBoss.mShadow->mIsDelay)
+                    _shadowBoss.mShadow->is_delay)
                 {
                     playerHero->mHitpoints = 0;
                 }
 
                 for (auto& tentacle : _shadowBoss.mTentaclesStatic)
                 {
-                    if (_shadowBoss.mShadow->mIsCalling)
+                    if (_shadowBoss.mShadow->summoning)
                     {
                         if (!tentacle.mIsStarted)
                         {
@@ -353,7 +352,7 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
                         }
                         tentacle.mIsEnabling = true;
                     }
-                    else if (_shadowBoss.mShadow->mIsWithdrawing)
+                    else if (_shadowBoss.mShadow->calling_of)
                     {
                         tentacle.mIsDisabled = true;
                         tentacle.mIsEnabling = false;
@@ -378,7 +377,7 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
 
                 for (auto& tentacle : _shadowBoss.mTentacles)
                 {
-                    if (_shadowBoss.mShadow->mIsWithdrawing)
+                    if (_shadowBoss.mShadow->calling_of)
                     {
                         tentacle.mHitpoints = 0;
                     }
@@ -513,7 +512,7 @@ void WorldContext::handleCollisions(Entity& entity)
             /// Damage on the first boss Shadow.
             if (_shadowBoss.mShadow->getRect().intersects(entity.getRect()) &&
                 _shadowBoss.mShadow->mLife && _shadowBoss.mShadow->mHitpoints > 0 &&
-                _shadowBoss.mIsActive && _shadowBoss.mShadow->mIsStay)
+                _shadowBoss.mIsActive && _shadowBoss.mShadow->idling)
             {
                 _shadowBoss.mShadow->mHitpoints -= entity.mDamage;
                 if (_shadowBoss.mShadow->mHitpoints <= 0)

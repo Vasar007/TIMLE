@@ -16,7 +16,7 @@ class Player final : public Entity
             Up,
             Down,
             Jump,
-            Stay
+            Idle
         };
 
 

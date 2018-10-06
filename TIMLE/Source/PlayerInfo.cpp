@@ -3,7 +3,7 @@
 
 PlayerInfo::PlayerInfo()
 : _currentGameStatus(PlayerInfo::GameStatus::GameRunning)
-, _currentLevelNumber(4)
+, _currentLevelNumber(1)
 , _player(nullptr)
 , _defaultQuestValues{ { Quest::TalkWithOswald,        false },
                        { Quest::KillDwarvenCommanderM, false },

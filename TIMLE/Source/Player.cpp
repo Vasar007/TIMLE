@@ -44,7 +44,7 @@ Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mActivatedGate(false)
 , mHasTeleported(false)
 , mIsStartedDelay(false)
-, mState(Player::State::Stay)
+, mState(Player::State::Idle)
 , mPlayerInfo(playerInfo)
 {
     // Инициализируем и получаем все объекты для взаимодействия персонажа с картой
@@ -385,11 +385,11 @@ void Player::update(const float dt)
                 case Player::State::Jump:
 
                     break;
-                case Player::State::Stay:
+                case Player::State::Idle:
 
                     break;
                 default:
-                    mState = Player::State::Stay;
+                    mState = Player::State::Idle;
                     break;
             }
 
@@ -483,7 +483,7 @@ void Player::update(const float dt)
                     else if (dx == 0.f)
                     {
                         mSprite.setTextureRect(sf::IntRect(256 * (static_cast<int>(mCurrentAttack) + 4) + 77,
-                                               (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
+                                               (((mState == State::Right) || (mState == State::Idle)) ? 1104 : 77), 100, 110));
                         mCurrentFrame = 0.f;
                     }
                 }
@@ -499,7 +499,7 @@ void Player::update(const float dt)
                         else if (dx == 0.f)
                         {
                             mSprite.setTextureRect(sf::IntRect(256 * 3 + 77,
-                                                   (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
+                                                   (((mState == State::Right) || (mState == State::Idle)) ? 1104 : 77), 100, 110));
                         }
                         else
                         {
@@ -517,7 +517,7 @@ void Player::update(const float dt)
                     else if ((dx == 0.f) && mIsJumped)
                     {
                         mSprite.setTextureRect(sf::IntRect(256 * 0 + 77,
-                                               (((mState == State::Right) || (mState == State::Stay)) ? 1104 : 77), 100, 110));
+                                               (((mState == State::Right) || (mState == State::Idle)) ? 1104 : 77), 100, 110));
                         mIsJumped = false;
                         mCurrentFrame = 0.f;
                     }

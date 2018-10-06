@@ -102,13 +102,11 @@ class WorldContext final
         bool           _debug;
 
 
-    private:
-        void buildBossData();
-
-
     public:
             WorldContext(TextureHolder& textures, FontHolder& fonts,
                           const std::size_t currentLevelNumber, Level& lvl, const bool debug);
+
+        void buildBossData();
 
         void draw(sf::RenderTarget& target) const;
 

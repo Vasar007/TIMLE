@@ -13,94 +13,94 @@ class Shadow final : public Entity
         /**
          * \brief The variable for the counting before we can destroy dead body.
          */
-        int                        _counter;
+        int                        counter_;
 
         /**
          * \brief Keeping current teleportation point.
          */
-        int                        _numTelPoint;
+        int                        teleportation_point_number_;
 
         /**
          * \brief An additional counter for helping with teleporting this object.
          */
-        float                      _appearing;
+        float                      appearence_timer_;
 
         /**
          * \brief An additional counter for helping with teleporting this object.
          */
-        float                      _disappearing;
+        float                      disappearance_timer_;
 
         /**
          * \brief The timer for downtime this object.
          */
-        float                      _stayTimer;
+        float                      stay_timer_;
 
         /**
          * \brief The timer for delay in place before the next teleport.
          */
-        float                      mDelayTimer;
+        float                      delay_timer_;
 
         /**
          * \brief Fixing some graphics issues when object dying.
          */
-        float                      _inaccuracy;
+        float                      inaccuracy_;
 
         /**
          * \brief Flag for the state "After teleporting".
          */
-        bool                       _isTeleported;
+        bool                       teleported_;
 
         /**
          * \brief Flag for the state "While teleporting".
          */
-        bool                       _isTeleporting;
+        bool                       teleporting_;
 
         /**
          * \brief Flag for the state "After dissapering".
          */
-        bool                       _isDisappeared;
+        bool                       isDisappeared_;
 
         /**
          * \brief Flag for the state "While dissapering".
          */
-        bool                       _isDisappearing;
+        bool                       disappearing_;
 
         /**
-         * \brief Flag, means that this object must change current state on "Staying".
+         * \brief Flag, means that this object must change current state on "Idle".
          */
-        bool                       _isNeedStay;
+        bool                       needs_idle_;
 
         /**
          * \brief Additional flag for the intermediate state before teleporting.
          */
-        bool                       _isNeedDelay;
+        bool                       needs_delay_;
 
         /**
          * \brief Special vector for keeping all teleport points of this object.
          */
-        std::vector<TeleportPoint> _teleporPoints;
+        std::vector<TeleportPoint> telepor_points_;
 
 
     public:
         /**
-         * \brief Flag for the state "Staying".
+         * \brief Flag for the state "Idle".
          */
-        bool mIsStay;
+        bool idling;
 
         /**
          * \brief Flag for the activate delaying timer between teleportations.
          */
-        bool mIsDelay;
+        bool is_delay;
 
         /**
          * \brief Flag for the activate all tentacles.
          */
-        bool mIsCalling;
+        bool summoning;
 
         /**
          * \brief Flag for the deactivate all tentacles.
          */
-        bool mIsWithdrawing;
+        bool calling_of;
 
 
     private:
@@ -123,15 +123,15 @@ class Shadow final : public Entity
          * \param[in] id       The identifier of the current entity.
          * \param[in] textures The reference to an associative array with textures.
          * \param[in] fonts    The reference to an associative array with fonts.
-         * \param[in] lvl      The reference to the level-class object.
-         * \param[in] X        The initial x-coordinate of this object.
-         * \param[in] Y        The initial y-coordinate of this object.
+         * \param[in] level    The reference to the level-class object.
+         * \param[in] x_coord  The initial x-coordinate of this object.
+         * \param[in] y_coord  The initial y-coordinate of this object.
          * \param[in] width    Width of this object.
          * \param[in] height   Height if this object.
          * \param[in] type     An additional parameter for interaction with map.
          */
              Shadow(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                    const Level& lvl, const float X, const float Y, const int width,
+                    const Level& level, const float x_coord, const float y_coord, const int width,
                     const int height, const std::string& type = "0");
 
 

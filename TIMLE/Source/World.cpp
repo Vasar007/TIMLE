@@ -40,7 +40,7 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , _playerHero(nullptr)
 , _playerInfo(playerInfo)
 , _lifeBar(nullptr)
-, _debug(debugMode != State::DebugMode::DebugOn)
+, _debug(debugMode == State::DebugMode::DebugOn)
 , _worldContext(textures, fonts, levelNumber, *_level, _debug)
 {
     _sound.setBuffer(sounds.get(Sounds::ID::Bullet));
@@ -109,7 +109,7 @@ void World::update(sf::Time dt)
     for (auto it = _effects.begin(); it != _effects.end();)
     {
         (*it)->update(static_cast<float>(dt.asMilliseconds()));
-        if ((*it)->mLife)
+        if ((*it)->alive)
         {
             ++it;
         }
@@ -304,7 +304,7 @@ void World::draw()
     {
         if (_debug)
         {
-            auto shape = buildBorderLines(effect->getRect(), sf::Color::Transparent,
+            auto shape = buildBorderLines(effect->get_rect(), sf::Color::Transparent,
                                           sf::Color::White, 1.f);
             _window.draw(shape);
         }
@@ -505,6 +505,8 @@ void World::buildScene()
 {
     // Initialization of level.
     loadLevel();
+
+    _worldContext.buildBossData();
 
     // Add player.
     const auto playerObj = _level->getObject("player");
@@ -1714,7 +1716,8 @@ void World::handleCollisions(const float dt)
                     if ((*it)->mHitpoints <= 0)
                     {
                         _effects.emplace_back(
-                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat,
+                                                         _textures.get(Textures::ID::Bloodsplat),
                                                          (*it)->x, (*it)->y, 48, 24)
                         );
                     }
@@ -1731,7 +1734,8 @@ void World::handleCollisions(const float dt)
                     if ((*it)->mHitpoints <= 0)
                     {
                         _effects.emplace_back(
-                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat,
+                                                         _textures.get(Textures::ID::Bloodsplat),
                                                          (*it)->x + 7.f, (*it)->y + 7.f, 48, 24)
                         );
                     }
@@ -1749,7 +1753,8 @@ void World::handleCollisions(const float dt)
                     if ((*it)->mHitpoints <= 0)
                     {
                         _effects.emplace_back(
-                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat,
+                                                         _textures.get(Textures::ID::Bloodsplat),
                                                          (*it)->x + 7.f, (*it)->y, 48, 24)
                         );
                     }
@@ -1767,7 +1772,8 @@ void World::handleCollisions(const float dt)
                     if ((*it)->mHitpoints <= 0)
                     {
                         _effects.emplace_back(
-                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat,
+                                                         _textures.get(Textures::ID::Bloodsplat),
                                                          (*it)->x, (*it)->y, 48, 24)
                         );
                     }
@@ -1785,7 +1791,8 @@ void World::handleCollisions(const float dt)
                     if ((*it)->mHitpoints <= 0)
                     {
                         _effects.emplace_back(
-                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat,
+                                                         _textures.get(Textures::ID::Bloodsplat),
                                                          (*it)->x, (*it)->y, 48, 24)
                         );
                     }
@@ -1808,7 +1815,8 @@ void World::handleCollisions(const float dt)
                     if ((*it)->mHitpoints <= 0)
                     {
                         _effects.emplace_back(
-                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat, _textures,
+                            std::make_unique<Bloodsplat>(Type::ID::Bloodsplat,
+                                                         _textures.get(Textures::ID::Bloodsplat),
                                                          (*it)->x + 11.f, (*it)->y + 22.f, 48, 24)
                         );
                     }

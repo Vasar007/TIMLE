@@ -79,13 +79,25 @@ class PlayerInfo final
          */
         struct SavePoint
         {
-            SavePoint(const float x, const float y)
-            : x(x)
-            , y(y)
+            /**
+             * \brief              A constructor with basic parameters.
+             * \param[in] x_coord  The initial x-coordinate of this point.
+             * \param[in] y_coord  The initial y-coordinate of this point.
+             */
+            SavePoint(const float x_coord, const float y_coord)
+            : x(x_coord)
+            , y(y_coord)
             {
             }
 
+            /**
+             * \brief Contain x coordinate of the save point.
+             */
             float x;
+
+            /**
+             * \brief Contain y coordinate of the save point.
+             */
             float y;
         };
 
@@ -94,111 +106,111 @@ class PlayerInfo final
         /**
          * \brief Associative array of the key buttons for each player's action.
          */
-        std::map<sf::Keyboard::Key, Action> _keyBinding;
+        std::map<sf::Keyboard::Key, Action>    _keyBinding;
 
         //std::map<Action, Command>            mActionBinding;    // Not using now.
 
         /**
          * \brief Current game status, using for interactiving with world.
          */
-        GameStatus                          _currentGameStatus;
+        GameStatus                             _currentGameStatus;
 
         /**
          * \brief Current level number.
          */
-        std::size_t                         _currentLevelNumber;
+        std::size_t                            _currentLevelNumber;
 
         /**
          * \brief Current player's class for interacting.
          */
-        Player*                             _player;
+        Player*                                _player;
 
         /**
          * \brief Default values for quests array.
          */
-        const std::map<Quest, bool>        _defaultQuestValues;
+        const std::map<Quest, bool>           _defaultQuestValues;
 
         /**
          * \brief Default values for solutions array.
          */
-        const std::map<Solution, std::size_t>        _defaultSolutionValues;
+        const std::map<Solution, std::size_t> _defaultSolutionValues;
 
 
     public:
         /**
          * \brief Current dialog number, which we need to show.
          */
-        std::size_t                 mDialogNumber;
+        std::size_t                     mDialogNumber;
 
         /**
          * \brief Array of all showed dialogs, which we have shown yet.
          */
-        std::vector<std::size_t>    mShowedDialogs;
+        std::vector<std::size_t>        mShowedDialogs;
 
         /**
          * \brief Variable for choosing number in the choosing state of dialog.
          */
-        std::size_t                 mChoosingNumber;
+        std::size_t                     mChoosingNumber;
 
         /**
          * \brief All choices, which player has done yet.
          */
-        std::map<Solution, std::size_t>    mChosenSolution;
+        std::map<Solution, std::size_t> mChosenSolution;
 
         /**
          * \brief Array of the quests, which player can carry out.
          */
-        std::map<Quest, bool>       mQuests;
+        std::map<Quest, bool>           mQuests;
 
         /**
          * \brief Boolean flag for notification of completion downloading level and resources.
          */
-        bool                        mLoaded;
+        bool                            mLoaded;
 
         /**
          * \brief Lives counter of the player's hero.
          */
-        std::size_t                 mLivesCount;
+        std::size_t                     mLivesCount;
 
         /**
          * \brief Last save point of the current game.
          */
-        SavePoint                   mLastSavePoint;
+        SavePoint                       mLastSavePoint;
 
         /**
          * \brief Define we can ressurect player's hero or not.
          */
-        bool                        mCanRessurect;
+        bool                            mCanRessurect;
 
         /**
          * \brief Define we can transit player's hero or not.
          */
-        bool                        mCanTransit;
+        bool                            mCanTransit;
 
         /**
          * \brief Define we should transit player's hero or not.
          */
-        bool                        mNeedTransit;
+        bool                            mNeedTransit;
 
         /**
          * \brief Define we transit player's hero or not.
          */
-        bool                        mDoTransit;
+        bool                            mDoTransit;
 
         /**
          * \brief Define we start transiting player's hero or not.
          */
-        bool                        mTransiting;
+        bool                            mTransiting;
 
         /**
          * \brief Number of door to transit.
          */
-        std::pair<int, std::string> mNumberOfDoor;
+        std::pair<int, std::string>     mNumberOfDoor;
 
         /**
          * \brief Coordination to transit.
          */
-        std::pair<float, float>     mTransitPos;
+        std::pair<float, float>         mTransitPos;
 
 
     private:

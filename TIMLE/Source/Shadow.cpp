@@ -7,28 +7,28 @@ namespace
 }
 
 Shadow::Shadow(const Type::ID id, const TextureHolder& textures, const FontHolder&,
-              const Level&, const float X, const float Y, const int width, const int height, 
-              const std::string&)
-: Entity(id, X, Y, width, height, SHADOW_TABLE.mSpeed, SHADOW_TABLE.mHitpoints, 
+              const Level&, const float x_coord, const float y_coord, const int width,
+              const int height, const std::string&)
+: Entity(id, x_coord, y_coord, width, height, SHADOW_TABLE.mSpeed, SHADOW_TABLE.mHitpoints, 
          SHADOW_TABLE.mDamage)
-, _counter(0)
-, _numTelPoint(0)
-, _appearing(0.f)
-, _disappearing(0.f)
-, _stayTimer(0.f)
-, mDelayTimer(0.f)
-, _inaccuracy(0.f)
-, _isTeleported(false)
-, _isTeleporting(false)
-, _isDisappeared(false)
-, _isDisappearing(false)
-, _isNeedStay(false)
-, _isNeedDelay(false)
-, _teleporPoints(SHADOW_TABLE.mTeleportPoints)
-, mIsStay(false)
-, mIsDelay(false)
-, mIsCalling(false)
-, mIsWithdrawing(false)
+, counter_(0)
+, teleportation_point_number_(0)
+, appearence_timer_(0.f)
+, disappearance_timer_(0.f)
+, stay_timer_(0.f)
+, delay_timer_(0.f)
+, inaccuracy_(0.f)
+, teleported_(false)
+, teleporting_(false)
+, isDisappeared_(false)
+, disappearing_(false)
+, needs_idle_(false)
+, needs_delay_(false)
+, telepor_points_(SHADOW_TABLE.mTeleportPoints)
+, idling(false)
+, is_delay(false)
+, summoning(false)
+, calling_of(false)
 {
     mTexture = textures.get(Textures::ID::Shadow);
     mSprite.setTexture(mTexture);
@@ -40,31 +40,31 @@ Shadow::Shadow(const Type::ID id, const TextureHolder& textures, const FontHolde
 
 void Shadow::appear(const float dt)
 {
-    _appearing += 0.0075f * dt;
-    if (_appearing >= 14.f)
+    appearence_timer_ += 0.0075f * dt;
+    if (appearence_timer_ >= 14.f)
     {
-        _appearing = 0.f;
-        _isTeleporting = false;
-        _isTeleported = true;
+        appearence_timer_ = 0.f;
+        teleporting_ = false;
+        teleported_ = true;
         mIsHittedOnce = false;
         return;
     }
     mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0? 10.f : -10.f), y + (mHeight / 2.f) - 8.f);
-    mSprite.setTextureRect(sf::IntRect(80 * (static_cast<int>(_appearing) % 4), 70 * (static_cast<int>(_appearing) / 4), 80, 70));
+    mSprite.setTextureRect(sf::IntRect(80 * (static_cast<int>(appearence_timer_) % 4), 70 * (static_cast<int>(appearence_timer_) / 4), 80, 70));
 }
 
 void Shadow::disappear(const float dt)
 {
-    _disappearing += 0.0075f * dt;
-    if (_disappearing >= 14.f)
+    disappearance_timer_ += 0.0075f * dt;
+    if (disappearance_timer_ >= 14.f)
     {
-        _disappearing = 0.f;
-        _isDisappeared = true;
-        _isDisappearing = false;
+        disappearance_timer_ = 0.f;
+        isDisappeared_ = true;
+        disappearing_ = false;
         return;
     }
     mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 8.f);
-    mSprite.setTextureRect(sf::IntRect(80 * ((13 - static_cast<int>(_disappearing)) % 4), 70 * ((13 - static_cast<int>(_disappearing)) / 4), 80, 70));
+    mSprite.setTextureRect(sf::IntRect(80 * ((13 - static_cast<int>(disappearance_timer_)) % 4), 70 * ((13 - static_cast<int>(disappearance_timer_)) / 4), 80, 70));
 }
 
 void Shadow::update(const float dt)
@@ -90,15 +90,15 @@ void Shadow::update(const float dt)
         return;
     }
 
-    mIsCalling = false;
-    mIsWithdrawing = false;
+    summoning = false;
+    calling_of = false;
     mMoveTimer += dt;
     if (mMoveTimer > 1000.f)
     {
         mMoveTimer = 0.f;
         if (mHitpoints <= 0)
         {
-            ++_counter;
+            ++counter_;
         }
     }
 
@@ -111,22 +111,22 @@ void Shadow::update(const float dt)
             mCurrentFrame -= 4.f;
         }
 
-        if (mIsAttacked && (_numTelPoint <= static_cast<int>(_teleporPoints.size())) && !mIsDelay && !mIsStay)
+        if (mIsAttacked && (teleportation_point_number_ <= static_cast<int>(telepor_points_.size())) && !is_delay && !idling)
         {
-            if (!_isDisappeared && !_isDisappearing)
+            if (!isDisappeared_ && !disappearing_)
             {
-                _isDisappearing = true;
+                disappearing_ = true;
             }
 
-            if (_isDisappearing)
+            if (disappearing_)
             {
                 disappear(dt);
             }
-            else if (!_isTeleported && !_isTeleporting)
+            else if (!teleported_ && !teleporting_)
             {
-                x = _teleporPoints[_numTelPoint].x;
-                y = _teleporPoints[_numTelPoint].y;
-                switch (_numTelPoint)
+                x = telepor_points_[teleportation_point_number_].x;
+                y = telepor_points_[teleportation_point_number_].y;
+                switch (teleportation_point_number_)
                 {
                     case 0:
                         if (dx > 0.f)
@@ -134,8 +134,8 @@ void Shadow::update(const float dt)
                             dx = -dx;
                             mSprite.scale(-1.f, 1.f);
                         }
-                        mIsCalling = true;
-                        _isNeedDelay = true;
+                        summoning = true;
+                        needs_delay_ = true;
                         break;
                     case 1:
                         if (dx < 0.f)
@@ -143,7 +143,7 @@ void Shadow::update(const float dt)
                             dx = -dx;
                             mSprite.scale(-1.f, 1.f);
                         }
-                        _isNeedDelay = true;
+                        needs_delay_ = true;
                         break;
                     case 2:
                         if (mIsBack)
@@ -151,7 +151,7 @@ void Shadow::update(const float dt)
                             dx = -dx;
                             mSprite.scale(-1.f, 1.f);
                         }
-                        _isNeedDelay = true;
+                        needs_delay_ = true;
                         break;
                     case 3:
                         if (mIsBack)
@@ -159,45 +159,45 @@ void Shadow::update(const float dt)
                             dx = -dx;
                             mSprite.scale(-1.f, 1.f);
                         }
-                        mIsWithdrawing = true;
-                        _isNeedStay = true;
+                        calling_of = true;
+                        needs_idle_ = true;
                         break;
                     default:
                         dx = 0.03f;
                         break;
                 }
 
-                ++_numTelPoint;
-                _isTeleporting = true;
+                ++teleportation_point_number_;
+                teleporting_ = true;
             }
 
-            if (_isTeleporting)
+            if (teleporting_)
             {
                 appear(dt);
             }
 
-            if (_isTeleported && !mIsHittedOnce)
+            if (teleported_ && !mIsHittedOnce)
             {
                 mIsHitted = true;
                 mIsHittedOnce = true;
                 mIsAttacked = false;
 
-                _isTeleported = false;
-                _isTeleporting = false;
+                teleported_ = false;
+                teleporting_ = false;
                 
-                _isDisappeared = false;
-                _isDisappearing = false;
+                isDisappeared_ = false;
+                disappearing_ = false;
 
-                if (_isNeedDelay)
+                if (needs_delay_)
                 {
-                    _isNeedDelay = false;
-                    mIsDelay = true;
+                    needs_delay_ = false;
+                    is_delay = true;
                 }
 
-                if (_isNeedStay)
+                if (needs_idle_)
                 {
-                    _isNeedStay = false;
-                    mIsStay = true;
+                    needs_idle_ = false;
+                    idling = true;
                 }
                 mCurrentFrame = 0.f;
             }
@@ -207,35 +207,35 @@ void Shadow::update(const float dt)
         }
         else
         {
-            if (mIsDelay)
+            if (is_delay)
             {
-                mDelayTimer += 0.0025f * dt;
+                delay_timer_ += 0.0025f * dt;
             }
 
-            if (mIsStay)
+            if (idling)
             {
-                _stayTimer += 0.0005f * dt;
+                stay_timer_ += 0.0005f * dt;
                 mIsHitted = false;
             }
 
-            if (mDelayTimer > 2.f)
+            if (delay_timer_ > 2.f)
             {
-                mDelayTimer = 0.f;
-                mIsDelay = false;
+                delay_timer_ = 0.f;
+                is_delay = false;
             }
 
-            if (_stayTimer > 2.f)
+            if (stay_timer_ > 2.f)
             {
-                _stayTimer = 0.f;
-                mIsStay = false;
-                _numTelPoint = 0;
+                stay_timer_ = 0.f;
+                idling = false;
+                teleportation_point_number_ = 0;
             }
 
             mSprite.setPosition(x + (mWidth / 2.f) + (dx > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 8.f);
             mSprite.setTextureRect(sf::IntRect(80 * static_cast<int>(mCurrentFrame), 280, 80, 70));
         }
         mCurrentDeath = 14.f;
-        _inaccuracy = dx;
+        inaccuracy_ = dx;
     }
 
     if (mHitpoints <= 0)
@@ -246,12 +246,12 @@ void Shadow::update(const float dt)
         if (mCurrentDeath < 0.f)
         {
             mCurrentDeath = 0.f;
-            if (_counter == 6)
+            if (counter_ == 6)
             {
                 mLife = false;
             }
         }
-        mSprite.setPosition(x + (mWidth / 2.f) + (_inaccuracy > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 8.f);
+        mSprite.setPosition(x + (mWidth / 2.f) + (inaccuracy_ > 0 ? 10.f : -10.f), y + (mHeight / 2.f) - 8.f);
         mSprite.setTextureRect(sf::IntRect(80 * (static_cast<int>(mCurrentDeath) % 4), 70 * (static_cast<int>(mCurrentDeath) / 4), 80, 70));
     }
 }
