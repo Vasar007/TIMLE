@@ -1,4 +1,4 @@
-#ifndef UTILITY_INL
+﻿#ifndef UTILITY_INL
 #define UTILITY_INL
 
 template <typename T>

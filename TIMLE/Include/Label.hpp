@@ -1,11 +1,11 @@
-#ifndef LABEL_HPP
+﻿#ifndef LABEL_HPP
 #define LABEL_HPP
 
 #include <SFML/Graphics/Text.hpp>
 
-#include "Component.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "ResourceHolder.hpp"
+#include "component.hpp"
+#include "resource_identifiers.hpp"
+#include "resource_holder.hpp"
 
 
 /**

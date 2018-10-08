@@ -1,7 +1,7 @@
-#ifndef GOLEM_HPP
+﻿#ifndef GOLEM_HPP
 #define GOLEM_HPP
 
-#include "Enemy.hpp"
+#include "enemy.hpp"
 
 
 /**

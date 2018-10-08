@@ -1,12 +1,12 @@
-#ifndef UTILITY_HPP
+﻿#ifndef UTILITY_HPP
 #define UTILITY_HPP
 
 #include <sstream>
 
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Keyboard.hpp>
 
 
 namespace sf
@@ -64,6 +64,6 @@ sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fi
 template <class T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source);
 
-#include "Utility.inl"
+#include "utility.inl"
 
 #endif // UTILITY_HPP

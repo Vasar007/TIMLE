@@ -1,4 +1,4 @@
-#ifndef STATE_HPP
+﻿#ifndef STATE_HPP
 #define STATE_HPP
 
 #include <memory>
@@ -6,10 +6,10 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include "StateIdentifiers.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "PlayerInfo.hpp"
-#include "AudioManager.hpp"
+#include "audio_manager.hpp"
+#include "player_info.hpp"
+#include "resource_identifiers.hpp"
+#include "state_identifiers.hpp"
 
 
 namespace sf

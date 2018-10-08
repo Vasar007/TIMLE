@@ -1,7 +1,7 @@
-#ifndef GOBLIN_HPP
+﻿#ifndef GOBLIN_HPP
 #define GOBLIN_HPP
 
-#include "Enemy.hpp"
+#include "enemy.hpp"
 
 
 /**

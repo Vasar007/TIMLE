@@ -1,15 +1,15 @@
-#include "../Include/Bullet.hpp"
+п»ї#include "bullet.hpp"
 
 
 Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
                const Level& lvl, const float X, const float Y, const int width, const int height,
                const float tX, const float tY)
-: Projectile(id, textures, fonts, lvl, X, Y, width, height)    // При клике мышкой
+: Projectile(id, textures, fonts, lvl, X, Y, width, height) // РџСЂРё РєР»РёРєРµ РјС‹С€РєРѕР№
 , mTargetX(tX)
 , mTargetY(tY)
 , mVx((mTargetX - x) / 100.f)
-, mVy((mTargetY - y) / 100.f)    // 100 - дистанция
-, mDistance(sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
+, mVy((mTargetY - y) / 100.f) // 100 - РґРёСЃС‚Р°РЅС†РёСЏ
+, mDistance(sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
 , mIsMouse(true)
 {
     mLevelObjects = lvl.getObjects("solid");
@@ -24,12 +24,12 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
                const Level& lvl, const float X, const float Y, const int width, const int height, 
                const int dir)
-: Projectile(id, textures, fonts, lvl, X, Y, width, height)    // При нажатии space
+: Projectile(id, textures, fonts, lvl, X, Y, width, height) // РџСЂРё РЅР°Р¶Р°С‚РёРё space
 , mTargetX(X + 150.f * ((dir - 1 == 0) || (dir - 1 == 4) ? 1.f : -1.f))
 , mTargetY(Y)
 , mVx((mTargetX - x) / 100.f)
-, mVy((mTargetY - y) / 100.f)    // 100 - дистанция
-, mDistance(sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
+, mVy((mTargetY - y) / 100.f) // 100 - РґРёСЃС‚Р°РЅС†РёСЏ
+, mDistance(sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
 , mIsMouse(false)
 {
     mLevelObjects = lvl.getObjects("solid");
@@ -44,14 +44,14 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 void Bullet::update(const float dt)
 {
 
-    //x += mSpeed*time*(targetX - x) /20;    // Само движение пули по х
-    //y += mSpeed*time*(targetY - y) /20;    // По у
+    //x += mSpeed*time*(targetX - x) / 20; // РЎР°РјРѕ РґРІРёР¶РµРЅРёРµ РїСѓР»Рё РїРѕ С…
+    //y += mSpeed*time*(targetY - y) / 20; // РџРѕ Сѓ
 
     x += mVx * dt * mSpeed;
     y += mVy * dt * mSpeed;
 
-    // Задержка пули в левой стене, чтобы при проседании кадров она случайно 
-    // не вылетела за предел карты и не было ошибки
+    // Р—Р°РґРµСЂР¶РєР° РїСѓР»Рё РІ Р»РµРІРѕР№ СЃС‚РµРЅРµ, С‡С‚РѕР±С‹ РїСЂРё РїСЂРѕСЃРµРґР°РЅРёРё РєР°РґСЂРѕРІ РѕРЅР° СЃР»СѓС‡Р°Р№РЅРѕ 
+    // РЅРµ РІС‹Р»РµС‚РµР»Р° Р·Р° РїСЂРµРґРµР» РєР°СЂС‚С‹ Рё РЅРµ Р±С‹Р»Рѕ РѕС€РёР±РєРё
     if (x <= 0.f)
     {
         x = -mSprite.getLocalBounds().width;
@@ -61,7 +61,7 @@ void Bullet::update(const float dt)
         y = -mSprite.getLocalBounds().height;
     }
 
-    for (const auto& object : mLevelObjects)    // Проход по объектам solid
+    for (const auto& object : mLevelObjects) // РџСЂРѕС…РѕРґ РїРѕ РѕР±СЉРµРєС‚Р°Рј solid
     {
         if (getRect().intersects(object.mRect))
         {

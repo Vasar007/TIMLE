@@ -1,7 +1,7 @@
-#ifndef GHOST_HPP
+﻿#ifndef GHOST_HPP
 #define GHOST_HPP
 
-#include "Enemy.hpp"
+#include "enemy.hpp"
 
 
 /**

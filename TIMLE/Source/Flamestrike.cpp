@@ -1,4 +1,4 @@
-#include "../Include/Flamestrike.hpp"
+﻿#include "flamestrike.hpp"
 
 
 Flamestrike::Flamestrike(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,

@@ -1,9 +1,9 @@
-#ifndef PLAYER_HPP
+﻿#ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include "Entity.hpp"
-#include "DataTables.hpp"
-#include "PlayerInfo.hpp"
+#include "entity.hpp"
+#include "data_tables.hpp"
+#include "player_info.hpp"
 
 
 class Player final : public Entity 

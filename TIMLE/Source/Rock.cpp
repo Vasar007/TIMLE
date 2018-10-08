@@ -1,4 +1,4 @@
-#include "../Include/Rock.hpp"
+п»ї#include "rock.hpp"
 
 
 Rock::Rock(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level& lvl,
@@ -23,7 +23,7 @@ void Rock::checkCollisionWithMap(const float, const float Dy)
 {
     for (auto& mLevelObject : mLevelObjects)
     {
-        // Проверяем пересечение с объектом
+        // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РѕР±СЉРµРєС‚РѕРј
         if (getRect().intersects(mLevelObject.mRect))
         {
             if (Dy > 0.f)
@@ -48,7 +48,7 @@ void Rock::update(const float dt)
         // Not using now.
         //mCurrentFrame += 0.005f * dt;
 
-        // Притяжение к земле
+        // РџСЂРёС‚СЏР¶РµРЅРёРµ Рє Р·РµРјР»Рµ
         dy += 0.0005f * dt;
         y += dy * dt;
         checkCollisionWithMap(0.f, dy);

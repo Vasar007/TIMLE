@@ -1,4 +1,4 @@
-#include "../Include/Enemy.hpp"
+п»ї#include "enemy.hpp"
 
 
 namespace
@@ -14,7 +14,7 @@ Enemy::Enemy(const Type::ID id, const TextureHolder&, const FontHolder&, const L
 , mCounter(0)
 , mIsTurned(false)
 {
-    // Инициализируем.получаем нужные объекты для взаимодействия врага с картой
+    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј.РїРѕР»СѓС‡Р°РµРј РЅСѓР¶РЅС‹Рµ РѕР±СЉРµРєС‚С‹ РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ РІСЂР°РіР° СЃ РєР°СЂС‚РѕР№
     for (const auto& object : lvl.getObjects("enemyBorder"))
     {
         if (object.mType == type)

@@ -1,11 +1,11 @@
-#ifndef LEVEL_HPP
+ï»¿#ifndef LEVEL_HPP
 #define LEVEL_HPP
 
 #include <iostream>
-#include <vector>
 #include <map>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include <tinyxml.h>
@@ -156,7 +156,7 @@ class Level
         /**
          * \brief              Loading data from map.
          * \param[in] filename Name of the map.
-         * \return             Boolean type: if loading was successful – true, if wasn't – false.
+         * \return             Boolean type: if loading was successful â€“ true, if wasn't â€“ false.
          */
         bool                loadFromFile(const std::string& filename);
 

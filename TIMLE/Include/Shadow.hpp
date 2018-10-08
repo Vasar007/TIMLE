@@ -1,7 +1,7 @@
-#ifndef SHADOW_HPP
+﻿#ifndef SHADOW_HPP
 #define SHADOW_HPP
 
-#include "Entity.hpp"
+#include "entity.hpp"
 
 
 /**

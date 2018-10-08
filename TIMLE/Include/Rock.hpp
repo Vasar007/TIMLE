@@ -1,7 +1,7 @@
-#ifndef ROCK_HPP
+﻿#ifndef ROCK_HPP
 #define ROCK_HPP
 
-#include "Entity.hpp"
+#include "entity.hpp"
 
 
 class Rock : public Entity

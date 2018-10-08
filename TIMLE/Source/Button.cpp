@@ -1,9 +1,9 @@
-#include <SFML/Window/Event.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
+﻿#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Window/Event.hpp>
 
-#include "../Include/Button.hpp"
-#include "../Include/Utility.hpp"
+#include "button.hpp"
+#include "utility.hpp"
 
 
 namespace GUI

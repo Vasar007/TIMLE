@@ -1,7 +1,7 @@
-#ifndef PROJECTILE_HPP
+﻿#ifndef PROJECTILE_HPP
 #define PROJECTILE_HPP
 
-#include "Entity.hpp"
+#include "entity.hpp"
 
 
 class Projectile : public Entity, sf::Transformable

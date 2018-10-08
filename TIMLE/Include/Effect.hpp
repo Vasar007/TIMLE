@@ -1,10 +1,10 @@
-#ifndef EFFECT_HPP
+﻿#ifndef EFFECT_HPP
 #define EFFECT_HPP
 
 #include <SFML/Graphics.hpp>
 
-#include "DataTables.hpp"
-#include "ResourceHolder.hpp"
+#include "data_tables.hpp"
+#include "resource_holder.hpp"
 
 
 /**

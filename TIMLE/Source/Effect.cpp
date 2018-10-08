@@ -1,5 +1,6 @@
-#include <utility>
-#include "../Include/Effect.hpp"
+﻿#include <utility>
+
+#include "effect.hpp"
 
 
 Effect::Effect(const Type::ID id, const float X, const float Y, const int width, const int height,

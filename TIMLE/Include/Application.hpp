@@ -1,15 +1,15 @@
-#ifndef APPLICATION_HPP
+﻿#ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include <SFML/System/Time.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/System/Time.hpp>
 
-#include "ResourceHolder.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "Player.hpp"
-#include "StateStack.hpp"
+#include "resource_identifiers.hpp"
+#include "resource_holder.hpp"
+#include "player.hpp"
+#include "state_stack.hpp"
 
 
 /**

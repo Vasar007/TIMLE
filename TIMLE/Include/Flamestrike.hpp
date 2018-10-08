@@ -1,7 +1,7 @@
-#ifndef FIREBALL_HPP
+﻿#ifndef FIREBALL_HPP
 #define FIREBALL_HPP
 
-#include "Projectile.hpp"
+#include "projectile.hpp"
 
 
 class Flamestrike final : public Projectile

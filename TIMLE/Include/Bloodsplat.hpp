@@ -1,9 +1,9 @@
-#ifndef BLOODSPLAT_HPP
+﻿#ifndef BLOODSPLAT_HPP
 #define BLOODSPLAT_HPP
 
 #include <SFML/Graphics/Texture.hpp>
 
-#include "Effect.hpp"
+#include "effect.hpp"
 
 
 /**

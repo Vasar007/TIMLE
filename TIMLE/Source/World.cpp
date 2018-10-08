@@ -1,29 +1,30 @@
-#include <limits>
+п»ї#include <limits>
 #include <string>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "../Include/World.hpp"
-#include "../Include/Projectile.hpp"
-#include "../Include/Utility.hpp"
-#include "../Include/Ghost.hpp"
-#include "../Include/Golem.hpp"
-#include "../Include/DarkSoldier.hpp"
-#include "../Include/Shadow.hpp"
-#include "../Include/Goblin.hpp"
-#include "../Include/MinotaurMage.hpp"
-#include "../Include/Dwarf.hpp"
-#include "../Include/MovingPlatform.hpp"
-#include "../Include/Bullet.hpp"
-#include "../Include/Rock.hpp"
-#include "../Include/Gate.hpp"
-#include "../Include/DialogPerson.hpp"
-#include "../Include/Tentacle.hpp"
-#include "../Include/DeadMan.hpp"
-#include "../Include/Flamestrike.hpp"
-#include "../Include/DarkArcher.hpp"
-#include "../Include/MagicArrow.hpp"
-#include "../Include/Bloodsplat.hpp"
+#include "bloodsplat.hpp"
+#include "bullet.hpp"
+#include "dark_archer.hpp"
+#include "dark_soldier.hpp"
+#include "dead_man.hpp"
+#include "dialog_person.hpp"
+#include "dwarf.hpp"
+#include "flamestrike.hpp"
+#include "gate.hpp"
+#include "ghost.hpp"
+#include "golem.hpp"
+#include "goblin.hpp"
+#include "magic_arrow.hpp"
+#include "minotaur_mage.hpp"
+#include "moving_platform.hpp"
+#include "projectile.hpp"
+#include "rock.hpp"
+#include "shadow.hpp"
+#include "tentacle.hpp"
+#include "utility.hpp"
+
+#include "world.hpp"
 
 
 World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
@@ -938,7 +939,6 @@ void World::handleCollisions(const float dt)
 
                 if ((*it)->mIsHitted)
                 {
-                    // Нанесение урона
                     std::unique_ptr<Entity> flamestrike = std::make_unique<Flamestrike>(
                         Type::ID::Flamestrike, _textures, _fonts, *_level,
                         _playerHero->x + static_cast<float>(_playerHero->mWidth) / 4.f,
@@ -991,7 +991,7 @@ void World::handleCollisions(const float dt)
 
                 ++distance;
             }
-            
+
             _debugRectsToDraw.emplace_back(buildBorderLines(findPlayer, sf::Color::Transparent,
                                                             sf::Color::Black, 1.f));
 
@@ -1114,7 +1114,7 @@ void World::handleCollisions(const float dt)
         {
             sf::FloatRect findPlayer((*it)->x, (*it)->y, static_cast<float>((*it)->mWidth), 
                                      static_cast<float>((*it)->mHeight));
-            
+
             size_t distance = 0;
             while (distance < 10)
             {
@@ -1133,7 +1133,7 @@ void World::handleCollisions(const float dt)
         /// Opening of the gates.
         if ((*it)->mTypeID == Type::ID::OpeningGate && !(*it)->mIsStarted)
         {
-            if ((*it)->mType == "3" && _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithHeinrich))
+            if ((*it)->mType == "3" && _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithOswald))
             {
                 (*it)->mIsStarted = true;
             }
@@ -1179,12 +1179,11 @@ void World::handleCollisions(const float dt)
 
                     (*it)->mIsAttacked = true;
                     (*it)->mCurrentFrame = 0.f;
-                    
+
                     if ((*it)->mIsHitted)
                     {
-                        // Наносит урон
                         _playerHero->mHitpoints -= (*it)->mDamage;
-                        // Игрок отскакивает от врага
+                        // The player bounces off the enemy.
                         _playerHero->dy = -0.1f;
                         //p.mSpeed = 0.5f * (*it)->dx;
                         //(*it)->isBack = false;
@@ -1197,7 +1196,7 @@ void World::handleCollisions(const float dt)
             /// If faced with Golem...
             if ((*it)->mTypeID == Type::ID::Golem)
             {
-                // Если голем активирован
+                // If the Golem is not activated.
                 if (!(*it)->mIsStarted)
                 {
                     (*it)->mIsStarted = true;
@@ -1210,7 +1209,7 @@ void World::handleCollisions(const float dt)
                         (*it)->mIsBack = true;
                         (*it)->dx = -(*it)->dx;
                     }
-                    
+
                     (*it)->mIsAttacked = true;
                     (*it)->mCurrentFrame = 0.f;
             
@@ -1234,23 +1233,22 @@ void World::handleCollisions(const float dt)
                         (*it)->mIsBack = true;
                         (*it)->dx = -(*it)->dx;
                     }
-                    
-                    // Враг останавливается
+
                     (*it)->mIsAttacked = true;
                     (*it)->mCurrentFrame = 0.f;
-                    
+
                     if ((*it)->mIsHitted)
                     {
-                        // Солдат телепортирует игрока
+                        // Soldier teleports the player.
                         _playerHero->x = ((*it)->dx > 0 ? 1.2f : 0.8f) * (*it)->x;
-                        // Игрок отскакивает от врага
+                        // The player bounces off the enemy.
                         _playerHero->y = 0.9f * (*it)->y;
                         _playerHero->dy = -0.25f;
                         (*it)->mIsHitted = false;
                         std::cout << "Hit\n";
                     }
                     //p.x = 0.97f * ((*it)->dx > 0? (*it)->x + 60.f : (*it)->x);
-                    //p.dy = -0.5f;    // Игрок отскакивает от врага
+                    //p.dy = -0.5f;    // The player bounces off the enemy.
                 }
             }
 
@@ -1306,7 +1304,7 @@ void World::handleCollisions(const float dt)
             /// If faced with Dwarf...
             if ((*it)->mTypeID == Type::ID::Dwarf)
             {
-                // Если дварф не активирован
+                // If the Dwarf is not activated.
                 if (!(*it)->mIsStarted)
                 {
                     (*it)->mIsStarted = true;
@@ -1336,7 +1334,7 @@ void World::handleCollisions(const float dt)
             /// If faced with DwarfArcher...
             if ((*it)->mTypeID == Type::ID::DwarfArcher)
             {
-                // Если дварф-лучник не активирован
+                // If the DwarfArcher is not activated.
                 if (!(*it)->mIsStarted)
                 {
                     (*it)->mIsStarted = true;
@@ -1366,11 +1364,11 @@ void World::handleCollisions(const float dt)
             /// If faced with DwarvenCommander...
             if ((*it)->mTypeID == Type::ID::DwarvenCommander)
             {
-                // Если дварф не активирован
+                // If the DwarvenCommander is not activated.
                 if (!(*it)->mIsStarted)
                 {
                     (*it)->mIsStarted = true;
-                    // Создаём рядом ещё двух гномов обычного типа, если сагрили командира гномов
+                    // Next create two more dwarves conventional type, if aggroes dwarven commander.
                     if (!(*it)->mIsSpawn)
                     {
                         if (_playerHero->dx >= 0.f)
@@ -1441,7 +1439,7 @@ void World::handleCollisions(const float dt)
             /// If faced with Tentacle...
             if ((*it)->mTypeID == Type::ID::Tentacle)
             {
-                // Если щупальце не активировано
+                // If the Tentacle is not activated.
                 if (!(*it)->mIsStarted)
                 {
                     (*it)->mIsStarted = true;
@@ -1449,7 +1447,7 @@ void World::handleCollisions(const float dt)
                 else if (_playerHero->mHitpoints > 0)
                 {
                     (*it)->mIsAttacked = true;
-                    
+
                     if ((*it)->mIsHitted)
                     {
                         _playerHero->mHitpoints -= (*it)->mDamage;
@@ -1462,7 +1460,7 @@ void World::handleCollisions(const float dt)
             /// If faced with DarkArcher...
             if ((*it)->mTypeID == Type::ID::DarkArcher)
             {
-                // Если тёмный лучник не активирован
+                // If the DarkArcher is not activated.
                 if (!(*it)->mIsEnd)
                 {
                     (*it)->mIsStarted = true;
@@ -1572,11 +1570,9 @@ void World::handleCollisions(const float dt)
                 case Type::ID::Oswald:
                     _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithOswald) = true;
                     break;
-                
                 case Type::ID::Heinrich:
                     _playerInfo.mQuests.at(PlayerInfo::Quest::TalkWithHeinrich) = true;
                     break;
-                
                 default:
                     std::cout << "Invalid dialog person type\n";
                     break;
@@ -1758,7 +1754,7 @@ void World::handleCollisions(const float dt)
                                                          (*it)->x + 7.f, (*it)->y, 48, 24)
                         );
                     }
-                    
+
                     (*it2)->mLife = false;
                 }
 

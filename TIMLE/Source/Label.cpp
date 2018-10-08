@@ -1,7 +1,7 @@
-#include <SFML/Graphics/RenderStates.hpp>
+﻿#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
-#include "../Include/Label.hpp"
+#include "label.hpp"
 
 
 namespace GUI

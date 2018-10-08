@@ -1,5 +1,6 @@
-#include "../Include/State.hpp"
-#include "../Include/StateStack.hpp"
+﻿#include "state_stack.hpp"
+
+#include "state.hpp"
 
 
 State::CurrentSettings::CurrentSettings(const sf::Vector2u windowSize, 

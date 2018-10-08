@@ -1,7 +1,7 @@
-#ifndef BULLET_HPP
+﻿#ifndef BULLET_HPP
 #define BULLET_HPP
 
-#include "Projectile.hpp"
+#include "projectile.hpp"
 
 
 class Bullet final : public Projectile

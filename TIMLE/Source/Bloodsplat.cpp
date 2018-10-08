@@ -1,4 +1,4 @@
-#include "../Include/Bloodsplat.hpp"
+﻿#include "bloodsplat.hpp"
 
 
 Bloodsplat::Bloodsplat(const Type::ID id, const sf::Texture& texture, const float X,

@@ -1,11 +1,11 @@
-#ifndef ENTITY_HPP
+﻿#ifndef ENTITY_HPP
 #define ENTITY_HPP
 
 #include <SFML/Graphics.hpp>
 
-#include "Level.hpp"
-#include "ResourceHolder.hpp"
-#include "DataTables.hpp"
+#include "data_tables.hpp"
+#include "level.hpp"
+#include "resource_holder.hpp"
 
 
 class Entity 

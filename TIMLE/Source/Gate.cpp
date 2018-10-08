@@ -1,4 +1,4 @@
-#include "../Include/Gate.hpp"
+п»ї#include "gate.hpp"
 
 
 Gate::Gate(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level& lvl,
@@ -41,7 +41,7 @@ void Gate::checkCollisionWithMap(const float, const float Dy)
 {
     for (auto& mLevelObject : mLevelObjects)
     {
-        // Проверяем пересечение с объектом
+        // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РѕР±СЉРµРєС‚РѕРј
         if (getRect().intersects(mLevelObject.mRect))
         {
             if (mLevelObject.mName == "solid")

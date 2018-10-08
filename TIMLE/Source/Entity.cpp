@@ -1,5 +1,6 @@
-#include <utility>
-#include "../Include/Entity.hpp"
+﻿#include <utility>
+
+#include "entity.hpp"
 
 
 Entity::Entity(const Type::ID id, const float X, const  float Y, const int width, const int height, 

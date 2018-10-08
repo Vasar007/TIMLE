@@ -1,11 +1,11 @@
-#ifndef COMPONENT_HPP
+﻿#ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
-#include <SFML/System/NonCopyable.hpp>
+#include <memory>
+
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-
-#include <memory>
+#include <SFML/System/NonCopyable.hpp>
 
 
 // Forward declaration.

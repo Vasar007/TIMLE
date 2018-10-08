@@ -1,7 +1,7 @@
-#ifndef TENTACLE_HPP
+﻿#ifndef TENTACLE_HPP
 #define TENTACLE_HPP
 
-#include "Enemy.hpp"
+#include "enemy.hpp"
 
 
 /**

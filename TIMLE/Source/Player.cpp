@@ -1,4 +1,4 @@
-#include "../Include/Player.hpp"
+п»ї#include "../Include/Player.hpp"
 
 
 namespace
@@ -47,7 +47,7 @@ Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mState(Player::State::Idle)
 , mPlayerInfo(playerInfo)
 {
-    // Инициализируем и получаем все объекты для взаимодействия персонажа с картой
+    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Рё РїРѕР»СѓС‡Р°РµРј РІСЃРµ РѕР±СЉРµРєС‚С‹ РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р° СЃ РєР°СЂС‚РѕР№
     mLevelObjects = lvl.getAllObjects();
     mTexture = textures.get(Textures::ID::Archer);
     mSprite.setTexture(mTexture);
@@ -121,7 +121,7 @@ void Player::control(const float dt)
             //mState = State::Jump;
             dy = -0.35f;
 
-            // Прыжок != на земле
+            // РџСЂС‹Р¶РѕРє != РЅР° Р·РµРјР»Рµ
             mOnGround = false;
             mCanDoubleJump = true;
             mPressJump = true;
@@ -131,7 +131,7 @@ void Player::control(const float dt)
             //mState = State::Jump;
             dy = -0.425f;
 
-            // Прыжок != на земле
+            // РџСЂС‹Р¶РѕРє != РЅР° Р·РµРјР»Рµ
             mOnGround = false;
             mDoubleJump = false;
         }
@@ -214,10 +214,10 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
     bool transitFound = false;
     for (const auto& object : mLevelObjects)
     {
-        // Проверяем пересечение с объектом
+        // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РѕР±СЉРµРєС‚РѕРј
         if (getRect().intersects(object.mRect))
         {
-            // Если встретили препятствие
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё РїСЂРµРїСЏС‚СЃС‚РІРёРµ
             if (object.mName == "solid" || object.mName == "rock")
             {
                 if (Dy > 0.f)
@@ -259,13 +259,13 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 }
             }
 
-            // Если встретили смерть
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЃРјРµСЂС‚СЊ
             if (object.mName == "death")
             {
                 mHitpoints = 0;
             }
 
-            // Если встретили диалог
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё РґРёР°Р»РѕРі
             if (object.mName == "dialogMessage")
             {
                 mDialogNumber = std::stoi(object.mType);
@@ -281,7 +281,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 }
             }
 
-            // Если встретили переход
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё РїРµСЂРµС…РѕРґ
             if (object.mName == "door")
             {
                 transitFound = true;
@@ -289,13 +289,13 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 mPlayerInfo.mNumberOfDoor = { object.mId, object.mType };
             }
 
-            // Если встретили конец уровня
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё РєРѕРЅРµС† СѓСЂРѕРІРЅСЏ
             if (object.mName == "end")
             {
                 mIsRichedEnd = true;
             }
 
-            // Если встретили босса
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё Р±РѕСЃСЃР°
             if (object.mName == "boss")
             {
                 switch (std::stoi(object.mType))
@@ -317,7 +317,7 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 }
             }
         }
-        // Если мы не пересекаемся не с какими прямоугольниками и dy > 0, то onGround = false 
+        // Р•СЃР»Рё РјС‹ РЅРµ РїРµСЂРµСЃРµРєР°РµРјСЃСЏ РЅРµ СЃ РєР°РєРёРјРё РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°РјРё Рё dy > 0, С‚Рѕ onGround = false 
         else if (dy > 0.f)
         {
             mOnGround = false;
@@ -367,7 +367,7 @@ void Player::update(const float dt)
                 control(dt);
             }
 
-            // В зависимости от направления
+            // Р’ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°РїСЂР°РІР»РµРЅРёСЏ
             switch (mState)
             {
                 case Player::State::Left:
@@ -409,14 +409,14 @@ void Player::update(const float dt)
                 x += dx * dt;
             }
 
-            // Обрабатываем столкновения по x
+            // РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ РїРѕ x
             checkCollisionWithMap(dx, 0.f);
             y += dy * dt;
         
-            // Обрабатываем столкновения по y
+            // РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ РїРѕ y
             checkCollisionWithMap(0.f, dy);
 
-            // Обнуляем скорость, чтобы объект остановился
+            // РћР±РЅСѓР»СЏРµРј СЃРєРѕСЂРѕСЃС‚СЊ, С‡С‚РѕР±С‹ РѕР±СЉРµРєС‚ РѕСЃС‚Р°РЅРѕРІРёР»СЃСЏ
             if (!mIsMove)
             {
                 mSpeed = 0.f;
@@ -437,7 +437,7 @@ void Player::update(const float dt)
                 _beforeJump = y;
             }
 
-            // Притяжение к земле
+            // РџСЂРёС‚СЏР¶РµРЅРёРµ Рє Р·РµРјР»Рµ
             dy += 0.0015f * dt;
 
 

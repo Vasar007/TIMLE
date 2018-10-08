@@ -26,13 +26,18 @@ Official repository of the game "This Is My Last Escapade" (TIMLE).
 
 ## Download
 
+TinyXML site is [here](http://www.grinninglizard.com/tinyxml/).
+
+Tiled Map Editor used to create levels. Official site is [here](https://www.mapeditor.org/).
+
+SFML library site is [here](https://www.sfml-dev.org/). Its repository can be found [here](https://github.com/SFML/SFML).
+
 Compiled game file with SFML dlls can be found [here](https://github.com/Vasar007/TIMLE/tree/master/ReleaseWithoutConsole).
 
 ## Compiling
 
-This project needs in SFML v2.4 and C++14.
+This project needs in SFML v2.4.2 and C++17.
 
 ## License information
 
-This project is licensed under the terms of the [MIT License](LICENSE).\
-SFML is licensed under the terms of the [zlib/png license](https://www.sfml-dev.org/license.php).
+This project is licensed under the terms of the [Apache License 2.0](LICENSE).

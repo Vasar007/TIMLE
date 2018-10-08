@@ -1,4 +1,4 @@
-#ifndef WORLD_HPP
+﻿#ifndef WORLD_HPP
 #define WORLD_HPP
 
 #include <list>
@@ -10,20 +10,18 @@
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/NonCopyable.hpp>
 
-#include "AudioManager.hpp"
-#include "Effect.hpp"
-#include "GolemDark.hpp"
-#include "Level.hpp"
-#include "Lifebar.hpp"
-#include "Player.hpp"
-#include "PlayerInfo.hpp"
-#include "Projectile.hpp"
-#include "ResourceHolder.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "Shadow.hpp"
-#include "State.hpp"
-#include "Tentacle.hpp"
-#include "WorldContext.hpp"
+#include "audio_manager.hpp"
+#include "effect.hpp"
+#include "level.hpp"
+#include "life_bar.hpp"
+#include "player.hpp"
+#include "player_info.hpp"
+#include "projectile.hpp"
+#include "resource_identifiers.hpp"
+#include "resource_holder.hpp"
+#include "state.hpp"
+#include "tentacle.hpp"
+#include "world_context.hpp"
 
 
 // Forward declaration.

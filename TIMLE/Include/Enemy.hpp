@@ -1,7 +1,7 @@
-#ifndef ENEMY_HPP
+﻿#ifndef ENEMY_HPP
 #define ENEMY_HPP
 
-#include "Entity.hpp"
+#include "entity.hpp"
 
 
 /**

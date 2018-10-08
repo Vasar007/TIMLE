@@ -1,16 +1,16 @@
-#ifndef BUTTON_HPP
+﻿#ifndef BUTTON_HPP
 #define BUTTON_HPP
 
 #include <memory>
 #include <functional>
-#include <SFML/Audio/Sound.hpp>
 
+#include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-#include "Component.hpp"
-#include "ResourceIdentifiers.hpp"
-#include "ResourceHolder.hpp"
+#include "component.hpp"
+#include "resource_holder.hpp"
+#include "resource_identifiers.hpp"
 
 
 /**

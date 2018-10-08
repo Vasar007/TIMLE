@@ -1,4 +1,4 @@
-#include "../Include/Tentacle.hpp"
+п»ї#include "tentacle.hpp"
 
 
 Tentacle::Tentacle(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
@@ -19,10 +19,10 @@ void Tentacle::checkCollisionWithMap(const float, const float)
 {
     for (const auto& object : mLevelObjects)
     {
-        // Проверяем пересечение с объектом
+        // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РѕР±СЉРµРєС‚РѕРј
         if (getRect().intersects(object.mRect))
         {
-            // Если встретили смерть
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЃРјРµСЂС‚СЊ
             if (object.mName == "death")
             {
                 mHitpoints = 0;

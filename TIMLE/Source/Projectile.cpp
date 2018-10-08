@@ -1,8 +1,9 @@
-#include <cmath>
+﻿#include <cmath>
 
-#include "../Include/Projectile.hpp"
-#include "../Include/DataTables.hpp"
-#include "../Include/Utility.hpp"
+#include "data_tables.hpp"
+#include "utility.hpp"
+
+#include "projectile.hpp"
 
 
 namespace

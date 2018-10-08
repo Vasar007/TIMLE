@@ -1,4 +1,4 @@
-#include "../Include/Pickup.hpp"
+﻿#include "../Include/Pickup.hpp"
 #include "../Include/DataTables.hpp"
 #include "../Include/Utility.hpp"
 #include "../Include/ResourceHolder.hpp"

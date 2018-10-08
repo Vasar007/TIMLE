@@ -1,4 +1,4 @@
-#include "../Include/Dwarf.hpp"
+п»ї#include "dwarf.hpp"
 
 
 Dwarf::Dwarf(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
@@ -29,7 +29,7 @@ void Dwarf::checkCollisionWithMap(const float Dx, const float Dy)
 {
     for (const auto& object : mLevelObjects)
     {
-        // Проверяем пересечение с объектом
+        // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РѕР±СЉРµРєС‚РѕРј
         if (getRect().intersects(object.mRect))
         {
             if (object.mName == "enemyBorder")
@@ -57,7 +57,7 @@ void Dwarf::checkCollisionWithMap(const float Dx, const float Dy)
                 }
             }
 
-            // Если встретили смерть
+            // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЃРјРµСЂС‚СЊ
             if (object.mName == "death")
             {
                 mHitpoints = 0;
@@ -68,7 +68,7 @@ void Dwarf::checkCollisionWithMap(const float Dx, const float Dy)
 
 void Dwarf::update(const float dt)
 {
-    // Притяжение к земле
+    // РџСЂРёС‚СЏР¶РµРЅРёРµ Рє Р·РµРјР»Рµ
     dy += 0.0015f * dt;
     y += dy * dt;
     checkCollisionWithMap(0.f, dy);

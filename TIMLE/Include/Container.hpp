@@ -1,10 +1,10 @@
-#ifndef CONTAINER_HPP
+﻿#ifndef CONTAINER_HPP
 #define CONTAINER_HPP
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "Component.hpp"
+#include "component.hpp"
 
 
 /**

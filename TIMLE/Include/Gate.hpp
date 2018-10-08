@@ -1,7 +1,7 @@
-#ifndef GATE_HPP
+﻿#ifndef GATE_HPP
 #define GATE_HPP
 
-#include "Entity.hpp"
+#include "entity.hpp"
 
 
 class Gate : public Entity
