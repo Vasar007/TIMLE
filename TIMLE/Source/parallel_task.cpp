@@ -49,7 +49,7 @@ void ParallelTask::runTask()
         }
     }
 
-    // mFinished may be accessed from multiple threads, protect it.
+    // _finished may be accessed from multiple threads, protect it.
     {
         sf::Lock lock(_mutex);
         _finished = true;
@@ -61,6 +61,7 @@ void ParallelTask::loadTextures()
     sf::Lock lock(_mutex);
     if (!_playerInfo.mLoaded)
     {
+        // Load textures.
         _textures.load(Textures::ID::Archer,          "Media/Textures/Player/male_lightT.png");
                                                       
         _textures.load(Textures::ID::Swordsman,       "Media/Textures/Player/male_heavy.png");
@@ -116,7 +117,7 @@ void ParallelTask::loadTextures()
 
         _textures.load(Textures::ID::Bloodsplat,      "Media/Textures/Effects/Bloodsplat.png");
 
-
+        // Load sounds.
         _sounds.load(Sounds::ID::Bullet,              "Media/Sounds/firebol3.ogg");
 
         _playerInfo.mLoaded = true;

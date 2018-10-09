@@ -21,10 +21,10 @@ SettingsState::SettingsState(StateStack& stack, Context context)
     std::fill(_labelsNames.begin(), _labelsNames.end(), "");
 
     // Set default label names.
-    _labelsNames.at(SettingsState::Setting::WindowSize) = toString(_window.getSize().x) + " x " +
-                                                          toString(_window.getSize().y);
+    _labelsNames.at(SettingsState::Setting::WindowSize) = utils::toString(_window.getSize().x) + " x " +
+                                                          utils::toString(_window.getSize().y);
     _labelsNames.at(SettingsState::Setting::WindowStyle) = "Window Mode";
-    _labelsNames.at(SettingsState::Setting::MusicVolume) = toString(_currentSettings->mMusicVolume);
+    _labelsNames.at(SettingsState::Setting::MusicVolume) = utils::toString(_currentSettings->mMusicVolume);
     _labelsNames.at(SettingsState::Setting::FontType) = "Noto Serif";
     _labelsNames.at(SettingsState::Setting::Language) = "Russian";
     _labelsNames.at(SettingsState::Setting::DebugMode) = L"Выключен";
@@ -71,8 +71,8 @@ SettingsState::SettingsState(StateStack& stack, Context context)
             mAudioManager.setMusicVolume(_currentSettings->mMusicVolume);
             
             // Update all labels names.
-            _labelsNames.at(SettingsState::Setting::WindowSize) = toString(_window.getSize().x) 
-                                                            + " x " + toString(_window.getSize().y);
+            _labelsNames.at(SettingsState::Setting::WindowSize) = utils::toString(_window.getSize().x)
+                                                            + " x " + utils::toString(_window.getSize().y);
 
             switch (_currentSettings->mWindowStyle)
             {
@@ -88,7 +88,7 @@ SettingsState::SettingsState(StateStack& stack, Context context)
             }
             
             _labelsNames[SettingsState::Setting::MusicVolume] = 
-                toString(_currentSettings->mMusicVolume);
+                utils::toString(_currentSettings->mMusicVolume);
 
             switch (_currentSettings->mFontType)
             {
@@ -158,8 +158,8 @@ bool SettingsState::update(sf::Time)
     {
         // Update all labels names.
         _labelsNames.at(SettingsState::Setting::WindowSize) = 
-            toString(_currentSettings->mWindowSize.x) + " x " +
-            toString(_currentSettings->mWindowSize.y);
+            utils::toString(_currentSettings->mWindowSize.x) + " x " +
+            utils::toString(_currentSettings->mWindowSize.y);
 
         switch (_currentSettings->mWindowStyle)
         {
@@ -174,7 +174,7 @@ bool SettingsState::update(sf::Time)
                 break;
         }
 
-        _labelsNames.at(SettingsState::Setting::MusicVolume) = toString(_currentSettings->mMusicVolume);
+        _labelsNames.at(SettingsState::Setting::MusicVolume) = utils::toString(_currentSettings->mMusicVolume);
 
         switch (_currentSettings->mFontType)
         {
@@ -267,7 +267,7 @@ void SettingsState::updateLabels()
     for (std::size_t i = 0; i < actionCount; ++i)
     {
         const sf::Keyboard::Key key = player.getAssignedKey(static_cast<PlayerInfo::Action>(i));
-        _bindingLabels.at(i)->setText(toString(key));
+        _bindingLabels.at(i)->setText(utils::toString(key));
     }
 
     for (std::size_t i = 0; i < SettingsState::Setting::SettingCount; ++i)

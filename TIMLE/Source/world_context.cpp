@@ -81,7 +81,7 @@ void WorldContext::buildBossData()
             break;
 
         default:
-            std::cout << "Error! Out of range level.\n";
+            std::cerr << "Error! Out of range level.\n";
             throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 }
@@ -98,8 +98,9 @@ void WorldContext::draw(sf::RenderTarget& target) const
                 {
                     if (_debug)
                     {
-                        auto shape = buildBorderLines(tentacle.getRect(), sf::Color::Transparent,
-                                                       sf::Color::Red, 1.f);
+                        auto shape = utils::buildBorderLines(
+                            tentacle.getRect(), sf::Color::Transparent, sf::Color::Red, 1.f
+                        );
                         target.draw(shape);
                     }
 
@@ -110,8 +111,9 @@ void WorldContext::draw(sf::RenderTarget& target) const
                 {
                     if (_debug)
                     {
-                        auto shape = buildBorderLines(tentacle.getRect(), sf::Color::Transparent,
-                                                      sf::Color::Red, 1.f);
+                        auto shape = utils::buildBorderLines(
+                            tentacle.getRect(), sf::Color::Transparent, sf::Color::Red, 1.f
+                        );
                         target.draw(shape);
                     }
 
@@ -120,8 +122,9 @@ void WorldContext::draw(sf::RenderTarget& target) const
 
                 if (_debug)
                 {
-                    auto shape = buildBorderLines(_shadowBoss.mShadow->getRect(),
-                                                  sf::Color::Transparent, sf::Color::Red, 1.f);
+                    auto shape = utils::buildBorderLines(
+                        _shadowBoss.mShadow->getRect(), sf::Color::Transparent, sf::Color::Red, 1.f
+                    );
                     target.draw(shape);
                 }
 
@@ -134,8 +137,9 @@ void WorldContext::draw(sf::RenderTarget& target) const
                 {
                     if (_debug)
                     {
-                        auto shape = buildBorderLines(_golemBoss.mGolem->getRect(),
-                                                      sf::Color::Transparent, sf::Color::Red, 1.f);
+                        auto shape = utils::buildBorderLines(
+                            _golemBoss.mGolem->getRect(), sf::Color::Transparent, sf::Color::Red, 1.f
+                        );
                         target.draw(shape);
                     }
 
@@ -159,7 +163,7 @@ void WorldContext::draw(sf::RenderTarget& target) const
             break;
 
         default:
-            std::cout << "Error! Out of range level.\n";
+            std::cerr << "Error! Out of range level.\n";
             throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 }
@@ -224,7 +228,7 @@ void WorldContext::update(const sf::Time dt)
             break;
 
         default:
-            std::cout << "Error! Out of range level.\n";
+            std::cerr << "Error! Out of range level.\n";
             throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 }
@@ -259,7 +263,7 @@ void WorldContext::processGolemDarkEvents(sf::View& view,
                 _golemBoss.mCameraCounter = 0;
                 _golemBoss.mIsShaked = false;
 
-                const int randomNum = randomInt(8);
+                const int randomNum = utils::randomInt(8);
                 std::unique_ptr<Entity> rock = std::make_unique<Rock>(
                     Type::ID::Rock, _textures, _fonts, _level,
                     _golemBoss.mRocks.at(randomNum).x,
@@ -501,7 +505,7 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
             break;
 
         default:
-            std::cout << "Error! Out of range level.\n";
+            std::cerr << "Error! Out of range level.\n";
             throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 }
@@ -553,7 +557,7 @@ void WorldContext::handleCollisions(Entity& entity)
             break;
 
         default:
-            std::cout << "Error! Out of range level.\n";
+            std::cerr << "Error! Out of range level.\n";
             throw std::invalid_argument(std::to_string(_currentLevelNumber));
     }
 }

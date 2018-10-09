@@ -15,7 +15,7 @@ TitleState::TitleState(StateStack& stack, Context context)
 
     _text.setFont(context.mFonts->get(Fonts::ID::Main));
     _text.setString(L"Нажмите любую кнопку для продолжения");
-    centerOrigin(_text);
+    utils::centerOrigin(_text);
     _text.setPosition(sf::Vector2f(context.mWindow->getSize() / 2u));
 }
 

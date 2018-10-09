@@ -1,8 +1,18 @@
-﻿#include "player_info.hpp"
+﻿#include <algorithm>
+
+#include "player_info.hpp"
 
 
 PlayerInfo::PlayerInfo()
-: _currentGameStatus(PlayerInfo::GameStatus::GameRunning)
+: _keyBinding{ { sf::Keyboard::Left,  PlayerInfo::Action::MoveLeft },
+               { sf::Keyboard::Right, PlayerInfo::Action::MoveRight },
+               { sf::Keyboard::Up,    PlayerInfo::Action::MoveUp },
+               { sf::Keyboard::Down,  PlayerInfo::Action::MoveDown },
+               { sf::Keyboard::Space, PlayerInfo::Action::Fire },
+               { sf::Keyboard::M,     PlayerInfo::Action::LaunchMissile },
+               { sf::Keyboard::E,     PlayerInfo::Action::UseDoor }
+}
+, _currentGameStatus(PlayerInfo::GameStatus::GameRunning)
 , _currentLevelNumber(1)
 , _player(nullptr)
 , _defaultQuestValues{ { Quest::TalkWithOswald,        false },
@@ -30,15 +40,6 @@ PlayerInfo::PlayerInfo()
 , mDoTransit(false)
 , mNumberOfDoor()
 {
-    // Set initial key bindings.
-    _keyBinding.emplace(sf::Keyboard::Left,  PlayerInfo::Action::MoveLeft);
-    _keyBinding.emplace(sf::Keyboard::Right, PlayerInfo::Action::MoveRight);
-    _keyBinding.emplace(sf::Keyboard::Up,    PlayerInfo::Action::MoveUp);
-    _keyBinding.emplace(sf::Keyboard::Down,  PlayerInfo::Action::MoveDown);
-    _keyBinding.emplace(sf::Keyboard::Space, PlayerInfo::Action::Fire);
-    _keyBinding.emplace(sf::Keyboard::M,     PlayerInfo::Action::LaunchMissile);
-    _keyBinding.emplace(sf::Keyboard::E,     PlayerInfo::Action::UseDoor);
-
     // Set initial action bindings.
     initializeActions();
 
@@ -49,37 +50,26 @@ PlayerInfo::PlayerInfo()
 
 void PlayerInfo::showDialog(const std::size_t number)
 {
-    mDialogNumber = number;
-
-    bool isFind = false;
-    for (const auto& dialog : mShowedDialogs)
+    if (const auto it = std::find(mShowedDialogs.begin(), mShowedDialogs.end(), number);
+        it == mShowedDialogs.end())
     {
-        if (dialog == mDialogNumber)
-        {
-            mDialogNumber = 0;
-            isFind = true;
-            break;
-        }
-    }
-
-    if (!isFind)
-    {
-        mShowedDialogs.push_back(mDialogNumber);
+        mDialogNumber = number;
+        mShowedDialogs.push_back(number);
     }
 }
 
 void PlayerInfo::assignKey(const Action action, const sf::Keyboard::Key key)
 {
     // Remove all keys that already map to action.
-    for (auto itr = _keyBinding.begin(); itr != _keyBinding.end();)
+    for (auto it = _keyBinding.begin(); it != _keyBinding.end();)
     {
-        if (itr->second == action)
+        if (it->second == action)
         {
-            _keyBinding.erase(itr++);
+            it = _keyBinding.erase(it);
         }
         else
         {
-            ++itr;
+            ++it;
         }
     }
 
@@ -89,11 +79,11 @@ void PlayerInfo::assignKey(const Action action, const sf::Keyboard::Key key)
 
 sf::Keyboard::Key PlayerInfo::getAssignedKey(const Action action) const
 {
-    for (const auto& pair : _keyBinding)
+    for (const auto& [key, value_action] : _keyBinding)
     {
-        if (pair.second == action)
+        if (value_action == action)
         {
-            return pair.first;
+            return key;
         }
     }
 
@@ -180,7 +170,7 @@ void PlayerInfo::ressurectPlayer()
         return;
     }
 
-    mLivesCount--;
+    --mLivesCount;
     mCanRessurect = true;
 
     // Save after finishing first quest with knights.

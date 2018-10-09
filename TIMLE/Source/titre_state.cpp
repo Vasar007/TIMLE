@@ -16,7 +16,7 @@ TitreState::TitreState(StateStack& stack, Context context)
     _text.setFont(context.mFonts->get(Fonts::ID::Main));
     _text.setString(L"\t\t\t\t\t\t\t\t\tSoftForAll\nАвторы:\nВасильев Василий\nЗыков Артём\nГусев Данила\n\n\n\n\n\n\nНажмите любую кнопку для продолжения");
     setText();
-    centerOrigin(_text);
+    utils::centerOrigin(_text);
     _text.setPosition(sf::Vector2f(context.mWindow->getSize().x / 2.f, 
                                    context.mWindow->getSize().y / 2.f + 350.f));
     _text.setOutlineColor(sf::Color::Black);

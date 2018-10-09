@@ -29,7 +29,7 @@ GameOverState::GameOverState(StateStack& stack, Context context)
     }
 
     _gameOverText.setCharacterSize(70);
-    centerOrigin(_gameOverText);
+    utils::centerOrigin(_gameOverText);
     _gameOverText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 }
 

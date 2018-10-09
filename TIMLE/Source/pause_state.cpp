@@ -21,7 +21,7 @@ PauseState::PauseState(StateStack& stack, Context context)
     _pausedText.setFont(font);
     _pausedText.setString(L"Игра приостановлена");    
     _pausedText.setCharacterSize(70);
-    centerOrigin(_pausedText);
+    utils::centerOrigin(_pausedText);
     _pausedText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 
     auto returnButton = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,

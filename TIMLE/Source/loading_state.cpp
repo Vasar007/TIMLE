@@ -17,7 +17,7 @@ LoadingState::LoadingState(StateStack& stack, Context context)
 
     _loadingText.setFont(font);
     _loadingText.setString(L"Загрузка...");
-    centerOrigin(_loadingText);
+    utils::centerOrigin(_loadingText);
     _loadingText.setPosition(viewSize.x / 2.f, viewSize.y / 2.f + 50.f);
 
     _progressBarBackground.setFillColor(sf::Color::White);

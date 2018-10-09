@@ -108,7 +108,7 @@ class PlayerInfo final
          */
         std::map<sf::Keyboard::Key, Action>    _keyBinding;
 
-        //std::map<Action, Command>            mActionBinding;    // Not using now.
+        //std::map<Action, Command>            mActionBinding; // Not using now.
 
         /**
          * \brief Current game status, using for interactiving with world.
