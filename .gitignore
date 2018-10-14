@@ -262,7 +262,6 @@ __pycache__/
 
 # User defined block
 [Rr]eleaseWithoutConsole/
-Dependencies/
 TIMLE/Extra/
 .vscode/
 *.json
