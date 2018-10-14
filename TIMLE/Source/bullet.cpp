@@ -1,4 +1,6 @@
-﻿#include "bullet.hpp"
+﻿#include <cmath>
+
+#include "bullet.hpp"
 
 
 Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
@@ -9,7 +11,7 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mTargetY(tY)
 , mVx((mTargetX - x) / 100.f)
 , mVy((mTargetY - y) / 100.f) // 100 - дистанция
-, mDistance(sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
+, mDistance(std::sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
 , mIsMouse(true)
 {
     mLevelObjects = lvl.getObjects("solid");
@@ -29,7 +31,7 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mTargetY(Y)
 , mVx((mTargetX - x) / 100.f)
 , mVy((mTargetY - y) / 100.f) // 100 - дистанция
-, mDistance(sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
+, mDistance(std::sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
 , mIsMouse(false)
 {
     mLevelObjects = lvl.getObjects("solid");
