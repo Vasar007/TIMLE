@@ -2,6 +2,7 @@
 #define UTILITY_HPP
 
 #include <iterator>
+#include <memory>
 #include <sstream>
 #include <utility>
 #include <vector>
