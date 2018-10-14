@@ -121,21 +121,12 @@ add_executable(${EXECUTABLE_NAME}
     "Source/world.cpp"
     "Source/world_context.cpp"
 )
+
 target_link_libraries(${EXECUTABLE_NAME}
     TinyXML
+    sfml-graphics
+    sfml-audio
+    sfml-window
+    sfml-system
 )
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-
-# Not used static linking but it need to consider this option.
-#set(SFML_STATIC_LIBRARIES TRUE)
-
-# Detect and add SFML
-find_package(SFML 2.5 COMPONENTS audio graphics window system REQUIRED)
-if (SFML_FOUND)
-    target_link_libraries(${EXECUTABLE_NAME}
-        sfml-graphics
-        sfml-audio
-        sfml-window
-        sfml-system
-    )
-endif()

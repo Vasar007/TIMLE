@@ -1,0 +1,47 @@
+sudo: required
+dist: trusty
+
+language: cpp
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libopenal-dev
+      - libjpeg-dev
+      - libudev-dev
+      - libxrandr-dev
+      - libfreetype6-dev
+      - libvorbis-dev
+      - libflac-dev
+      - gcc-7
+      - g++-7
+
+env:
+  - TARGET_CPU=amd64 BUILD_CONFIGURATION=Release
+
+cache:
+  directories:
+    - $HOME/travisCacheDir
+
+branches:
+  only:
+    - master
+    - develop
+
+matrix:
+  fast_finish: true
+
+install:
+  - bash .travis/os_setup.sh
+
+script:
+  - bash .travis/build.sh
