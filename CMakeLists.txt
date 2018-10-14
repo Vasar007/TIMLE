@@ -34,15 +34,15 @@ endif()
 
 # Add TinyXML library.
 add_library(TinyXML STATIC
-    Dependencies/TinyXML/tinystr.h
-    Dependencies/TinyXML/tinystr.cpp
-    Dependencies/TinyXML/tinyxml.h
-    Dependencies/TinyXML/tinyxml.cpp
-    Dependencies/TinyXML/tinyxmlerror.cpp
-    Dependencies/TinyXML/tinyxmlparser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/TinyXML/tinystr.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/TinyXML/tinystr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/TinyXML/tinyxml.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/TinyXML/tinyxml.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/TinyXML/tinyxmlerror.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/TinyXML/tinyxmlparser.cpp
 )
 target_include_directories(TinyXML PUBLIC
-    Dependencies
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies
 )
 set_target_properties(TinyXML PROPERTIES LINKER_LANGUAGE CXX)
 
