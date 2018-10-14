@@ -38,6 +38,7 @@ PlayerInfo::PlayerInfo()
 , mCanTransit(false)
 , mNeedTransit(false)
 , mDoTransit(false)
+, mTransiting(false)
 , mNumberOfDoor()
 {
     // Set initial action bindings.

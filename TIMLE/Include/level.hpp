@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <SFML/Graphics.hpp>
-#include <tinyxml.h>
+#include <TinyXML/tinyxml.h>
 
 
 /**

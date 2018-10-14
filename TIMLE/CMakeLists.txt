@@ -1,0 +1,140 @@
+﻿include_directories(
+    ${PROJECT_BINARY_DIR}
+    "Include"
+    "Source"
+    "../Dependencies"
+)
+
+set(EXECUTABLE_NAME "TIMLE")
+
+# Add source to this project's executable.
+add_executable(${EXECUTABLE_NAME}
+    "Include/application.hpp"
+    "Include/audio_manager.hpp"
+    "Include/bloodsplat.hpp"
+    "Include/bullet.hpp"
+    "Include/button.hpp"
+    "Include/changing_state.hpp"
+    "Include/choosing_state.hpp"
+    "Include/component.hpp"
+    "Include/container.hpp"
+    "Include/dark_archer.hpp"
+    "Include/dark_soldier.hpp"
+    "Include/data_tables.hpp"
+    "Include/dead_man.hpp"
+    "Include/dialog_person.hpp"
+    "Include/dialog_state.hpp"
+    "Include/dwarf.hpp"
+    "Include/effect.hpp"
+    "Include/enemy.hpp"
+    "Include/entity.hpp"
+    "Include/flamestrike.hpp"
+    "Include/game_over_state.hpp"
+    "Include/game_state.hpp"
+    "Include/gate.hpp"
+    "Include/ghost.hpp"
+    "Include/goblin.hpp"
+    "Include/golem.hpp"
+    "Include/golem_dark.hpp"
+    "Include/label.hpp"
+    "Include/level.hpp"
+    "Include/life_bar.hpp"
+    "Include/loading_state.hpp"
+    "Include/magic_arrow.hpp"
+    "Include/menu_state.hpp"
+    "Include/minotaur_mage.hpp"
+    "Include/moving_platform.hpp"
+    "Include/parallel_task.hpp"
+    "Include/pause_state.hpp"
+    "Include/player.hpp"
+    "Include/player_info.hpp"
+    "Include/projectile.hpp"
+    "Include/resource_holder.hpp"
+    "Include/resource_holder.inl"
+    "Include/resource_identifiers.hpp"
+    "Include/rock.hpp"
+    "Include/settings_state.hpp"
+    "Include/shadow.hpp"
+    "Include/state.hpp"
+    "Include/state_identifiers.hpp"
+    "Include/state_stack.hpp"
+    "Include/tentacle.hpp"
+    "Include/title_state.hpp"
+    "Include/titre_state.hpp"
+    "Include/transition_state.hpp"
+    "Include/utility.hpp"
+    "Include/utility.inl"
+    "Include/world.hpp"
+    "Include/world_context.hpp"
+
+    "Source/application.cpp"
+    "Source/audio_manager.cpp"
+    "Source/bloodsplat.cpp"
+    "Source/bullet.cpp"
+    "Source/button.cpp"
+    "Source/changing_state.cpp"
+    "Source/choosing_state.cpp"
+    "Source/component.cpp"
+    "Source/container.cpp"
+    "Source/dark_archer.cpp"
+    "Source/dark_soldier.cpp"
+    "Source/data_tables.cpp"
+    "Source/dead_man.cpp"
+    "Source/dialog_person.cpp"
+    "Source/dialog_state.cpp"
+    "Source/dwarf.cpp"
+    "Source/effect.cpp"
+    "Source/enemy.cpp"
+    "Source/entity.cpp"
+    "Source/flamestrike.cpp"
+    "Source/game_over_state.cpp"
+    "Source/game_state.cpp"
+    "Source/gate.cpp"
+    "Source/ghost.cpp"
+    "Source/goblin.cpp"
+    "Source/golem.cpp"
+    "Source/golem_dark.cpp"
+    "Source/label.cpp"
+    "Source/level.cpp"
+    "Source/life_bar.cpp"
+    "Source/loading_state.cpp"
+    "Source/magic_arrow.cpp"
+    "Source/main.cpp"
+    "Source/menu_state.cpp"
+    "Source/minotaur_mage.cpp"
+    "Source/moving_platform.cpp"
+    "Source/parallel_task.cpp"
+    "Source/pause_state.cpp"
+    "Source/player.cpp"
+    "Source/player_info.cpp"
+    "Source/projectile.cpp"
+    "Source/rock.cpp"
+    "Source/settings_state.cpp"
+    "Source/shadow.cpp"
+    "Source/state.cpp"
+    "Source/state_stack.cpp"
+    "Source/tentacle.cpp"
+    "Source/title_state.cpp"
+    "Source/titre_state.cpp"
+    "Source/transition_state.cpp"
+    "Source/utility.cpp"
+    "Source/world.cpp"
+    "Source/world_context.cpp"
+)
+target_link_libraries(${EXECUTABLE_NAME}
+    TinyXML
+)
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+
+# Detect and add SFML
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+# Find any version 2.X of SFML
+# See the FindSFML.cmake file for additional details and instructions
+find_package(SFML 2.4 REQUIRED audio graphics window system)
+if (SFML_FOUND)
+    include_directories(${SFML_INCLUDE_DIR})
+    target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+endif()
+
+# Install target
+install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)

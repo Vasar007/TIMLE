@@ -26,13 +26,12 @@ bool GameState::update(const sf::Time dt)
 
     if(!_world.hasAlivePlayer())
     {
-        if (mAudioManager.isPlaying())
-        {
-            mAudioManager.stopAllMusics();
-        }
-
         if (_playerInfo.mLivesCount == 0 || _playerInfo.isFigthWithBoss())
         {
+            if (mAudioManager.isPlaying())
+            {
+                mAudioManager.stopAllMusics();
+            }
             _playerInfo.setGameStatus(PlayerInfo::GameStatus::GameOver);
             _playerInfo.resetData();
             requestStackPush(States::ID::GameOver);

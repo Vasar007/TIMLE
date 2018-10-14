@@ -27,6 +27,10 @@ void AudioManager::buildMusic()
 
 void AudioManager::stopAllMusics()
 {
+    if (_currentMusicID.empty() && _currentState == CurrentState::Stop)
+    {
+        return;
+    }
     for (const auto& music_id : _currentMusicID)
     {
         _musics.get(music_id).stop();

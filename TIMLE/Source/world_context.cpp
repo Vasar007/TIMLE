@@ -406,7 +406,7 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
                     }
                 }
             }
-            else if (_shadowBoss.mIsFinished && !_shadowBoss.mShadow->mLife)
+            else if (_shadowBoss.mIsFinished && !_shadowBoss.mShadow->mLife && _shadowBoss.mIsActive)
             {
                 _shadowBoss.mIsActive = false;
                 playerInfo.mQuests.at(PlayerInfo::Quest::KillShadow) = true;
@@ -466,7 +466,7 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
                     }
                 }
             }
-            else if (_golemBoss.mIsFinished && !_golemBoss.mGolem->mLife)
+            else if (_golemBoss.mIsFinished && !_golemBoss.mGolem->mLife && _golemBoss.mIsActive)
             {
                 _golemBoss.mIsActive = false;
                 playerInfo.mQuests.at(PlayerInfo::Quest::KillGolemDark) = true;
