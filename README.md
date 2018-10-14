@@ -1,5 +1,9 @@
 # TIMLE
 
+[![License](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/Vasar007/TIMLE/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/Vasar007/TIMLE.svg?branch=master)](https://travis-ci.com/Vasar007/TIMLE)
+[![CodeFactor](https://www.codefactor.io/repository/github/vasar007/TIMLE/badge)](https://www.codefactor.io/repository/github/vasar007/TIMLE)
+
 Official repository of the game "This Is My Last Escapade" (TIMLE).
 
 ## Screenshots
@@ -31,8 +35,6 @@ TinyXML site is [here](http://www.grinninglizard.com/tinyxml/).
 Tiled Map Editor used to create levels. Official site is [here](https://www.mapeditor.org/).
 
 SFML library site is [here](https://www.sfml-dev.org/). Its repository can be found [here](https://github.com/SFML/SFML).
-
-Compiled game file with SFML dlls can be found [here](https://github.com/Vasar007/TIMLE/tree/master/ReleaseWithoutConsole).
 
 ## Compiling
 
