@@ -126,15 +126,16 @@ target_link_libraries(${EXECUTABLE_NAME}
 )
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-# Detect and add SFML
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
-# Find any version 2.X of SFML
-# See the FindSFML.cmake file for additional details and instructions
-find_package(SFML 2.4 REQUIRED audio graphics window system)
-if (SFML_FOUND)
-    include_directories(${SFML_INCLUDE_DIR})
-    target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
-endif()
+# Not used static linking but it need to consider this option.
+#set(SFML_STATIC_LIBRARIES TRUE)
 
-# Install target
-install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
+# Detect and add SFML
+find_package(SFML 2.5 COMPONENTS audio graphics window system REQUIRED)
+if (SFML_FOUND)
+    target_link_libraries(${EXECUTABLE_NAME}
+        sfml-graphics
+        sfml-audio
+        sfml-window
+        sfml-system
+    )
+endif()

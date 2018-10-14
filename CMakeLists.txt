@@ -2,7 +2,7 @@
 
 # Enable debug symbols by default
 # must be done before project() statement
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
 # (you can also set it on the command line: -D CMAKE_BUILD_TYPE=Release)
@@ -10,7 +10,7 @@ endif()
 project(TIMLE)
 
 if(WIN32)
-    set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/Common Files/SFML-2.4.2")
+    set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/Common Files/SFML-2.5.0-x64")
 endif()
 
 # Set compiler options.
@@ -25,7 +25,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Compiler build variables.
-set(TARGET_CPU x86)
+set(TARGET_CPU amd64)
 set(BUILD_CONFIGURATION Debug)
 
 if ("${TARGET_CPU}" STREQUAL "amd64")

@@ -29,7 +29,7 @@ Level::Level()
 {
 }
 
-bool Level::loadFromFile(const std::string& filename)
+bool Level::loadFromFile(const std::string& filename, const std::string& tile_sheet_path)
 {
     //Загружаем файл в TiXmlDocument
     TiXmlDocument levelFile(filename.c_str());
@@ -37,7 +37,7 @@ bool Level::loadFromFile(const std::string& filename)
     if (!levelFile.LoadFile())
     {
         // Если не удалось загрузить карту, выдаем ошибку
-        std::cout << "Loading level \"" << filename << "\" failed.\n";
+        std::cerr << "Loading level \"" << filename << "\" failed.\n";
         return false;
     }
 
@@ -58,7 +58,8 @@ bool Level::loadFromFile(const std::string& filename)
 
     // source - путь до картинки в контейнере image
     TiXmlElement* image = tilesetElement->FirstChildElement("image");
-    const std::string imagepath = image->Attribute("source");
+
+    const std::string imagepath = tile_sheet_path + image->Attribute("source");
 
     // Пытаемся загрузить тайлсет
     sf::Image img;
@@ -66,7 +67,7 @@ bool Level::loadFromFile(const std::string& filename)
     if (!img.loadFromFile(imagepath))
     {
         // Если не удалось загрузить тайлсет-выводим ошибку в консоль
-        std::cout << "Failed to load tile sheet.\n";
+        std::cerr << "Failed to load tile sheet.\n";
         return false;
     }
 
@@ -120,7 +121,8 @@ bool Level::loadFromFile(const std::string& filename)
 
         if (layerDataElement == nullptr)
         {
-            std::cout << "Bad map. No layer information found.\n";
+            std::cerr << "Bad map. No layer information found.\n";
+            return false;
         }
 
         // Контейнер <tile> - описание тайлов каждого слоя
@@ -128,7 +130,7 @@ bool Level::loadFromFile(const std::string& filename)
 
         if (tileElement == nullptr)
         {
-            std::cout << "Bad map. No tile information found.\n";
+            std::cerr << "Bad map. No tile information found.\n";
             return false;
         }
 
@@ -268,7 +270,7 @@ bool Level::loadFromFile(const std::string& filename)
     }
     else
     {
-        std::cout << "No object layers found...\n";
+        std::cerr << "No object layers found...\n";
     }
 
     return true;

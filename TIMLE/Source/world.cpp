@@ -55,31 +55,50 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 
 void World::loadLevel()
 {
+    std::string level_path;
+    std::string tile_sheet_path;
+    std::string error_message;
+
     switch (_currentLevelNumber)
     {
         case 1:
-            _level->loadFromFile("Level1.tmx");
+            level_path = "Levels/Level1.tmx";
+            tile_sheet_path = "Levels/";
+            error_message = "Error ocured during level 1 loading.";
             break;
 
         case 2:
-            _level->loadFromFile("Level2.tmx");
+            level_path = "Levels/Level2.tmx";
+            tile_sheet_path = "Levels/";
+            error_message = "Error ocured during level 2 loading.";
             break;
 
         case 3:
-            _level->loadFromFile("Level3.tmx");
+            level_path = "Levels/Level3.tmx";
+            tile_sheet_path = "Levels/";
+            error_message = "Error ocured during level 3 loading.";
             break;
 
         case 4:
-            _level->loadFromFile("test_map.tmx"); // Test level for Vasilyev.
+            level_path = "Levels/test_map.tmx"; // Test level for Vasilyev.
+            tile_sheet_path = "Levels/";
+            error_message = "Error ocured during test level loading.";
             break;
 
         case 5:
-            _level->loadFromFile("supertest_map.tmx"); // Test level for Gusev.
+            level_path = "Levels/supertest_map.tmx"; // Test level for Gusev.
+            tile_sheet_path = "Levels/";
+            error_message = "Error ocured during AI test level loading.";
             break;
 
         default:
             std::cerr << "Error! Out of range level.\n";
             throw std::invalid_argument(std::to_string(_currentLevelNumber));
+    }
+
+    if (!_level->loadFromFile(level_path, tile_sheet_path))
+    {
+        throw std::invalid_argument(error_message);
     }
 }
 

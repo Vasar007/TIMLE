@@ -154,11 +154,13 @@ class Level
                             Level();
 
         /**
-         * \brief              Loading data from map.
-         * \param[in] filename Name of the map.
-         * \return             Boolean type: if loading was successful – true, if wasn't – false.
+         * \brief                     Loading data from map.
+         * \param[in] filename        Name of the map.
+         * \param[in] tile_sheet_path Additional path of the tile sheet.
+         * \return                    If loading was successful returns true, false otherwise.
          */
-        bool                loadFromFile(const std::string& filename);
+        bool                loadFromFile(const std::string& filename,
+                                         const std::string& tile_sheet_path="");
 
         /**
          * \brief          Gets first object with this name from map.
