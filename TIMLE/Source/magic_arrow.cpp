@@ -1,4 +1,6 @@
-﻿#include "magic_arrow.hpp"
+﻿#include <cmath>
+
+#include "magic_arrow.hpp"
 
 
 MagicArrow::MagicArrow(const Type::ID id,const TextureHolder& textures, const FontHolder& fonts,
@@ -9,7 +11,7 @@ MagicArrow::MagicArrow(const Type::ID id,const TextureHolder& textures, const Fo
 , mTargetY(tY)
 , mVx((mTargetX - x) / 100.f)
 , mVy((mTargetY - y) / 100.f)    // 100 - дистанция
-, mDistance(sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
+, mDistance(std::sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
 {
     mLevelObjects = lvl.getObjects("solid");
     mSpeed = 0.2f;
