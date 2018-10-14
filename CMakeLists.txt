@@ -47,7 +47,7 @@ target_include_directories(TinyXML PUBLIC
 set_target_properties(TinyXML PROPERTIES LINKER_LANGUAGE CXX)
 
 # Not used static linking but it need to think abut this option.
-#set(SFML_STATIC_LIBRARIES TRUE)
+set(SFML_STATIC_LIBS FALSE CACHE BOOL "Choose whether SFML is linked statically or not.")
 
 # Detect and add SFML
 find_package(SFML 2.5 COMPONENTS audio graphics window system REQUIRED)
