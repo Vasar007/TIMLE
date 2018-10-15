@@ -10,13 +10,9 @@ cmake .. -G "Visual Studio 15 Win64" -DCMAKE_INSTALL_PREFIX=../install -DSFML_DE
 msbuild INSTALL.vcxproj
 
 cd ../../
-cd TIMLE
 
 mkdir build
+cd build
+mkdir TIMLE
 
-mkdir "build/TIMLE"
-echo "mkdir build/TIMLE"
-
-echo "Process TIMLE by CMake started"
-cmake . -G "Visual Studio 15 Win64" -DCMAKE_INSTALL_PREFIX=./build/TIMLE -DCMAKE_PREFIX_PATH=./SFML/install
-echo "Process TIMLE by CMake ended"
+cmake .. -G "Visual Studio 15 Win64" -DCMAKE_INSTALL_PREFIX=TIMLE -DCMAKE_PREFIX_PATH=../SFML/install
