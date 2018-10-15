@@ -6,9 +6,11 @@ branches:
     - master
     - production
 
-platform: x64
+platform:
+  - x64
 
-configuration: Release
+configuration:
+  - Release
 
 test: off
 
