@@ -11,6 +11,8 @@ project(TIMLE)
 # Set SFML path in the system.
 if (WIN32)
     set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/Common Files/SFML-2.5.0-x64")
+elseif (UNIX)
+    set(CMAKE_PREFIX_PATH "/opt/SFML-2.5.0-x64")
 endif()
 
 # Set compiler options.
