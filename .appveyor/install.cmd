@@ -14,8 +14,13 @@ echo "After SFML build"
 cd ../../
 echo "Process TIMLE project"
 cd TIMLE
+echo "cd into TIMLE project"
 
 mkdir build
-mkdir build/TIMLE
+echo "mkdir build"
 
-cmake . -G "Visual Studio 15 Win64" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DTARGET_CPU=$PLATFORM -DCMAKE_INSTALL_PREFIX=./build/TIMLE -DCMAKE_PREFIX_PATH=./SFML/install
+mkdir build/TIMLE
+echo "mkdir build/TIMLE"
+
+cmake . -G "Visual Studio 15 Win64" -DCMAKE_INSTALL_PREFIX=./build/TIMLE -DCMAKE_PREFIX_PATH=./SFML/install
+echo "Process TIMLE by CMake"
