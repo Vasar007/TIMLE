@@ -12,8 +12,7 @@ msbuild INSTALL.vcxproj
 echo "After SFML build"
 
 cd ../../
-git clone https://github.com/Vasar007/TIMLE.git
-echo "After TIMPLE clonning"
+echo "Process TIMLE project"
 cd TIMLE
 
 mkdir build
