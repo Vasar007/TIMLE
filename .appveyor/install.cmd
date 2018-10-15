@@ -19,6 +19,10 @@ echo "cd into TIMLE project"
 mkdir build
 echo "mkdir build"
 
+echo "call ls"
+ls
+echo "end ls"
+
 mkdir build/TIMLE
 echo "mkdir build/TIMLE"
 
