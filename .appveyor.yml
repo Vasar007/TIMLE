@@ -20,11 +20,8 @@ matrix:
 cache:
  - c:/tools/vcpkg/installed/
 
-
 before_build:
   - cmd: .appveyor/install.cmd
 
-build:
-  project: TIMLE/build/INSTALL.vcxproj
-  parallel: true
-  verbosity: minimal
+build_script:
+  - cmd: .appveyor/build.cmd
