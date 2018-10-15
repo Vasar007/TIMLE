@@ -1,4 +1,4 @@
-git clone https://github.com/Vasar007/TIMLE.git
+git clone https://github.com/SFML/SFML.git
 cd SFML
 
 mkdir install
