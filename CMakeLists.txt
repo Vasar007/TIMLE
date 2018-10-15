@@ -50,16 +50,23 @@ target_include_directories(TinyXML PUBLIC
 )
 set_target_properties(TinyXML PROPERTIES LINKER_LANGUAGE CXX)
 
-# Not used static linking but it need to think abut this option.
+# Not used static linking but it need to think about this option.
 set(SFML_STATIC_LIBS FALSE CACHE BOOL "Choose whether SFML is linked statically or not.")
 
 # Detect and add SFML
-find_package(SFML 2.5 COMPONENTS audio graphics window system REQUIRED)
+find_package(SFML 2.5 COMPONENTS audio graphics window system) # Not used REQUIRED to know CMAKE_PREFIX_PATH.
 
 # Check if we found SFML.
 if (NOT SFML_FOUND)
-    message(FATAL_ERROR "Not found SFML library.")
+    message(FATAL_ERROR "Not found SFML library in the ${CMAKE_PREFIX_PATH}")
 endif ()
 
 # Include sub-projects.
 add_subdirectory(TIMLE)
+
+# Install executable.
+install(TARGETS ${PROJCT_NAME} RUNTIME DESTINATION .)
+
+# Install game data.
+install(DIRECTORY TIMLE/Media DESTINATION .)
+install(DIRECTORY TIMLE/Levels DESTINATION .)

@@ -18,11 +18,11 @@ matrix:
   fast_finish: true
 
 cache:
- - c:\tools\vcpkg\installed\
+ - c:/tools/vcpkg/installed/
 
 
 before_build:
-  - cmd: .appveyor\install.cmd
+  - cmd: .appveyor/install.cmd
 
 build:
   project: TIMLE/build/INSTALL.vcxproj

@@ -11,8 +11,8 @@ msbuild INSTALL.vcxproj
 
 cd ../../
 
+mkdir install
 mkdir build
 cd build
-mkdir TIMLE
 
-cmake .. -G "Visual Studio 15 Win64" -DCMAKE_INSTALL_PREFIX=TIMLE -DCMAKE_PREFIX_PATH=../SFML/install
+cmake .. -G "Visual Studio 15 Win64" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DTARGET_CPU=$PLATFORM -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_PREFIX_PATH=../SFML/install
