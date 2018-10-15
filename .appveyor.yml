@@ -1,6 +1,11 @@
 image: Visual Studio 2017
 shallow_clone: true
 
+clone_folder: c:/projects/timle
+
+init:
+  - git config --global core.autocrlf input
+
 branches:
   only:
     - master
@@ -17,8 +22,7 @@ test: off
 matrix:
   fast_finish: true
 
-cache:
- - c:/tools/vcpkg/installed/
+cache: c:/tools/vcpkg/installed/
 
 before_build:
   - cmd: .appveyor/install.cmd
