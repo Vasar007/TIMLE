@@ -263,6 +263,7 @@ __pycache__/
 # User defined block
 [Rr]eleaseWithoutConsole/
 TIMLE/Extra/
+cmake-build-debug/
 .vscode/
 *.json
 *.tlog
