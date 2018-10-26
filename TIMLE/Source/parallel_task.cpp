@@ -73,9 +73,9 @@ void ParallelTask::loadTextures()
         _textures.load(Textures::ID::GolemAttack,     "Media/Textures/Enemies/GolemAtk.png");
         _textures.load(Textures::ID::GolemDeath,      "Media/Textures/Enemies/GolemDie.png");
 
-        _textures.load(Textures::ID::GolemDark,       "Media/Textures/Enemies/GolemdarkWalk.png");
-        _textures.load(Textures::ID::GolemDarkAttack, "Media/Textures/Enemies/GolemdarkAtk.png");
-        _textures.load(Textures::ID::GolemDarkDeath,  "Media/Textures/Enemies/GolemdarkDie.png");
+        _textures.load(Textures::ID::GolemDark,       "Media/Textures/Enemies/GolemDarkWalk.png");
+        _textures.load(Textures::ID::GolemDarkAttack, "Media/Textures/Enemies/GolemDarkAtk.png");
+        _textures.load(Textures::ID::GolemDarkDeath,  "Media/Textures/Enemies/GolemDarkDie.png");
 
         _textures.load(Textures::ID::DarkSoldier,     "Media/Textures/Enemies/DarkSoldier.png");
 
@@ -94,12 +94,12 @@ void ParallelTask::loadTextures()
         _textures.load(Textures::ID::Fire,            "Media/Textures/Projectiles/Fire01.png");
         _textures.load(Textures::ID::MagicArrow,      "Media/Textures/Projectiles/MagicArrow.png");
         _textures.load(Textures::ID::MovingPlatform,  "Media/Textures/Objects/MovingPlatformCastle.png");
-        _textures.load(Textures::ID::Quest,           "Media/Textures/Interface/MissionBg.jpg");
+        _textures.load(Textures::ID::Quest,           "Media/Textures/Interface/missionbg.jpg");
 
         _textures.load(Textures::ID::HealthBar,       "Media/Textures/Interface/RedBar.png");
         _textures.load(Textures::ID::ManaBar,         "Media/Textures/Interface/BlueBar.png");
         _textures.load(Textures::ID::EmptyBar,        "Media/Textures/Interface/EmptyBar.png");
-        _textures.load(Textures::ID::BossBar,         "Media/Textures/Interface/healthbar.png");
+        _textures.load(Textures::ID::BossBar,         "Media/Textures/Interface/HealthBar.png");
 
         _textures.load(Textures::ID::RockDirt,        "Media/Textures/Objects/FallStoneDirt.png");
         _textures.load(Textures::ID::RockCastle,      "Media/Textures/Objects/FallingStoneCastle.png");

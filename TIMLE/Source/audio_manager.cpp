@@ -1,4 +1,6 @@
-﻿#include "audio_manager.hpp"
+﻿#include <algorithm>
+
+#include "audio_manager.hpp"
 
 
 AudioManager::AudioManager()
