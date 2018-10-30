@@ -68,7 +68,7 @@ sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fi
 
 // Copy for smart pointers.
 
-template <class T>
+template <typename T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source);
 
 // Copy and move operation with std::vector's.
