@@ -4,7 +4,7 @@
 namespace utils
 {
 
-template <typename T>
+template <class T>
 std::string toString(const T& value)
 {
     std::stringstream stream;
@@ -12,13 +12,13 @@ std::string toString(const T& value)
     return stream.str();
 }
 
-template <typename T>
+template <class T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source)
 {
     return source ? std::make_unique<T>(*source) : nullptr;
 }
 
-template <typename T>
+template <class T>
 typename std::vector<T>::iterator append(std::vector<T>& dest, const std::vector<T>& src)
 {
     typename std::vector<T>::iterator result;
@@ -36,7 +36,7 @@ typename std::vector<T>::iterator append(std::vector<T>& dest, const std::vector
     return result;
 }
 
-template <typename T>
+template <class T>
 typename std::vector<T>::iterator append(std::vector<T>& dest, std::vector<T>&& src)
 {
     typename std::vector<T>::iterator result;

@@ -26,7 +26,7 @@ namespace utils
 // Since std::to_string doesn't work on MinGW we have to implement
 // our own to support all platforms.
 
-template <typename T>
+template <class T>
 std::string        toString(const T& value);
 
 
@@ -68,15 +68,15 @@ sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fi
 
 // Copy for smart pointers.
 
-template <typename T>
+template <class T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source);
 
 // Copy and move operation with std::vector's.
 
-template <typename T>
+template <class T>
 typename std::vector<T>::iterator append(std::vector<T>& dest, const std::vector<T>& src);
 
-template <typename T>
+template <class T>
 typename std::vector<T>::iterator append(std::vector<T>& dest, std::vector<T>&& src);
 
 } // namespace utils
