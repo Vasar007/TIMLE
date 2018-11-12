@@ -73,27 +73,22 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::Ghost, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 125;
     enemy.mDamage = 50;
     enemy.mSpeed = 50.f;
     enemy.mTexture = Textures::ID::Golem;
     enemy.mFireInterval = sf::Time::Zero;
     enemy.mCalcBodyRect = 
-        [](float left, float top, float width, float height, float direction)
+        [](float left, float top, float width, float height, float)
     {
-        if (direction > 0.f)
-        {
-            return sf::FloatRect(left + 15.f, top + 4.f, width - 28.f, height - 4.f);
-        }
-        else
-        {
-            return sf::FloatRect(left + 15.f, top + 4.f, width - 28.f, height - 4.f);
-        }
+        return sf::FloatRect(left + 15.f, top + 4.f, width - 28.f, height - 4.f);
     };
     data.emplace(Type::ID::Golem, std::move(enemy));
 
 
-    enemy.mHitpoints = 1000;
+    enemy = EntityData();
+    enemy.mHitpoints = 200;
     enemy.mDamage = 0;
     enemy.mSpeed = 50.f;
     enemy.mTexture = Textures::ID::DarkSoldier;
@@ -106,6 +101,7 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::DarkSoldier, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 50;
     enemy.mDamage = 30;
     enemy.mSpeed = 50.f;
@@ -127,6 +123,7 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::Goblin, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 150;
     enemy.mDamage = 50;
     enemy.mSpeed = 50.f;
@@ -140,6 +137,7 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::MinotaurMage, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 75;
     enemy.mDamage = 20;
     enemy.mSpeed = 50.f;
@@ -160,6 +158,7 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::Dwarf, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 75;
     enemy.mDamage = 10;
     enemy.mSpeed = 50.f;
@@ -180,6 +179,7 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::DwarfArcher, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 100;
     enemy.mDamage = 30;
     enemy.mSpeed = 50.f;
@@ -200,6 +200,7 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::DwarvenCommander, std::move(enemy));
 
 
+    enemy = EntityData();
     enemy.mHitpoints = 100;
     enemy.mDamage = 10;
     enemy.mSpeed = 50.f;
@@ -213,7 +214,8 @@ std::map<Type::ID, EntityData> initializeEnemyData()
     data.emplace(Type::ID::Tentacle, std::move(enemy));
 
 
-    enemy.mHitpoints = 150;
+    enemy = EntityData();
+    enemy.mHitpoints = 100;
     enemy.mDamage = 25;
     enemy.mSpeed = 50.f;
     enemy.mTexture = Textures::ID::DarkArcher;
@@ -233,32 +235,40 @@ std::map<Type::ID, ProjectileData> initializeProjectileData()
 {
     std::map<Type::ID, ProjectileData> data;
 
-    ProjectileData projectile;
+    ProjectileData projectile{};
 
     projectile.mDamage = 25;
     projectile.mSpeed = 10.f;
     projectile.mTexture = Textures::ID::Bullet;
-    data.emplace(Type::ID::AlliedBullet, std::move(projectile));
+    data.emplace(Type::ID::AlliedBullet, projectile);
 
+
+    projectile = ProjectileData();
     projectile.mDamage = 10;
     projectile.mSpeed = 10.f;
     projectile.mTexture = Textures::ID::Bullet;
-    data.emplace(Type::ID::EnemyBullet, std::move(projectile));
+    data.emplace(Type::ID::EnemyBullet, projectile);
 
+
+    projectile = ProjectileData();
     projectile.mDamage = 15;
     projectile.mSpeed = 0.f;
     projectile.mTexture = Textures::ID::Fire;
-    data.emplace(Type::ID::Flamestrike, std::move(projectile));
+    data.emplace(Type::ID::Flamestrike, projectile);
 
+
+    projectile = ProjectileData();
     projectile.mDamage = 25;
     projectile.mSpeed = 5.f;
     projectile.mTexture = Textures::ID::Fire;
-    data.emplace(Type::ID::Fireball, std::move(projectile));
+    data.emplace(Type::ID::Fireball, projectile);
 
+
+    projectile = ProjectileData();
     projectile.mDamage = 15;
     projectile.mSpeed = 4.f;
     projectile.mTexture = Textures::ID::MagicArrow;
-    data.emplace(Type::ID::MagicArrow, std::move(projectile));
+    data.emplace(Type::ID::MagicArrow, projectile);
 
     return data;
 }
