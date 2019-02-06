@@ -1,0 +1,31 @@
+image: Visual Studio 2017
+shallow_clone: true
+
+clone_folder: c:/projects/timle
+
+init:
+  - git config --global core.autocrlf input
+
+branches:
+  only:
+    - master
+    - production
+
+platform:
+  - x64
+
+configuration:
+  - Release
+
+test: off
+
+matrix:
+  fast_finish: true
+
+cache: c:/tools/vcpkg/installed/
+
+before_build:
+  - cmd: .appveyor/install.cmd
+
+build_script:
+  - cmd: .appveyor/build.cmd
