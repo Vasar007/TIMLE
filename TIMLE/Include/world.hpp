@@ -1,7 +1,6 @@
 ﻿#ifndef WORLD_HPP
 #define WORLD_HPP
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -52,9 +51,9 @@ class World final : private sf::NonCopyable
         PlayerInfo&                        _playerInfo;
         std::unique_ptr<LifeBar>           _lifeBar;
 
-        std::list<std::unique_ptr<Entity>> _entities;
-        std::list<std::unique_ptr<Effect>> _effects;
-        std::list<std::unique_ptr<Projectile>> _guidedProjectiles;
+        std::vector<std::unique_ptr<Entity>> _entities;
+        std::vector<std::unique_ptr<Effect>> _effects;
+        std::vector<std::unique_ptr<Projectile>> _guidedProjectiles;
         std::vector<Object>                _objects;
         std::vector<Object>                _doors;
         std::vector<WorldContext::SpawnPoint> _enemySpawnPoints; // Not using now.

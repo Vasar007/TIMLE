@@ -234,7 +234,7 @@ void WorldContext::update(const sf::Time dt)
 }
 
 void WorldContext::processGolemDarkEvents(sf::View& view,
-                                          std::list<std::unique_ptr<Entity>>& entities)
+                                          std::vector<std::unique_ptr<Entity>>& entities)
 {
     if (_golemBoss.mIsActive && _golemBoss.mIsShaked)
     {

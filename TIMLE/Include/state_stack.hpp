@@ -62,7 +62,7 @@ class StateStack : private sf::NonCopyable
 
         StateStack&  operator=(StateStack&& other) = delete;
 
-        template <typename T>
+        template <class T>
         void         registerState(const States::ID stateID);
 
         virtual void update(const sf::Time dt);
@@ -77,7 +77,7 @@ class StateStack : private sf::NonCopyable
 };
 
 
-template <typename T>
+template <class T >
 void StateStack::registerState(const States::ID stateID)
 {
     _factories[stateID] = [this] ()

@@ -1,7 +1,6 @@
 ﻿#ifndef WORLD_CONTEXT_HPP
 #define WORLD_CONTEXT_HPP
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -59,8 +58,8 @@ class WorldContext final
 
             std::unique_ptr<Shadow>  mShadow;
             std::unique_ptr<LifeBar> mShadowLifeBar;
-            std::list<Tentacle>      mTentacles;
-            std::list<Tentacle>      mTentaclesStatic;
+            std::vector<Tentacle>    mTentacles;
+            std::vector<Tentacle>    mTentaclesStatic;
         };
 
         /**
@@ -113,7 +112,7 @@ class WorldContext final
 
         void update(const sf::Time dt);
 
-        void processGolemDarkEvents(sf::View& view, std::list<std::unique_ptr<Entity>>& entities);
+        void processGolemDarkEvents(sf::View& view, std::vector<std::unique_ptr<Entity>>& entities);
 
         void processMainEvents(PlayerInfo& playerInfo, AudioManager& audioManager);
 
