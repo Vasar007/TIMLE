@@ -90,6 +90,6 @@ public:
      * \param[in] drawing_bounds Drawing bounds which is the player's scope.
      * \param[in] states         Render states to use for drawing.
      */
-    void tile_layer::draw_rect(sf::RenderTarget& target, const sf::IntRect drawing_bounds,
-                               sf::RenderStates states = sf::RenderStates::Default) const;
+    void draw_rect(sf::RenderTarget& target, const sf::IntRect drawing_bounds,
+                   sf::RenderStates states = sf::RenderStates::Default) const;
 };

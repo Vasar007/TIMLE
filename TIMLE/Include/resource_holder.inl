@@ -53,6 +53,6 @@ void ResourceHolder<Resource, Identifier>::insertResource(Identifier id,
                                                           std::unique_ptr<Resource> resource) 
 {
     // Insert and check success.
-    auto inserted = _resourceMap.emplace(id, std::move(resource));
+    [[maybe_unused]] auto inserted = _resourceMap.emplace(id, std::move(resource));
     assert(inserted.second);
 }
