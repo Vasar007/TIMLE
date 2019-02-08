@@ -1,7 +1,5 @@
-﻿#ifndef WORLD_CONTEXT_HPP
-#define WORLD_CONTEXT_HPP
+﻿#pragma once
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -25,13 +23,13 @@ class WorldContext final
         struct SpawnPoint
         {
             SpawnPoint(const Type::ID type, const float x, const float y)
-            : mType(type)
+            : type(type)
             , x(x)
             , y(y)
             {
             }
 
-            Type::ID mType;
+            Type::ID type;
             float    x;
             float    y;
         };
@@ -59,8 +57,8 @@ class WorldContext final
 
             std::unique_ptr<Shadow>  mShadow;
             std::unique_ptr<LifeBar> mShadowLifeBar;
-            std::list<Tentacle>      mTentacles;
-            std::list<Tentacle>      mTentaclesStatic;
+            std::vector<Tentacle>    mTentacles;
+            std::vector<Tentacle>    mTentaclesStatic;
         };
 
         /**
@@ -93,7 +91,7 @@ class WorldContext final
 
     private:
         std::size_t    _currentLevelNumber;
-        Level&         _level;
+        level&         _level;
         TextureHolder& _textures;
         FontHolder&    _fonts;
 
@@ -105,7 +103,7 @@ class WorldContext final
 
     public:
             WorldContext(TextureHolder& textures, FontHolder& fonts,
-                          const std::size_t currentLevelNumber, Level& lvl, const bool debug);
+                          const std::size_t currentLevelNumber, level& lvl, const bool debug);
 
         void buildBossData();
 
@@ -113,7 +111,7 @@ class WorldContext final
 
         void update(const sf::Time dt);
 
-        void processGolemDarkEvents(sf::View& view, std::list<std::unique_ptr<Entity>>& entities);
+        void processGolemDarkEvents(sf::View& view, std::vector<std::unique_ptr<Entity>>& entities);
 
         void processMainEvents(PlayerInfo& playerInfo, AudioManager& audioManager);
 
@@ -121,5 +119,3 @@ class WorldContext final
 
         bool isGolemDarkActive() const;
 };
-
-#endif // WORLD_CONTEXT_HPP

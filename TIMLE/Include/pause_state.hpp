@@ -1,5 +1,4 @@
-﻿#ifndef PAUSE_STATE_HPP
-#define PAUSE_STATE_HPP
+﻿#pragma once
 
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -28,5 +27,3 @@ class PauseState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // PAUSE_STATE_HPP

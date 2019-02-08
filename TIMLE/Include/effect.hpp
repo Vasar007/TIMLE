@@ -1,5 +1,4 @@
-﻿#ifndef EFFECT_HPP
-#define EFFECT_HPP
+﻿#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -174,5 +173,3 @@ class Effect
          */
         virtual void  update(const float dt) = 0;
 };
-
-#endif // EFFECT_HPP

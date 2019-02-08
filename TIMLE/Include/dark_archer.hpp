@@ -1,5 +1,4 @@
-﻿#ifndef DARK_ARCHER_HPP
-#define DARK_ARCHER_HPP
+﻿#pragma once
 
 #include "enemy.hpp"
 
@@ -23,7 +22,7 @@ class DarkArcher final : public Enemy
          * \param[in] type     An additional parameter for interaction with map.
          */
              DarkArcher(const Type::ID id, const TextureHolder& textures, 
-                        const FontHolder& fonts, const Level& lvl, const float X, const float Y, 
+                        const FontHolder& fonts, const level& lvl, const float X, const float Y, 
                         const int width, const int height, const std::string& type = "0");
 
 
@@ -41,5 +40,3 @@ class DarkArcher final : public Enemy
          */
         void update(const float dt) override;
 };
-
-#endif // DARK_ARCHER_HPP

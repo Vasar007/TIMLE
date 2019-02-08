@@ -1,7 +1,10 @@
 ﻿#include <cassert>
 #include <cmath>
 #include <ctime>
+#include <limits>
 #include <random>
+#include <stdexcept>
+#include <string>
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -205,6 +208,16 @@ sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fi
     shape.setOutlineThickness(outlineThickness);
 
     return shape;
+}
+
+unsigned int stou(const std::string& str, size_t* const idx, const int base)
+{
+    const unsigned long result = std::stoul(str, idx, base);
+    if (result > std::numeric_limits<unsigned int>::max())
+    {
+        throw std::out_of_range("stou parsed value which is not included in the possible domain");
+    }
+    return result;
 }
 
 } // namespace utils

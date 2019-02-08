@@ -1,4 +1,6 @@
-﻿#include "player.hpp"
+﻿#include <iostream>
+
+#include "player.hpp"
 
 
 namespace
@@ -7,7 +9,7 @@ namespace
 }
 
 Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolder&, 
-               const Level& lvl, const float X, const  float Y, const int width, const int height, 
+               const level& lvl, const float X, const  float Y, const int width, const int height, 
                PlayerInfo& playerInfo)
 : Entity(id, X, Y, width, height, PLAYER_TABLE.at(id).mSpeed, PLAYER_TABLE.at(id).mHitpoints,
          PLAYER_TABLE.at(id).mDamage)
@@ -48,7 +50,7 @@ Player::Player(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mPlayerInfo(playerInfo)
 {
     // Инициализируем и получаем все объекты для взаимодействия персонажа с картой
-    mLevelObjects = lvl.getAllObjects();
+    mLevelObjects = lvl.get_all_objects();
     mTexture = textures.get(Textures::ID::Archer);
     mSprite.setTexture(mTexture);
     mSprite.setTextureRect(sf::IntRect(77, 1104, 100, 110));
@@ -216,14 +218,14 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
     for (const auto& object : mLevelObjects)
     {
         // Проверяем пересечение с объектом
-        if (getRect().intersects(object.mRect))
+        if (getRect().intersects(object.rect))
         {
             // Если встретили препятствие
-            if (object.mName == "solid" || object.mName == "rock")
+            if (object.name == "solid" || object.name == "rock")
             {
                 if (Dy > 0.f)
                 {
-                    y = object.mRect.top - mHeight;
+                    y = object.rect.top - mHeight;
                     dy = 0.f;
                     mOnGround = true;
                     mDoubleJump = false;
@@ -247,59 +249,59 @@ void Player::checkCollisionWithMap(const float Dx, const float Dy)
                 }
                 if (Dy < 0.f)
                 {
-                    y = object.mRect.top + object.mRect.height;
+                    y = object.rect.top + object.rect.height;
                     dy = 0.f;
                 }
                 if (Dx > 0.f)
                 {
-                    x = object.mRect.left - mWidth;
+                    x = object.rect.left - mWidth;
                 }
                 if (Dx < 0.f)
                 {
-                    x = object.mRect.left + object.mRect.width;
+                    x = object.rect.left + object.rect.width;
                 }
             }
 
             // Если встретили смерть
-            if (object.mName == "death")
+            if (object.name == "death")
             {
                 mHitpoints = 0;
             }
 
             // Если встретили диалог
-            if (object.mName == "dialogMessage")
+            if (object.name == "dialogMessage")
             {
-                mDialogNumber = std::stoi(object.mType);
-                if (std::stoi(object.mType) == 3 && mGotKey)
+                mDialogNumber = std::stoi(object.type);
+                if (std::stoi(object.type) == 3 && mGotKey)
                 {
                     mActivatedGate = true;
                     mDialogNumber = 5;
                 }
                 
-                if (std::stoi(object.mType) == 8 && !_hadFirstMiniDelay)
+                if (std::stoi(object.type) == 8 && !_hadFirstMiniDelay)
                 {
                     mDialogNumber = 0;
                 }
             }
 
             // Если встретили переход
-            if (object.mName == "door")
+            if (object.name == "door")
             {
                 transitFound = true;
                 mPlayerInfo.mCanTransit = true;
-                mPlayerInfo.mNumberOfDoor = { object.mId, object.mType };
+                mPlayerInfo.mNumberOfDoor = { object.id, object.type };
             }
 
             // Если встретили конец уровня
-            if (object.mName == "end")
+            if (object.name == "end")
             {
                 mIsRichedEnd = true;
             }
 
             // Если встретили босса
-            if (object.mName == "boss")
+            if (object.name == "boss")
             {
-                switch (std::stoi(object.mType))
+                switch (std::stoi(object.type))
                 {
                     case 1:
                         mHasStartedFirstMainBoss = true;

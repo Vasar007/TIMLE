@@ -12,7 +12,7 @@ namespace
 }
 
 Projectile::Projectile(const Type::ID id, const TextureHolder&, const FontHolder&,
-                       const Level&, const float X, const float Y, const int width, const int height)
+                       const level&, const float X, const float Y, const int width, const int height)
 : Entity(id, X, Y, width, height, PROJECTILE_TABLE.at(id).mSpeed, 100,
          PROJECTILE_TABLE.at(id).mDamage)
 , _guided(false)
@@ -37,7 +37,7 @@ void Projectile::updateDirection(const float dt)
 {
     if (isGuided())
     {
-        const float approachRate = 100.f;
+        constexpr float approachRate = 100.f;
 
         // float dt => sf::Time dt.asSeconds()
         auto newVelocity = utils::unitVector(

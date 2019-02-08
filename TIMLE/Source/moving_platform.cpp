@@ -2,13 +2,13 @@
 
 
 MovingPlatform::MovingPlatform(Type::ID id, const TextureHolder& textures, const FontHolder&,
-                               const Level& lvl, const float X, const float Y, const int width, 
+                               const level& lvl, const float X, const float Y, const int width, 
                                const int height, const std::string& type)
 : Entity(id, X, Y, width, height, 50.f, 100, 0, type)
 {
-    for (const auto& object : lvl.getObjects("platformBorder"))
+    for (const auto& object : lvl.get_objects("platformBorder"))
     {
-        if (object.mType == type)
+        if (object.type == type)
         {
             mLevelObjects.push_back(object);
         }
@@ -27,7 +27,7 @@ void MovingPlatform::checkCollisionWithMap()
     for (auto& mLevelObject : mLevelObjects)
     {
         // Проверяем пересечение с объектом
-        if (getRect().intersects(mLevelObject.mRect))
+        if (getRect().intersects(mLevelObject.rect))
         {
             dx = -dx;
             dy = -dy;

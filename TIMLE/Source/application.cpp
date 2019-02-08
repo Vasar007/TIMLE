@@ -114,7 +114,6 @@ void Application::render()
             _window.clear(mColorConstants.at(0));
             break;
     }
-    //mWindow.clear(sf::Color(85, 170, 255));
 
     _stateStack.draw();
 

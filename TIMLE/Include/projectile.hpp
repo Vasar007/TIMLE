@@ -1,5 +1,4 @@
-﻿#ifndef PROJECTILE_HPP
-#define PROJECTILE_HPP
+﻿#pragma once
 
 #include "entity.hpp"
 
@@ -7,7 +6,7 @@
 class Projectile : public Entity, sf::Transformable
 {
     private:
-        enum Category
+        enum Category : unsigned int
         {
             EnemyProjectile,
             AlliedProjectile
@@ -21,7 +20,7 @@ class Projectile : public Entity, sf::Transformable
 
     public:
                               Projectile(const Type::ID id, const TextureHolder& textures,
-                                         const FontHolder& fonts, const Level& lvl, const float X,
+                                         const FontHolder& fonts, const level& lvl, const float X,
                                          const float Y, const int width, const int height);
 
         void                  guideTowards(const sf::Vector2f position);
@@ -40,5 +39,3 @@ class Projectile : public Entity, sf::Transformable
          */
         void                  update(float dt) override = 0;
 };
-
-#endif // PROJECTILE_HPP

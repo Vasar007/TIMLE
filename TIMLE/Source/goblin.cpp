@@ -2,7 +2,7 @@
 
 
 Goblin::Goblin(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-               const Level& lvl, const float X, const float Y, const int width,
+               const level& lvl, const float X, const float Y, const int width,
                const int height, const std::string& type)
 : Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 {
@@ -18,35 +18,35 @@ void Goblin::checkCollisionWithMap(const float Dx, const float Dy)
     for (const auto& object : mLevelObjects)
     {
         // Проверяем пересечение с объектом
-        if (getRect().intersects(object.mRect))
+        if (getRect().intersects(object.rect))
         {
-            if (object.mName == "enemyBorder")
+            if (object.name == "enemyBorder")
             {
                 if (Dy > 0.f)
                 {
-                    y = object.mRect.top - mHeight;
+                    y = object.rect.top - mHeight;
                     dy = 0.f;
                     mOnGround = true;
                 }
                 if (Dy < 0.f)
                 {
-                    y = object.mRect.top + object.mRect.height;
+                    y = object.rect.top + object.rect.height;
                     dy = 0.f;
                 }
                 if (Dx > 0.f)
                 {
-                    x = object.mRect.left - mWidth;
+                    x = object.rect.left - mWidth;
                     mIsTurned = true;
                 }
                 if (Dx < 0.f)
                 {
-                    x = object.mRect.left + object.mRect.width;
+                    x = object.rect.left + object.rect.width;
                     mIsTurned = true;;
                 }
             }
 
             // Если встретили смерть
-            if (object.mName == "death")
+            if (object.name == "death")
             {
                 mHitpoints = 0;
             }

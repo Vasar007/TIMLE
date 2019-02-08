@@ -1,5 +1,4 @@
-﻿#ifndef DIALOG_STATE_HPP
-#define DIALOG_STATE_HPP
+﻿#pragma once
 
 #include <vector>
 
@@ -41,5 +40,3 @@ class DialogState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // DIALOGSTATE_HPP

@@ -1,14 +1,16 @@
-﻿#include "gate.hpp"
+﻿#include <iostream>
+
+#include "gate.hpp"
 
 
-Gate::Gate(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level& lvl,
+Gate::Gate(const Type::ID id, const TextureHolder& textures, const FontHolder&, const level& lvl,
            const float X, const float Y, const int width, const std::string& type)
 : Entity(id, X, Y, width, std::stoi(type) * 16, 50.f, 100, 0, type)
 , mSize(std::stoi(type))
 , mWaySizeDown(Y + mSize * 16.f)
 , mWaySizeUp(Y)
 {
-    mLevelObjects = lvl.getObjects("solid");
+    mLevelObjects = lvl.get_objects("solid");
 
     switch(std::stoi(type))
     {
@@ -42,19 +44,19 @@ void Gate::checkCollisionWithMap(const float, const float Dy)
     for (auto& mLevelObject : mLevelObjects)
     {
         // Проверяем пересечение с объектом
-        if (getRect().intersects(mLevelObject.mRect))
+        if (getRect().intersects(mLevelObject.rect))
         {
-            if (mLevelObject.mName == "solid")
+            if (mLevelObject.name == "solid")
             {
                 if (Dy > 0.f)
                 {
-                    y = mLevelObject.mRect.top - mHeight;
+                    y = mLevelObject.rect.top - mHeight;
                     dy = 0.f;
                     mIsEnd = true;
                 }
                 if (Dy < 0.f)
                 {
-                    y = mLevelObject.mRect.top + mLevelObject.mRect.height;
+                    y = mLevelObject.rect.top + mLevelObject.rect.height;
                     dy = 0.f;
                 }
             }

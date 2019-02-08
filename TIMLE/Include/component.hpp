@@ -1,5 +1,4 @@
-﻿#ifndef COMPONENT_HPP
-#define COMPONENT_HPP
+﻿#pragma once
 
 #include <memory>
 
@@ -56,12 +55,24 @@ class Component : public sf::Drawable, public sf::Transformable, private sf::Non
          */
         virtual      ~Component() = default;
 
+        /**
+         * \brief Deleted copy constructor.
+         */
                      Component(const Component& other) = delete;
-
+        
+        /**
+         * \brief Deleted move constructor.
+         */
                      Component(Component&& other) = delete;
 
+        /**
+         * \brief Deleted copy operator=.
+         */
         Component&   operator=(const Component& other) = delete;
 
+        /**
+         * \brief Deleted copy operator=.
+         */
         Component&   operator=(Component&& other) = delete;
 
 
@@ -111,5 +122,3 @@ class Component : public sf::Drawable, public sf::Transformable, private sf::Non
 };
 
 }
-
-#endif // COMPONENT_HPP

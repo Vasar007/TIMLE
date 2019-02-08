@@ -1,5 +1,4 @@
-﻿#ifndef UTILITY_HPP
-#define UTILITY_HPP
+﻿#pragma once
 
 #include <iterator>
 #include <memory>
@@ -66,6 +65,8 @@ sf::RectangleShape buildBorderLines(const sf::Vector2f position, const sf::Vecto
 sf::RectangleShape buildBorderLines(const sf::FloatRect rect, const sf::Color fillColor,
                                     const sf::Color outlineColor, const float outlineThickness);
 
+unsigned int stou(const std::string& str, size_t* const idx = nullptr, const int base = 10);
+
 // Copy for smart pointers.
 
 template <class T>
@@ -82,5 +83,3 @@ typename std::vector<T>::iterator append(std::vector<T>& dest, std::vector<T>&& 
 } // namespace utils
 
 #include "utility.inl"
-
-#endif // UTILITY_HPP

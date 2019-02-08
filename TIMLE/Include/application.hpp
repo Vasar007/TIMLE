@@ -1,5 +1,4 @@
-﻿#ifndef APPLICATION_HPP
-#define APPLICATION_HPP
+﻿#pragma once
 
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -119,5 +118,3 @@ class Application
          */
         void run();
 };
-
-#endif // APPLICATION_HPP

@@ -1,5 +1,4 @@
-﻿#ifndef MENU_STATE_HPP
-#define MENU_STATE_HPP
+﻿#pragma once
 
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -23,5 +22,3 @@ class MenuState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // MENU_STATE_HPP

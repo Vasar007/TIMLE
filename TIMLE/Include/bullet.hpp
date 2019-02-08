@@ -1,5 +1,4 @@
-﻿#ifndef BULLET_HPP
-#define BULLET_HPP
+﻿#pragma once
 
 #include "projectile.hpp"
 
@@ -18,14 +17,12 @@ class Bullet final : public Projectile
     
     public:
              Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                    const Level& lvl, const float X, const float Y, const int width, 
+                    const level& lvl, const float X, const float Y, const int width, 
                     const int height, const float tX, const float tY);
                                     
              Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                    const Level& lvl, const float X, const float Y, const int width,
+                    const level& lvl, const float X, const float Y, const int width,
                     const int height, const int dir);
 
         void update(const float dt) override;
 };
-
-#endif // BULLET_HPP

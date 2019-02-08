@@ -1,5 +1,4 @@
-﻿#ifndef TENTACLE_HPP
-#define TENTACLE_HPP
+﻿#pragma once
 
 #include "enemy.hpp"
 
@@ -49,7 +48,7 @@ class Tentacle final : public Enemy
          * \param[in] type     An additional parameter for interaction with map.
          */
              Tentacle(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                      const Level& lvl, const float X, const float Y, const int width,
+                      const level& lvl, const float X, const float Y, const int width,
                       const int height, const std::string& type);
 
 
@@ -67,5 +66,3 @@ class Tentacle final : public Enemy
          */
         void update(const float dt) override;
 };
-
-#endif // TENTACLE_HPP

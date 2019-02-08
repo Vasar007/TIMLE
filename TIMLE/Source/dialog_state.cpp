@@ -16,8 +16,8 @@ DialogState::DialogState(StateStack& stack, Context context)
 , _texture(context.mTextures->get(Textures::ID::DialogBox))
 , _playerInfo(*context.mPlayerInfo)
 {
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     _sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
 
@@ -216,8 +216,8 @@ void DialogState::draw()
     auto& window = *getContext().mWindow;
     window.setView(window.getDefaultView());
 
-    const auto center = window.getView().getCenter();
-    const auto size = window.getView().getSize();
+    const auto& center = window.getView().getCenter();
+    const auto& size = window.getView().getSize();
 
     _sprite.setScale(size.x / _sprite.getLocalBounds().width, 1.5f);
 

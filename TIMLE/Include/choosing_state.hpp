@@ -1,5 +1,4 @@
-#ifndef CHOOSING_STATE_HPP
-#define CHOOSING_STATE_HPP
+#pragma once
 
 #include <vector>
 
@@ -35,5 +34,3 @@ public:
     bool update(const sf::Time dt) override;
     bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // CHOOSING_STATE_HPP

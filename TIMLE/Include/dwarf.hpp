@@ -1,5 +1,4 @@
-﻿#ifndef DWARF_HPP
-#define DWARF_HPP
+﻿#pragma once
 
 #include "enemy.hpp"
 
@@ -49,7 +48,7 @@ class Dwarf final : public Enemy
          * \param[in] dwarfType Special parameter for identifier type of dwarfes.
          */
              Dwarf(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                   const Level& lvl, const float X, const float Y, const int width, 
+                   const level& lvl, const float X, const float Y, const int width, 
                    const int height, const std::string& type = "0",
                    const DwarfType dwarfType = DwarfType::Dwarf);
 
@@ -68,5 +67,3 @@ class Dwarf final : public Enemy
          */
         void update(const float dt) override;
 };
-
-#endif // DWARF_HPP

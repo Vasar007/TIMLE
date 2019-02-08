@@ -1,5 +1,4 @@
-﻿#ifndef PLAYER_INFO_HPP
-#define PLAYER_INFO_HPP
+﻿#pragma once
 
 #include <map>
 
@@ -306,5 +305,3 @@ class PlayerInfo final
          */
         bool              isFigthWithBoss() const;
 };
-
-#endif // PLAYER_INFO_HPP

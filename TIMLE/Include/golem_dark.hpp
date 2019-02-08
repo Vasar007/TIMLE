@@ -1,5 +1,4 @@
-﻿#ifndef GOLEM_DARK_HPP
-#define GOLEM_DARK_HPP
+﻿#pragma once
 
 #include "enemy.hpp"
 
@@ -13,12 +12,12 @@ class GolemDark final : public Entity
         /**
          * \brief The variable for the counting before we can destroy dead body.
          */
-        int  counter_;
+        int  _counter;
 
         /**
          * \brief The variable for turning the object.
          */
-        bool turned_around_;
+        bool _turned_around;
         
 
     public:
@@ -35,7 +34,7 @@ class GolemDark final : public Entity
          * \param[in] type     An additional parameter for interaction with map.
          */
              GolemDark(const Type::ID id, const TextureHolder& textures,  const FontHolder& fonts,
-                       const Level& level, const float x_coord, const float y_coord,
+                       const level& level, const float x_coord, const float y_coord,
                        const int width, const int height, const std::string& type = "0");
     
 
@@ -53,5 +52,3 @@ class GolemDark final : public Entity
          */
         void update(const float dt) override;
 };
-
-#endif // GOLEM_DARK_HPP

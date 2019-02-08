@@ -1,5 +1,4 @@
-﻿#ifndef STATE_STACK_HPP
-#define STATE_STACK_HPP
+﻿#pragma once
 
 #include <functional>
 #include <map>
@@ -62,7 +61,7 @@ class StateStack : private sf::NonCopyable
 
         StateStack&  operator=(StateStack&& other) = delete;
 
-        template <typename T>
+        template <class T>
         void         registerState(const States::ID stateID);
 
         virtual void update(const sf::Time dt);
@@ -77,7 +76,7 @@ class StateStack : private sf::NonCopyable
 };
 
 
-template <typename T>
+template <class T >
 void StateStack::registerState(const States::ID stateID)
 {
     _factories[stateID] = [this] ()
@@ -85,5 +84,3 @@ void StateStack::registerState(const States::ID stateID)
         return State::unPtr(new T(*this, _context));
     };
 }
-
-#endif // STATE_STACK_HPP

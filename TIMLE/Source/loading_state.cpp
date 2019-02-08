@@ -13,7 +13,7 @@ LoadingState::LoadingState(StateStack& stack, Context context)
 {
     auto& window = *getContext().mWindow;
     const auto& font = context.mFonts->get(Fonts::ID::Main);
-    const auto viewSize = window.getView().getSize();
+    const auto& viewSize = window.getView().getSize();
 
     _loadingText.setFont(font);
     _loadingText.setString(L"Загрузка...");

@@ -1,5 +1,4 @@
-﻿#ifndef LIFE_BAR_HPP
-#define LIFE_BAR_HPP
+﻿#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -73,5 +72,3 @@ class LifeBar
          */
         void draw(sf::RenderTarget& target);
 };
-
-#endif // LIFE_BAR_HPP

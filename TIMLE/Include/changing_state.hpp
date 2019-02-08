@@ -1,5 +1,4 @@
-﻿#ifndef CHANING_STATE_HPP
-#define CHANING_STATE_HPP
+﻿#pragma once
 
 #include <vector>
 
@@ -35,5 +34,3 @@ class ChanginState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // CHANING_STATE_HPP

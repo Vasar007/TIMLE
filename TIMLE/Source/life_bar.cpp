@@ -65,8 +65,8 @@ void LifeBar::update(int points)
 
 void LifeBar::draw(sf::RenderTarget& target)
 {
-    const sf::Vector2f center = target.getView().getCenter();
-    const sf::Vector2f size = target.getView().getSize();
+    const auto& center = target.getView().getCenter();
+    const auto& size = target.getView().getSize();
 
     if ((_type == Type::ID::ShadowBossBar) || (_type == Type::ID::GolemDarkBossBar))
     {

@@ -2,7 +2,7 @@
 
 
 Flamestrike::Flamestrike(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                         const Level& lvl, const float X, const float Y, const int width, 
+                         const level& lvl, const float X, const float Y, const int width, 
                          const int height)
 : Projectile(id, textures, fonts, lvl, X, Y, width, height)
 {

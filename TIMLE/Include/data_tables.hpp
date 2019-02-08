@@ -1,5 +1,4 @@
-﻿#ifndef DATA_TABLES_HPP
-#define DATA_TABLES_HPP
+﻿#pragma once
 
 #include <functional>
 #include <map>
@@ -169,5 +168,3 @@ ShadowData                         initializeShadowData();
 GolemDarkData                      initializeGolemDarkData();
 std::map<Type::ID, ProjectileData> initializeProjectileData();
 std::map<Type::ID, PickupData>     initializePickupData();
-
-#endif // DATA_TABLES_HPP

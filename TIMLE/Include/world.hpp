@@ -1,7 +1,5 @@
-﻿#ifndef WORLD_HPP
-#define WORLD_HPP
+﻿#pragma once
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -44,7 +42,7 @@ class World final : private sf::NonCopyable
         FontHolder&                        _fonts;
         SoundBufferHolder&                 _sounds;
         AudioManager&                      _audioManager;
-        std::unique_ptr<Level>             _level;
+        std::unique_ptr<level>             _level;
 
         std::size_t                        _currentLevelNumber;
         sf::Vector2f                       _position;
@@ -52,11 +50,11 @@ class World final : private sf::NonCopyable
         PlayerInfo&                        _playerInfo;
         std::unique_ptr<LifeBar>           _lifeBar;
 
-        std::list<std::unique_ptr<Entity>> _entities;
-        std::list<std::unique_ptr<Effect>> _effects;
-        std::list<std::unique_ptr<Projectile>> _guidedProjectiles;
-        std::vector<Object>                _objects;
-        std::vector<Object>                _doors;
+        std::vector<std::unique_ptr<Entity>> _entities;
+        std::vector<std::unique_ptr<Effect>> _effects;
+        std::vector<std::unique_ptr<Projectile>> _guidedProjectiles;
+        std::vector<object>                _objects;
+        std::vector<object>                _doors;
         std::vector<WorldContext::SpawnPoint> _enemySpawnPoints; // Not using now.
 
         std::vector<sf::RectangleShape>    _debugRectsToDraw;
@@ -101,7 +99,7 @@ class World final : private sf::NonCopyable
 
     public:
         /**
-         * \brief                   Default constructor.
+         * \brief                   Constructor.
          * \param[out] window       Active window for rendering all stuff.
          * \param[out] textures     Textures holder for extracting necessary textures.
          * \param[out] fonts        Fonts holder for extracting necessary textures.
@@ -129,7 +127,5 @@ class World final : private sf::NonCopyable
 
         bool        hasPlayerReachedEnd() const;
 
-        std::size_t getLevelNumber() const;
+        std::size_t getLevelNumber() const noexcept;
 };
-
-#endif // WORLD_HPP

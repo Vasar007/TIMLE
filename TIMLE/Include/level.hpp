@@ -1,8 +1,5 @@
-﻿#ifndef LEVEL_HPP
-#define LEVEL_HPP
+﻿#pragma once
 
-#include <iostream>
-#include <map>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -10,195 +7,142 @@
 #include <SFML/Graphics.hpp>
 #include <TinyXML/tinyxml.h>
 
-
-/**
- * \brief Special data structure for reading information from the map and keeping it together.
- */
-struct Object 
-{
-    /**
-     * \brief Object id.
-     */
-    int                                mId;
-
-    /**
-     * \brief Name of the object.
-     */
-    std::string                        mName;
-
-    /**
-     * \brief Type of the object.
-     */
-    std::string                        mType;
-
-    /**
-     * \brief Rectangle, which contains coordinates of the object, its width and height.
-     */
-    sf::Rect<float>                    mRect;
-
-    /**
-     * \brief An associative array, which contains all properties of the object.
-     */
-    std::map<std::string, std::string> mProperties;
-
-    /**
-     * \brief Sprite of the object.
-     */
-    sf::Sprite                         mSprite;
-
-
-    /**
-     * \brief          Gets the needed value of the property.
-     * \param[in] name Name of the property.
-     * \return         Integer value of the property in the array. 
-     */
-    int                                getPropertyInt(const std::string& name);
-
-    /**
-     * \brief          Gets the needed value of the property.
-     * \param[in] name Name of the property.
-     * \return         Floating point value of the property in the array. 
-     */
-    float                              getPropertyFloat(const std::string& name);
-
-    /**
-     * \brief          Gets the needed value of the property.
-     * \param[in] name Name of the property.
-     * \return         String value of the property in the array. 
-     */
-    std::string                        getPropertyString(const std::string& name);
-};
-
-
-/**
- * \brief Additional data structure for keeping information about layers to the map.
- */
-struct Layer 
-{
-    /**
-     * \brief The opacity of the layer.
-     */
-    int                     mOpacity{};
-
-    /**
-     * \brief Vector tiles layer.
-     */
-    std::vector<sf::Sprite> mTiles;
-};
+#include "object.hpp"
+#include "tile_layer.hpp"
 
 
 /**
  * \brief Main data structure, which contains all information about current map.
  */
-class Level 
+class level 
 {
-    private:
-        /**
-         * \brief Width of the map.
-         */
-        int                _width;
+private:
+    /**
+     * \brief Additional data structure for keeping information about layers to the map.
+     */
+    struct layer
+    {
+                   layer(const sf::Texture& tileset, const sf::Vector2u tile_size,
+                         const unsigned int width, const unsigned int height)
+                   : opacity(0)
+                   , tiles(tileset, tile_size, width, height)
+                   {
+                   }
 
         /**
-         * \brief Height of the map.
+         * \brief The opacity of the layer.
          */
-        int                _height;
+        int        opacity;
 
         /**
-         * \brief Current width of the tile in the map.
+         * \brief Array which contains tiles from the same layer in tile map.
          */
-        int                _tileWidth;
+        tile_layer tiles;
+    };
 
-        /**
-         * \brief Current height of the tile in the map.
-         */
-        int                _tileHeight;
+    /**
+     * \brief Width of the map.
+     */
+    unsigned int        _width;
 
-        /**
-         * \brief Identifier of the first tile in the map.
-         */
-        int                _firstTileID;
+    /**
+     * \brief Height of the map.
+     */
+    unsigned int        _height;
+
+    /**
+     * \brief Current width of the tile in the map.
+     */
+    unsigned int        _tile_width;
+
+    /**
+     * \brief Current height of the tile in the map.
+     */
+    unsigned int        _tile_height;
+
+    /**
+        * \brief Identifier of the first tile in the map.
+        */
+    int                 _first_tile_id;
 
 
-        /**
-         * \brief The size of the bounds, which we draw.
-         */
-        sf::FloatRect      _drawingBounds;
+    /**
+     * \brief The size of the bounds, which we draw.
+     */
+    sf::FloatRect       _drawing_bounds;
 
-        /**
-         * \brief Current tileset of this map.
-         */
-        sf::Texture        _tilesetImage;
+    /**
+     * \brief Current tileset of this map.
+     */
+    sf::Texture         _tileset;
 
-        /**
-         * \brief Vector with all current map layers.
-         */
-        std::vector<Layer> _layers;
+    /**
+     * \brief Vector with all current map layers.
+     */
+    std::vector<layer>  _layers;
 
     
-    public:
-        /**
-         * \brief Number of the loaded level.
-         */
-        std::size_t         mLevelNumber;
+public:
+    /**
+     * \brief Number of the loaded level.
+     */
+    std::size_t         level_number;
 
-        /**
-         * \brief Vector with all objects, which exist on the map.
-         */
-        std::vector<Object> mObjects;
+    /**
+     * \brief Vector with all objects, which exist on the map.
+     */
+    std::vector<object> objects;
     
     
-    public:
-        /**
-         * \brief Default constructor.
-         */
-                            Level();
+    /**
+     * \brief Default constructor.
+     */
+                        level();
 
-        /**
-         * \brief                     Loading data from map.
-         * \param[in] filename        Name of the map.
-         * \param[in] tile_sheet_path Additional path of the tile sheet.
-         * \return                    If loading was successful returns true, false otherwise.
-         */
-        bool                loadFromFile(const std::string& filename,
-                                         const std::string& tile_sheet_path="");
+    /**
+     * \brief                     Loading data from map.
+     * \param[in] filename        Name of the map.
+     * \param[in] tile_sheet_path Additional path of the tile sheet.
+     * \return                    If loading was successful returns true, false otherwise.
+     */
+    bool                load_from_file(const std::string& filename,
+                                       const std::string& tile_sheet_path = "");
 
-        /**
-         * \brief          Gets first object with this name from map.
-         * \param[in] name Name of the object.
-         * \return         Found object or nullptr if object wasn't found.
-         */
-        Object                getObject(const std::string_view name) const;
+    /**
+     * \brief          Get first object with this name from map.
+     * \param[in] name Name of the object.
+     * \return         Found object or nullptr if object wasn't found.
+     */
+    object              get_object(const std::string_view name) const;
 
-        /**
-         * \brief          Gets all object with the same name from map.
-         * \param[in] name Name of the object.
-         * \return         All found object or nullptr if objects weren't found.
-         */
-        std::vector<Object> getObjects(const std::string_view name) const;
+    /**
+     * \brief          Get all object with the same name from map.
+     * \param[in] name Name of the object.
+     * \return         All found object or nullptr if objects weren't found.
+     */
+    std::vector<object> get_objects(const std::string_view name) const;
 
-        /**
-         * \brief  Gets absolutely all objects on the map.
-         * \return Vector with all objects on the map.
-         */
-        std::vector<Object> getAllObjects() const;
+    /**
+     * \brief  Get absolutely all objects on the map.
+     * \return Vector with all objects on the map.
+     */
+    std::vector<object> get_all_objects() const noexcept;
 
-        /**
-         * \brief             Draws all map.
-         * \param[out] window Active window to drawing.
-         */
-        void                drawAll(sf::RenderWindow& window) const;
+    /**
+     * \brief             Draw all map.
+     * \param[out] window Active window to drawing.
+     */
+    void                draw_all(sf::RenderWindow& window) const;
 
-        /**
-         * \brief             Draws only player's area of this map.
-         * \param[out] window Active window to drawing.
-         */
-        void                draw(sf::RenderWindow& window);
+    /**
+     * \brief             Draw only player's area of this map.
+     * \param[out] window Active window to drawing.
+     */
+    void                draw(sf::RenderWindow& window);
 
-        /**
-         * \brief  Gets tile size of the current map.
-         * \return Vector2i, which contains tile size.
-         */
-        sf::Vector2i        getTileSize() const;
+    /**
+     * \brief  Get tile size of the current map.
+     * \return Vector2u, which contains tile size.
+     */
+    sf::Vector2u        get_tile_size() const noexcept;
 };
-
-#endif // LEVEL_HPP

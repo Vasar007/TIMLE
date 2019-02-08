@@ -1,5 +1,4 @@
-﻿#ifndef RESOURCE_HOLDER_HPP
-#define RESOURCE_HOLDER_HPP
+﻿#pragma once
 
 #include <cassert>
 #include <map>
@@ -13,7 +12,7 @@
  * \tparam Resource   A type of the resources for keeping.
  * \tparam Identifier Array of identificators for tracking recources.
  */
-template <typename Resource, typename Identifier>
+template <class Resource, class Identifier>
 class ResourceHolder
 {
     private:
@@ -48,7 +47,7 @@ class ResourceHolder
          * \param[in] secondParam Additional parameter for loading file (for instance, area of the
          *                        image to load).
          */
-        template <typename Parameter>
+        template <class Parameter>
         void            load(Identifier id, const std::string& filename,
                              const Parameter& secondParam);
 
@@ -68,5 +67,3 @@ class ResourceHolder
 };
 
 #include "resource_holder.inl"
-
-#endif // RESOURCE_HOLDER_HPP
