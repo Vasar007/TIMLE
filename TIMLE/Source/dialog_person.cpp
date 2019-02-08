@@ -1,9 +1,11 @@
-﻿#include "dialog_person.hpp"
+﻿#include <iostream>
+
+#include "dialog_person.hpp"
 
 
 
 DialogPerson::DialogPerson(const Type::ID id, const TextureHolder& textures, const FontHolder&,
-                           const Level&, const float X, const float Y, const int width, 
+                           const level&, const float X, const float Y, const int width, 
                            const int height, const std::string& type)
 : Entity(id, X, Y, width, height, 50.f, 100, 0, type)
 , mDialogNumber(std::stoi(type))

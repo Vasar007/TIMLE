@@ -1,5 +1,4 @@
-﻿#ifndef BLOODSPLAT_HPP
-#define BLOODSPLAT_HPP
+﻿#pragma once
 
 #include <SFML/Graphics/Texture.hpp>
 
@@ -13,7 +12,7 @@ class Bloodsplat final : public Effect
 {
     public:
         /**
-         * \brief             Default constructor.
+         * \brief             Constructor.
          * \param[in] id      The identifier of the current effect.
          * \param[in] texture The reference to texture from TextureHolder.
          * \param[in] X       The initial x-coordinate of this object.
@@ -32,5 +31,3 @@ class Bloodsplat final : public Effect
          */
         void update(const float dt) override;
 };
-
-#endif // BLOODSPLAT_HPP

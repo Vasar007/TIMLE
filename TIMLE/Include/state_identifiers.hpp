@@ -1,5 +1,4 @@
-﻿#ifndef STATE_IDENTIFIERS_HPP
-#define STATE_IDENTIFIERS_HPP
+﻿#pragma once
 
 
 namespace States
@@ -21,5 +20,3 @@ namespace States
         Transit
     };
 }
-
-#endif // STATE_IDENTIFIERS_HPP

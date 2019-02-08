@@ -1,5 +1,4 @@
-﻿#ifndef ENEMY_HPP
-#define ENEMY_HPP
+﻿#pragma once
 
 #include "entity.hpp"
 
@@ -35,20 +34,32 @@ class Enemy : public Entity
          * \param[in] type     An additional parameter for interaction with map.
          */
                      Enemy(Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                              const Level& lvl, const float X, const float Y, const int width, 
-                              const int height, const std::string& type = "0");
+                           const level& lvl, const float X, const float Y, const int width, 
+                           const int height, const std::string& type = "0");
 
         /**
          * \brief Default destructor for correct deleting derived objects.
          */
         virtual      ~Enemy() = default;
 
+        /**
+         * \brief Deleted copy constructor.
+         */
                      Enemy(const Enemy& other) = default;
 
+        /**
+         * \brief Deleted move constructor.
+         */
                      Enemy(Enemy&& other) = default;
 
+        /**
+         * \brief Deleted copy operator=.
+         */
         Enemy&       operator=(const Enemy& other) = default;
 
+        /**
+         * \brief Deleted move operator=.
+         */
         Enemy&       operator=(Enemy&& other) = default;
 
         /**
@@ -65,5 +76,3 @@ class Enemy : public Entity
          */
         void         update(const float dt) override = 0;
 };
-
-#endif // ENEMY_HPP

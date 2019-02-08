@@ -4,7 +4,7 @@
 
 
 MagicArrow::MagicArrow(const Type::ID id,const TextureHolder& textures, const FontHolder& fonts,
-                       const Level& lvl, const float X, const float Y, const int width, 
+                       const level& lvl, const float X, const float Y, const int width, 
                        const int height, const float tX, const float tY)
 : Projectile(id, textures, fonts, lvl, X, Y, width, height)
 , mTargetX(tX)
@@ -13,7 +13,7 @@ MagicArrow::MagicArrow(const Type::ID id,const TextureHolder& textures, const Fo
 , mVy((mTargetY - y) / 100.f)    // 100 - дистанция
 , mDistance(std::sqrt((mTargetX - x)*(mTargetX - x) + (mTargetY - y)*(mTargetY - y)))
 {
-    mLevelObjects = lvl.getObjects("solid");
+    mLevelObjects = lvl.get_objects("solid");
     mSpeed = 0.2f;
     mTexture = textures.get(Textures::ID::MagicArrow);
 
@@ -47,7 +47,7 @@ void MagicArrow::update(const float dt)
 
     for (const auto& object : mLevelObjects)
     {
-        if (getRect().intersects(object.mRect))
+        if (getRect().intersects(object.rect))
         {
             mLife = false;
             break;

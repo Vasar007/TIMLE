@@ -1,5 +1,4 @@
-﻿#ifndef UTILITY_INL
-#define UTILITY_INL
+﻿#pragma once
 
 namespace utils
 {
@@ -60,5 +59,3 @@ typename std::vector<T>::iterator append(std::vector<T>& dest, std::vector<T>&& 
 }
 
 } // namespace utils
-
-#endif // UTILITY_INL

@@ -1,5 +1,4 @@
-﻿#ifndef PLAYER_HPP
-#define PLAYER_HPP
+﻿#pragma once
 
 #include "entity.hpp"
 #include "data_tables.hpp"
@@ -76,7 +75,7 @@ class Player final : public Entity
 
     public:
              Player(const Type::ID id, const TextureHolder& textures, 
-                    const FontHolder& fonts, const Level& lvl, const float X, 
+                    const FontHolder& fonts, const level& lvl, const float X, 
                     const float Y, const int width, const int height, 
                     PlayerInfo& playerInfo);
 
@@ -84,5 +83,3 @@ class Player final : public Entity
 
         void update(const float dt) override;
 };
-
-#endif // PLAYER_HPP

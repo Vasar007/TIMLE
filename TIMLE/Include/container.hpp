@@ -1,5 +1,4 @@
-﻿#ifndef CONTAINER_HPP
-#define CONTAINER_HPP
+﻿#pragma once
 
 #include <memory>
 #include <vector>
@@ -94,5 +93,3 @@ class Container final : public Component
 };
 
 }
-
-#endif // CONTAINER_HPP

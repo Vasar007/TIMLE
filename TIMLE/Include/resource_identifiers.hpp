@@ -1,5 +1,4 @@
-﻿#ifndef RESOURCE_IDENTIFIERS_HPP
-#define RESOURCE_IDENTIFIERS_HPP
+﻿#pragma once
 
 
 // Forward declaration of SFML classes.
@@ -146,5 +145,3 @@ using TextureHolder     = ResourceHolder<sf::Texture, Textures::ID>;
 using FontHolder        = ResourceHolder<sf::Font, Fonts::ID>;
 using SoundBufferHolder = ResourceHolder<sf::SoundBuffer, Sounds::ID>;
 using MusicHolder       = ResourceHolder<sf::Music, Music::ID>;
-
-#endif // RESOURCE_IDENTIFIERS_HPP

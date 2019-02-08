@@ -1,5 +1,4 @@
-﻿#ifndef GAME_STATE_HPP
-#define GAME_STATE_HPP
+﻿#pragma once
 
 #include "player_info.hpp"
 #include "state.hpp"
@@ -20,5 +19,3 @@ class GameState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // GAME_STATE_HPP

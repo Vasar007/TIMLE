@@ -14,8 +14,8 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 , _currentSettings(context.mCurrentSettings)
 {
     // Define some variables for convenience.
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     // Reset array of default strings.
     std::fill(_labelsNames.begin(), _labelsNames.end(), "");
@@ -280,8 +280,8 @@ void SettingsState::addButtonLabel(const PlayerInfo::Action action, const float 
                                    const sf::String& text, const Context context)
 {
     // Defines some variables for convenience.
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     const auto index = static_cast<std::size_t>(action);
     _bindingButtons.at(index) = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
@@ -301,8 +301,8 @@ void SettingsState::addButtonLabel(const Setting setting, const float y,
                                    const sf::String& text, const Context context)
 {
     // Defines some variables for convenience.
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     _settingButtons.at(setting) = std::make_shared<GUI::Button>(*context.mFonts, *context.mTextures,
                                                                 *context.mSounds);

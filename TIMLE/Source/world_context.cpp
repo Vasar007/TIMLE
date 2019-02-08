@@ -8,7 +8,7 @@
 
 
 WorldContext::WorldContext(TextureHolder& textures, FontHolder& fonts,
-                           const std::size_t currentLevelNumber, Level& lvl, const bool debug)
+                           const std::size_t currentLevelNumber, level& lvl, const bool debug)
 : _currentLevelNumber(currentLevelNumber)
 , _level(lvl)
 , _textures(textures)
@@ -24,10 +24,10 @@ void WorldContext::buildBossData()
         case 1:
         {
             // Create and initialize first boss Shadow.
-            const auto shadowObj = _level.getObject("bossShadow");
+            const auto shadowObj = _level.get_object("bossShadow");
             _shadowBoss.mShadow = std::make_unique<Shadow>(
                 Type::ID::Shadow, _textures, _fonts, _level,
-                shadowObj.mRect.left, shadowObj.mRect.top, 40, 35, shadowObj.mType
+                shadowObj.rect.left, shadowObj.rect.top, 40, 35, shadowObj.type
             );
             _shadowBoss.mShadowLifeBar = std::make_unique<LifeBar>(
                 Type::ID::ShadowBossBar, _textures, _fonts, _shadowBoss.mShadow->mHitpoints
@@ -48,10 +48,10 @@ void WorldContext::buildBossData()
             }
 
             // Create and initialize first mini-boss GolemDark.
-            const auto golemObj = _level.getObject("bossGolemDark");
+            const auto golemObj = _level.get_object("bossGolemDark");
             _golemBoss.mGolem = std::make_unique<GolemDark>(
                 Type::ID::GolemDark, _textures, _fonts, _level,
-                golemObj.mRect.left, golemObj.mRect.top, 70, 60, golemObj.mType
+                golemObj.rect.left, golemObj.rect.top, 70, 60, golemObj.type
             );
             _golemBoss.mGolemLifeBar = std::make_unique<LifeBar>(
                 Type::ID::GolemDarkBossBar, _textures, _fonts, _golemBoss.mGolem->mHitpoints
@@ -472,18 +472,18 @@ void WorldContext::processMainEvents(PlayerInfo& playerInfo, AudioManager& audio
                 playerInfo.mQuests.at(PlayerInfo::Quest::KillGolemDark) = true;
 
                 // Temporary object.
-                Object tempObject;
+                object tempObject;
 
-                tempObject.mName = "dialogMessage";
-                tempObject.mType = "9";
+                tempObject.name = "dialogMessage";
+                tempObject.type = "9";
 
                 sf::FloatRect objectRect;
                 objectRect.top = 2388;
                 objectRect.left = 8352;
                 objectRect.height = 60;
                 objectRect.width = 80;
-                tempObject.mRect = std::move(objectRect);
-                _level.mObjects.push_back(tempObject);
+                tempObject.rect = std::move(objectRect);
+                _level.objects.push_back(tempObject);
                 playerHero->mLevelObjects.push_back(std::move(tempObject));
 
                 audioManager.setMusic(Music::ID::FirstMainMusic);

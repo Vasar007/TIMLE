@@ -1,5 +1,4 @@
-﻿#ifndef LOADING_STATE_HPP
-#define LOADING_STATE_HPP
+﻿#pragma once
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -27,5 +26,3 @@ class LoadingState final : public State
     
         void setCompletion(float percent);
 };
-
-#endif // LOADING_STATE_HPP

@@ -1,5 +1,4 @@
-﻿#ifndef MAGIC_ARROW_HPP
-#define MAGIC_ARROW_HPP
+﻿#pragma once
 
 #include "projectile.hpp"
 
@@ -16,10 +15,8 @@ class MagicArrow final : public Projectile
 
     public:
              MagicArrow(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                        const Level& lvl, const float X, const float Y, const int width,
+                        const level& lvl, const float X, const float Y, const int width,
                         const int height, const float tX, const float tY);
 
         void update(const float dt) override;
 };
-
-#endif // MAGIC_ARROW_HPP

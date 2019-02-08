@@ -1,5 +1,4 @@
-﻿#ifndef SHADOW_HPP
-#define SHADOW_HPP
+﻿#pragma once
 
 #include "entity.hpp"
 
@@ -13,72 +12,72 @@ class Shadow final : public Entity
         /**
          * \brief The variable for the counting before we can destroy dead body.
          */
-        int                        counter_;
+        int                        _counter;
 
         /**
          * \brief Keeping current teleportation point.
          */
-        int                        teleportation_point_number_;
+        int                        _teleportation_point_number;
 
         /**
          * \brief An additional counter for helping with teleporting this object.
          */
-        float                      appearence_timer_;
+        float                      _appearence_timer;
 
         /**
          * \brief An additional counter for helping with teleporting this object.
          */
-        float                      disappearance_timer_;
+        float                      _disappearance_timer;
 
         /**
          * \brief The timer for downtime this object.
          */
-        float                      stay_timer_;
+        float                      _stay_timer;
 
         /**
          * \brief The timer for delay in place before the next teleport.
          */
-        float                      delay_timer_;
+        float                      _delay_timer;
 
         /**
          * \brief Fixing some graphics issues when object dying.
          */
-        float                      inaccuracy_;
+        float                      _inaccuracy;
 
         /**
          * \brief Flag for the state "After teleporting".
          */
-        bool                       teleported_;
+        bool                       _teleported;
 
         /**
          * \brief Flag for the state "While teleporting".
          */
-        bool                       teleporting_;
+        bool                       _teleporting;
 
         /**
          * \brief Flag for the state "After dissapering".
          */
-        bool                       isDisappeared_;
+        bool                       _is_isappeared;
 
         /**
          * \brief Flag for the state "While dissapering".
          */
-        bool                       disappearing_;
+        bool                       _disappearing;
 
         /**
          * \brief Flag, means that this object must change current state on "Idle".
          */
-        bool                       needs_idle_;
+        bool                       _needs_idle;
 
         /**
          * \brief Additional flag for the intermediate state before teleporting.
          */
-        bool                       needs_delay_;
+        bool                       _needs_delay;
 
         /**
          * \brief Special vector for keeping all teleport points of this object.
          */
-        std::vector<TeleportPoint> telepor_points_;
+        std::vector<TeleportPoint> _telepor_points;
 
 
     public:
@@ -131,7 +130,7 @@ class Shadow final : public Entity
          * \param[in] type     An additional parameter for interaction with map.
          */
              Shadow(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                    const Level& level, const float x_coord, const float y_coord, const int width,
+                    const level& level, const float x_coord, const float y_coord, const int width,
                     const int height, const std::string& type = "0");
 
 
@@ -141,5 +140,3 @@ class Shadow final : public Entity
          */
         void update(const float dt) override;
 };
-
-#endif // SHADOW_HPP

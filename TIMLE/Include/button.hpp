@@ -1,5 +1,4 @@
-﻿#ifndef BUTTON_HPP
-#define BUTTON_HPP
+﻿#pragma once
 
 #include <memory>
 #include <functional>
@@ -95,7 +94,7 @@ class Button final : public Component
 
     public:
         /**
-         * \brief                 Default constructor.
+         * \brief                 Constructor.
          * \param[in] fonts       Fonts holder for extracting necessary font.
          * \param[in] textures    Textures holder for extracting necessary textures.
          * \param[in] soundBuffer Sounds holder for extracting necessary sounds.
@@ -155,5 +154,3 @@ class Button final : public Component
 };
 
 }
-
-#endif // BUTTON_HPP

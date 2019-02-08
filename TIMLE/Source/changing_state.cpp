@@ -50,8 +50,8 @@ ChanginState::ChanginState(StateStack& stack, Context context)
     */
 
     // Define some variables for convenience.
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     _sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
 
@@ -469,8 +469,8 @@ void ChanginState::draw()
     auto& window = *getContext().mWindow;
     window.setView(window.getDefaultView());
 
-    const auto center = window.getView().getCenter();
-    const auto size = window.getView().getSize();
+    const auto& center = window.getView().getCenter();
+    const auto& size = window.getView().getSize();
 
     _text.setPosition(center.x - 150.f, center.y - (size.y / 2.f) + 100.f);
 

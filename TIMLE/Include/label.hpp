@@ -1,5 +1,4 @@
-﻿#ifndef LABEL_HPP
-#define LABEL_HPP
+﻿#pragma once
 
 #include <SFML/Graphics/Text.hpp>
 
@@ -21,7 +20,7 @@ class Label final : public Component
 {
     public:
         /**
-         * \brief Syntactic sugar.
+         * \brief Type alias.
          */
         using shPtr = std::shared_ptr<Label>;
             
@@ -44,7 +43,7 @@ class Label final : public Component
 
     public:
         /**
-         * \brief           Default constuctor.
+         * \brief           Constuctor.
          * \param[in] text  Text of the label.
          * \param[in] fonts Font holder for extracting necessary font.
          */
@@ -70,5 +69,3 @@ class Label final : public Component
 };
 
 }
-
-#endif // LABEL_HPP

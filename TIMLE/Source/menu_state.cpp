@@ -12,8 +12,8 @@ MenuState::MenuState(StateStack& stack, Context context)
 : State(stack, context)
 {
     // Define some variables for convenience.
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     if (mAudioManager.isPlaying())
     {

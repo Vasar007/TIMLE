@@ -1,5 +1,4 @@
-﻿#ifndef GOBLIN_HPP
-#define GOBLIN_HPP
+﻿#pragma once
 
 #include "enemy.hpp"
 
@@ -23,7 +22,7 @@ class Goblin final : public Enemy
          * \param[in] type     An additional parameter for interaction with map.
          */
              Goblin(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                    const Level& lvl, const float X, const float Y,
+                    const level& lvl, const float X, const float Y,
                     const int width, const int height, const std::string& type = "0");
 
 
@@ -41,5 +40,3 @@ class Goblin final : public Enemy
          */
         void update(const float dt) override;
 };
-
-#endif // GOBLIN_HPP

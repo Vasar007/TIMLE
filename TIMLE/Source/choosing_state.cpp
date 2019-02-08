@@ -15,8 +15,8 @@ ChoosingState::ChoosingState(StateStack& stack, Context context)
 , _playerInfo(*context.mPlayerInfo)
 {
     // Define some variables for convenience.
-    const auto windowSize(context.mWindow->getView().getSize());
-    const auto windowCenter(context.mWindow->getView().getCenter());
+    const auto& windowSize(context.mWindow->getView().getSize());
+    const auto& windowCenter(context.mWindow->getView().getCenter());
 
     _sound.setBuffer(context.mSounds->get(Sounds::ID::ButtonCLick));
 
@@ -163,8 +163,8 @@ void ChoosingState::draw()
     auto& window = *getContext().mWindow;
     window.setView(window.getDefaultView());
 
-    const auto center = window.getView().getCenter();
-    //auto size = window.getView().getSize();
+    const auto& center = window.getView().getCenter();
+    //const auto& size = window.getView().getSize();
 
     _text.setPosition(center.x - 200.f, center.y - 0.f);
 

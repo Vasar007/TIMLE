@@ -1,5 +1,4 @@
-﻿#ifndef TITRE_STATE_HPP
-#define TITRE_STATE_HPP
+﻿#pragma once
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -28,5 +27,3 @@ class TitreState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // TITRE_STATE_HPP

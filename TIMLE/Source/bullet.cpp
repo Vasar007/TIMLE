@@ -4,7 +4,7 @@
 
 
 Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
-               const Level& lvl, const float X, const float Y, const int width, const int height,
+               const level& lvl, const float X, const float Y, const int width, const int height,
                const float tX, const float tY)
 : Projectile(id, textures, fonts, lvl, X, Y, width, height) // При клике мышкой
 , mTargetX(tX)
@@ -14,7 +14,7 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mDistance(std::sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
 , mIsMouse(true)
 {
-    mLevelObjects = lvl.getObjects("solid");
+    mLevelObjects = lvl.get_objects("solid");
     mSpeed = 0.2f;
     mTexture = textures.get(Textures::ID::Bullet);
 
@@ -24,7 +24,7 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 }
 
 Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts, 
-               const Level& lvl, const float X, const float Y, const int width, const int height, 
+               const level& lvl, const float X, const float Y, const int width, const int height, 
                const int dir)
 : Projectile(id, textures, fonts, lvl, X, Y, width, height) // При нажатии space
 , mTargetX(X + 150.f * ((dir - 1 == 0) || (dir - 1 == 4) ? 1.f : -1.f))
@@ -34,7 +34,7 @@ Bullet::Bullet(const Type::ID id, const TextureHolder& textures, const FontHolde
 , mDistance(std::sqrt((mTargetX - x) * (mTargetX - x) + (mTargetY - y) * (mTargetY - y)))
 , mIsMouse(false)
 {
-    mLevelObjects = lvl.getObjects("solid");
+    mLevelObjects = lvl.get_objects("solid");
     mSpeed = 0.2f;
     mTexture = textures.get(Textures::ID::Bullet);
 
@@ -65,7 +65,7 @@ void Bullet::update(const float dt)
 
     for (const auto& object : mLevelObjects) // Проход по объектам solid
     {
-        if (getRect().intersects(object.mRect))
+        if (getRect().intersects(object.rect))
         {
             mLife = false;
         }

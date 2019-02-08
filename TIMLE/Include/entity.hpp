@@ -1,5 +1,4 @@
-﻿#ifndef ENTITY_HPP
-#define ENTITY_HPP
+﻿#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -58,7 +57,7 @@ class Entity
         bool                mIsDisabled;
         bool                mIsEnabling;
 
-        std::string         mType;
+        std::string         type;
 
         sf::Sprite          mSprite;
         sf::Texture         mTexture;
@@ -66,7 +65,7 @@ class Entity
         sf::Texture         mTextureDeath;
         Type::ID            mTypeID;
     
-        std::vector<Object> mLevelObjects;
+        std::vector<object> mLevelObjects;
 
     
     public:
@@ -100,5 +99,3 @@ class Entity
     
         virtual void  update(const float dt) = 0;
 };
-
-#endif // ENTITY_HPP

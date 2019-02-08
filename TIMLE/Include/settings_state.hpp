@@ -1,5 +1,4 @@
-﻿#ifndef SETTINGS_STATE_HPP
-#define SETTINGS_STATE_HPP
+﻿#pragma once
 
 #include <array>
 #include <vector>
@@ -16,7 +15,7 @@
 class SettingsState final : public State
 {
     public:
-        enum Setting
+        enum Setting : std::size_t
         {
             WindowSize,
             WindowStyle,
@@ -61,5 +60,3 @@ class SettingsState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // SETTINGS_STATE_HPP

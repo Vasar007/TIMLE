@@ -1,5 +1,4 @@
-﻿#ifndef STATE_STACK_HPP
-#define STATE_STACK_HPP
+﻿#pragma once
 
 #include <functional>
 #include <map>
@@ -85,5 +84,3 @@ void StateStack::registerState(const States::ID stateID)
         return State::unPtr(new T(*this, _context));
     };
 }
-
-#endif // STATE_STACK_HPP

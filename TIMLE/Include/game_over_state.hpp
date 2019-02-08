@@ -1,5 +1,4 @@
-﻿#ifndef GAME_OVER_STATE_HPP
-#define GAME_OVER_STATE_HPP
+﻿#pragma once
 
 #include <SFML/Graphics/Text.hpp>
 
@@ -25,5 +24,3 @@ class GameOverState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // GAMEOVERSTATE_HPP

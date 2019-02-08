@@ -1,5 +1,4 @@
-﻿#ifndef MINOTAUR_MAGE_HPP
-#define MINOTAUR_MAGE_HPP
+﻿#pragma once
 
 #include "enemy.hpp"
 
@@ -23,7 +22,7 @@ class MinotaurMage final : public Enemy
          * \param[in] type     An additional parameter for interaction with map.
          */
              MinotaurMage(const Type::ID id, const TextureHolder& textures, 
-                          const FontHolder& fonts, const Level& lvl, const float X, 
+                          const FontHolder& fonts, const level& lvl, const float X, 
                           const  float Y, const int width, const int height, 
                           const std::string& type = "0");
 
@@ -42,5 +41,3 @@ class MinotaurMage final : public Enemy
          */
         void update(const float dt) override;
 };
-
-#endif // MINOTAUR_MAGE_HPP

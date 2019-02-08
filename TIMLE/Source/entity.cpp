@@ -38,7 +38,7 @@ Entity::Entity(const Type::ID id, const float X, const  float Y, const int width
 , mIsEnabled(false)
 , mIsDisabled(false)
 , mIsEnabling(false)
-, mType(std::move(type))
+, type(std::move(type))
 , mTypeID(id)
 {
     mSprite.setOrigin(static_cast<float>(mWidth) / 2.f, static_cast<float>(mHeight) / 2.f);

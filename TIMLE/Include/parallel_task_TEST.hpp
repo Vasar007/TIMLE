@@ -1,5 +1,4 @@
-﻿#ifndef PARALLELTASK_HPP
-#define PARALLELTASK_HPP
+﻿#pragma once
 
 #include <atomic>
 #include <mutex>
@@ -44,5 +43,3 @@ class ParallelTask
         bool     isFinished();
         float    getCompletion();
 };
-
-#endif // PARALLELTASK_HPP

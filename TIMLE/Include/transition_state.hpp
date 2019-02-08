@@ -1,5 +1,4 @@
-﻿#ifndef TRANSITION_STATE_HPP
-#define TRANSITION_STATE_HPP
+﻿#pragma once
 
 #include <SFML/Graphics/Text.hpp>
 
@@ -24,5 +23,3 @@ class TransitionState final : public State
         bool update(const sf::Time dt) override;
         bool handleEvent(const sf::Event& event) override;
 };
-
-#endif // TRANSITION_STATE_HPP

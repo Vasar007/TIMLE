@@ -1,7 +1,9 @@
-﻿#include "dead_man.hpp"
+﻿#include <iostream>
+
+#include "dead_man.hpp"
 
 
-DeadMan::DeadMan(const Type::ID id, const TextureHolder& textures, const FontHolder&, const Level&,
+DeadMan::DeadMan(const Type::ID id, const TextureHolder& textures, const FontHolder&, const level&,
                  const float X, const float Y, const int width, const int height, 
                  const std::string& type)
 : Entity(id, X, Y, width, height, 50.f, 100, 0, type)

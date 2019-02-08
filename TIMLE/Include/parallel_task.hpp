@@ -1,5 +1,4 @@
-﻿#ifndef PARALLEL_TASK_HPP
-#define PARALLEL_TASK_HPP
+﻿#pragma once
 
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -40,5 +39,3 @@ class ParallelTask
         bool     isFinished();
         float    getCompletion();
 };
-
-#endif // PARALLEL_TASK_HPP

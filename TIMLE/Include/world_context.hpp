@@ -1,5 +1,4 @@
-﻿#ifndef WORLD_CONTEXT_HPP
-#define WORLD_CONTEXT_HPP
+﻿#pragma once
 
 #include <memory>
 #include <vector>
@@ -24,13 +23,13 @@ class WorldContext final
         struct SpawnPoint
         {
             SpawnPoint(const Type::ID type, const float x, const float y)
-            : mType(type)
+            : type(type)
             , x(x)
             , y(y)
             {
             }
 
-            Type::ID mType;
+            Type::ID type;
             float    x;
             float    y;
         };
@@ -92,7 +91,7 @@ class WorldContext final
 
     private:
         std::size_t    _currentLevelNumber;
-        Level&         _level;
+        level&         _level;
         TextureHolder& _textures;
         FontHolder&    _fonts;
 
@@ -104,7 +103,7 @@ class WorldContext final
 
     public:
             WorldContext(TextureHolder& textures, FontHolder& fonts,
-                          const std::size_t currentLevelNumber, Level& lvl, const bool debug);
+                          const std::size_t currentLevelNumber, level& lvl, const bool debug);
 
         void buildBossData();
 
@@ -120,5 +119,3 @@ class WorldContext final
 
         bool isGolemDarkActive() const;
 };
-
-#endif // WORLD_CONTEXT_HPP

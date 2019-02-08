@@ -2,7 +2,7 @@
 
 
 Tentacle::Tentacle(const Type::ID id, const TextureHolder& textures, const FontHolder& fonts,
-                   const Level& lvl, const float X, const float Y, const int width,
+                   const level& lvl, const float X, const float Y, const int width,
                    const int height, const std::string& type)
 : Enemy(id, textures, fonts, lvl, X, Y, width, height, type)
 , _appearing(0.f)
@@ -20,10 +20,10 @@ void Tentacle::checkCollisionWithMap(const float, const float)
     for (const auto& object : mLevelObjects)
     {
         // Проверяем пересечение с объектом
-        if (getRect().intersects(object.mRect))
+        if (getRect().intersects(object.rect))
         {
             // Если встретили смерть
-            if (object.mName == "death")
+            if (object.name == "death")
             {
                 mHitpoints = 0;
             }

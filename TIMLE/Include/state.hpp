@@ -1,5 +1,4 @@
-﻿#ifndef STATE_HPP
-#define STATE_HPP
+﻿#pragma once
 
 #include <memory>
 
@@ -28,7 +27,7 @@ class State
         /**
          * \brief Enumeration of the window styles.
          */
-        enum WindowStyle
+        enum WindowStyle : int
         {
             None       = 0,      ///< No border / title bar (this flag and all others are mutually exclusive).
             Titlebar   = 1 << 0, ///< Title bar + fixed border.
@@ -119,5 +118,3 @@ class State
 
         Context getContext() const;
 };
-
-#endif // STATE_HPP
