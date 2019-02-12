@@ -44,6 +44,12 @@ World::World(sf::RenderWindow& window, TextureHolder& textures, FontHolder& font
 , _debug(debugMode == State::DebugMode::DebugOn)
 , _worldContext(textures, fonts, levelNumber, *_level, _debug)
 {
+    constexpr std::size_t k_reserved_elements = 200;
+    _objects.reserve(k_reserved_elements);
+    _entities.reserve(k_reserved_elements);
+    _effects.reserve(k_reserved_elements);
+    _guidedProjectiles.reserve(k_reserved_elements);
+
     _sound.setBuffer(sounds.get(Sounds::ID::Bullet));
 
     audioManager.setMusic(Music::ID::FirstMainMusic);
@@ -821,6 +827,9 @@ void World::addObjects()
         }
     }
 
+    // Add extra capacity for further events.
+    _entities.reserve(_entities.capacity() * _entities.capacity() / 2);
+
     // Add interaction objects, not enemy.
     utils::append(_objects, _level->get_objects("solid"));
     utils::append(_objects, _level->get_objects("enemyBorder"));  
@@ -828,8 +837,10 @@ void World::addObjects()
     utils::append(_objects, _level->get_objects("end"));
     utils::append(_objects, _level->get_objects("boss"));
     utils::append(_objects, _level->get_objects("dialogMessage"));
-    utils::append(_objects, _level->get_objects("door"));
-    _doors = _level->get_objects("door");
+
+    auto temp = _level->get_objects("door");
+    utils::append(_objects, temp);
+    _doors = std::move(temp);
 }
 
 void World::addEnemy(const Type::ID type, const float relX, const float relY)
@@ -844,7 +855,6 @@ void World::guideMissiles()
         missile->guideTowards(sf::Vector2f(_playerHero->getCenter().x, _playerHero->getCenter().y));
     }
 }
-
 
 void World::spawnEnemies()
 {

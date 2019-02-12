@@ -34,8 +34,16 @@ void WorldContext::buildBossData()
                 Type::ID::ShadowBossBar, _textures, _fonts, _shadowBoss.mShadow->mHitpoints
             );
 
+            constexpr std::size_t k_shadow_attacks_number = 3;
+            constexpr std::size_t k_package_tentacles_number = 5;
+            _shadowBoss.mTentacles.reserve(k_shadow_attacks_number * k_package_tentacles_number);
+
+            constexpr std::size_t k_static_positions_number = 5;
+            _shadowBoss.mTentaclesStatic.reserve(_shadowBoss.mNumberOfTentacles * k_package_tentacles_number);
             for (std::size_t i = 0; i < _shadowBoss.mNumberOfTentacles; ++i)
             {
+                // Create static tentacles in all specified positions gradually, i.e. create first
+                // tentacle in each position, shift coordinates and create the next one and etc.
                 _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
                                                           _level, 12013.f + 13.f * i, 994.f, 13, 45, "0");
                 _shadowBoss.mTentaclesStatic.emplace_back(Type::ID::Tentacle, _textures, _fonts,
@@ -58,6 +66,8 @@ void WorldContext::buildBossData()
                 Type::ID::GolemDarkBossBar, _textures, _fonts, _golemBoss.mGolem->mHitpoints
             );
 
+            constexpr std::size_t k_rock_positions_number = 8;
+            _golemBoss.mRocks.reserve(k_rock_positions_number);
             _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8192.f, 2272.f);
             _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8272.f, 2240.f);
             _golemBoss.mRocks.emplace_back(Type::ID::Rock, 8336.f, 2192.f);
@@ -235,7 +245,7 @@ void WorldContext::update(const sf::Time dt)
 }
 
 void WorldContext::processGolemDarkEvents(sf::View& view,
-                                          std::list<std::unique_ptr<Entity>>& entities)
+                                          std::vector<std::unique_ptr<Entity>>& entities)
 {
     if (_golemBoss.mIsActive && _golemBoss.mIsShaked)
     {

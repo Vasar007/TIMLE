@@ -51,9 +51,9 @@ class World final : private sf::NonCopyable
         PlayerInfo&                        _playerInfo;
         std::unique_ptr<LifeBar>           _lifeBar;
 
-        std::list<std::unique_ptr<Entity>> _entities;
-        std::list<std::unique_ptr<Effect>> _effects;
-        std::list<std::unique_ptr<Projectile>> _guidedProjectiles;
+        std::vector<std::unique_ptr<Entity>> _entities;
+        std::vector<std::unique_ptr<Effect>> _effects;
+        std::vector<std::unique_ptr<Projectile>> _guidedProjectiles;
         std::vector<object>                _objects;
         std::vector<object>                _doors;
         std::vector<WorldContext::SpawnPoint> _enemySpawnPoints; // Not using now.
