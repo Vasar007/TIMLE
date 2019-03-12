@@ -36,29 +36,29 @@ GolemDark::GolemDark(const Type::ID id, const TextureHolder& textures, const Fon
     mCurrentDeath = 5.f;
 }
 
-void GolemDark::check_collision_with_map(const float dX, const float dY)
+void GolemDark::check_collision_with_map(const float dx_, const float dy_)
 {
     for (const auto& object : mLevelObjects)
     {
         if (getRect().intersects(object.rect))
         {
-            if (dY > 0.f)
+            if (dy_ > 0.f)
             {
                 y = object.rect.top - mHeight;
                 dy = 0.f;
                 mOnGround = true;
             }
-            if (dY < 0.f)
+            if (dy_ < 0.f)
             {
                 y = object.rect.top + object.rect.height;
                 dy = 0.f;
             }
-            if (dX > 0.f)
+            if (dx_ > 0.f)
             {
                 x = object.rect.left - mWidth;
                 _turned_around = true;
             }
-            if (dX < 0.f)
+            if (dx_ < 0.f)
             {
                 x = object.rect.left + object.rect.width;
                 _turned_around = true;;

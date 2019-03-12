@@ -24,7 +24,7 @@ Shadow::Shadow(const Type::ID id, const TextureHolder& textures, const FontHolde
 , _disappearing(false)
 , _needs_idle(false)
 , _needs_delay(false)
-, _telepor_points(SHADOW_TABLE.mTeleportPoints)
+, _teleport_points(SHADOW_TABLE.mTeleportPoints)
 , idling(false)
 , is_delay(false)
 , summoning(false)
@@ -111,7 +111,7 @@ void Shadow::update(const float dt)
             mCurrentFrame -= 4.f;
         }
 
-        if (mIsAttacked && (_teleportation_point_number <= static_cast<int>(_telepor_points.size())) && !is_delay && !idling)
+        if (mIsAttacked && (_teleportation_point_number <= static_cast<int>(_teleport_points.size())) && !is_delay && !idling)
         {
             if (!_is_isappeared && !_disappearing)
             {
@@ -124,8 +124,8 @@ void Shadow::update(const float dt)
             }
             else if (!_teleported && !_teleporting)
             {
-                x = _telepor_points[_teleportation_point_number].x;
-                y = _telepor_points[_teleportation_point_number].y;
+                x = _teleport_points[_teleportation_point_number].x;
+                y = _teleport_points[_teleportation_point_number].y;
                 switch (_teleportation_point_number)
                 {
                     case 0:

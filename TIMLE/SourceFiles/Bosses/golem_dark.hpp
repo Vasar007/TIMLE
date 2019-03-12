@@ -42,15 +42,15 @@ class GolemDark final : public Entity
     
 
         /**
-         * \brief        Check collision this object with other objects and special areas in the
-         *               map.
-         * \param[in] dX The current delta x-coordinate of this object for checking.
-         * \param[in] dY The current delta y-coordinate of this object for checking.
+         * \brief         Check collision this object with other objects and special areas in the
+         *                map.
+         * \param[in] dx_ The current delta x-coordinate of this object for checking.
+         * \param[in] dy_ The current delta y-coordinate of this object for checking.
          */
-        void check_collision_with_map(const float dX, const float dY);
+        void check_collision_with_map(const float dx_, const float dy_);
 
         /**
-         * \brief        Overrided funtion for updating this object and its states.
+         * \brief        Overridden function for updating this object and its states.
          * \param[in] dt Delta time parameter.
          */
         void update(const float dt) override;

@@ -58,12 +58,12 @@ class Shadow final : public Entity
         bool                       _teleporting;
 
         /**
-         * \brief Flag for the state "After dissapering".
+         * \brief Flag for the state "After disappearing".
          */
         bool                       _is_isappeared;
 
         /**
-         * \brief Flag for the state "While dissapering".
+         * \brief Flag for the state "While disappearing".
          */
         bool                       _disappearing;
 
@@ -80,7 +80,7 @@ class Shadow final : public Entity
         /**
          * \brief Special vector for keeping all teleport points of this object.
          */
-        std::vector<TeleportPoint> _telepor_points;
+        std::vector<TeleportPoint> _teleport_points;
 
 
     public:
@@ -138,7 +138,7 @@ class Shadow final : public Entity
 
 
         /**
-         * \brief        Overrided funtion for updating this object and its states.
+         * \brief        Overridden function for updating this object and its states.
          * \param[in] dt Delta time parameter.
          */
         void update(const float dt) override;
