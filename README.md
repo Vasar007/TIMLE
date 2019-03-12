@@ -38,7 +38,7 @@ SFML library site is [here](https://www.sfml-dev.org/). Its repository can be fo
 
 ## Compiling
 
-This project needs in SFML v2.4.2 and C++17.
+This project needs in SFML v2.5.1 and C++17.
 
 ## License information
 
