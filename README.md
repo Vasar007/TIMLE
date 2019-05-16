@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/Vasar007/TIMLE/blob/master/LICENSE)
 [![Travis (.org)](https://travis-ci.com/Vasar007/TIMLE.svg?branch=master)](https://travis-ci.com/Vasar007/TIMLE)
-[![AppVeyor branch](https://ci.appveyor.com/project/Vasar007/timle)](https://img.shields.io/appveyor/ci/Vasar007/TIMLE/master.svg)
+[![AppVeyor branch](https://img.shields.io/appveyor/ci/Vasar007/TIMLE/master.svg)](https://ci.appveyor.com/project/Vasar007/timle)
 [![CodeFactor](https://www.codefactor.io/repository/github/vasar007/TIMLE/badge)](https://www.codefactor.io/repository/github/vasar007/TIMLE)
 
 Official repository of the game "This Is My Last Escapade" (TIMLE).
