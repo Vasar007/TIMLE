@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/Vasar007/TIMLE/blob/master/LICENSE)
 [![Build Status](https://travis-ci.com/Vasar007/TIMLE.svg?branch=master)](https://travis-ci.com/Vasar007/TIMLE)
 [![CodeFactor](https://www.codefactor.io/repository/github/vasar007/TIMLE/badge)](https://www.codefactor.io/repository/github/vasar007/TIMLE)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FVasar007%2FTIMLE.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FVasar007%2FTIMLE?ref=badge_shield)
 
 Official repository of the game "This Is My Last Escapade" (TIMLE).
 
@@ -43,3 +44,6 @@ This project needs in SFML v2.5.1 and C++17.
 ## License information
 
 This project is licensed under the terms of the [Apache License 2.0](LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FVasar007%2FTIMLE.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FVasar007%2FTIMLE?ref=badge_large)
