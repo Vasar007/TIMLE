@@ -9,7 +9,7 @@ init:
 branches:
   only:
     - master
-    - production
+    - develop
 
 platform:
   - x64
