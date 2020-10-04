@@ -9,6 +9,8 @@ endif()
 project(TIMLE)
 
 # Set SFML path in the system.
+LIST(APPEND CMAKE_MODULE_PATH CMake)
+
 if (NOT CMAKE_PREFIX_PATH)
     if (WIN32)
         set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/Common Files/SFML-2.5.1-x64")
