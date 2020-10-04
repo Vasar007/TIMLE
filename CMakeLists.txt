@@ -8,9 +8,10 @@ endif()
 
 project(TIMLE)
 
-# Set SFML path in the system.
-LIST(APPEND CMAKE_MODULE_PATH CMake)
+# Add directory containing FindSFML.cmake to module path
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
 
+# Set SFML path in the system.
 if (NOT CMAKE_PREFIX_PATH)
     if (WIN32)
         set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/Common Files/SFML-2.5.1-x64")
