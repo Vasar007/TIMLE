@@ -271,3 +271,4 @@ cmake-build-debug/
 *.vcxproj.filters
 *.vcxproj.user
 *.sln
+out/build
